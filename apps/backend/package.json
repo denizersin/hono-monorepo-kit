@@ -1,0 +1,44 @@
+{
+  "name": "@repo/backend",
+  "version": "0.1.0",
+  "private": true,
+  "exports": {
+    "./exports": "./src/exports/exports.ts"
+  },
+  "type": "module",
+  "scripts": {
+    "dev": "tsc --watch & tsx watch src",
+    "build": "rm -rf dist && tsc && tsc-alias",
+    "start": "node dist/src/index.js",
+    "lint": "eslint . --max-warnings 0",
+    "check-types": "tsc --noEmit",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "initialize-db": "tsx ./src/modules/infrastructure/database/scripts/initialize-db.ts",
+    "update-db": "pnpm run db:generate && pnpm run db:migrate",
+    "recreate-db": "tsx ./src/modules/infrastructure/database/scripts/re-create-db.ts",
+    "reset-db": "pnpm run recreate-db && pnpm run update-db && pnpm run initialize-db"
+  },
+  "dependencies": {
+    "@hono/node-server": "^1.8.2",
+    "@hono/zod-validator": "^0.4.3",
+    "@repo/shared": "workspace:*",
+    "@types/jsonwebtoken": "^9.0.9",
+    "dotenv": "^16.4.7",
+    "drizzle-orm": "^0.39.3",
+    "drizzle-zod": "^0.7.0",
+    "hono": "^4.1.2",
+    "jsonwebtoken": "^9.0.2",
+    "mysql2": "^3.12.0",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@tsconfig/node20": "^20.1.4",
+    "@types/node": "^22.0.0",
+    "drizzle-kit": "^0.30.4",
+    "eslint": "^9.0.0",
+    "tsc-alias": "^1.8.11",
+    "tsx": "^4.7.1",
+    "typescript": "^5.3.3"
+  }
+}

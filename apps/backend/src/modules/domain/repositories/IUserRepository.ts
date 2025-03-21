@@ -1,0 +1,11 @@
+import { TSession } from "@repo/shared/types";
+import TUserEntity from "../entities/user/User";
+
+export interface IUserRepository {
+    getUserById(id: number): Promise<TUserEntity.TUser|undefined>
+    getUserByEmail(email: string): Promise<TUserEntity.TUser|undefined>
+    createUser(user: TUserEntity.TUserInsert): Promise<number>
+    getUserByEmailAndPassword(email: string, password: string): Promise<TUserEntity.TUser|undefined>
+    getSessionUser(user:TUserEntity.TUser): Promise<TSession['user']>
+}
+

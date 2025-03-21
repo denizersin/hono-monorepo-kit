@@ -1,0 +1,32 @@
+{
+    "name": "@repo/shared",
+    "version": "0.0.0",
+    "type": "module",
+    "private": true,
+    "types": "./dist/types/index.d.ts",
+    "exports": {
+        "./validators": "./dist/dto/validators/index.js",
+        "./schema": "./dist/dto/schema/index.js",
+        "./userInsertSchema": "./dist/dto/validators/user/index.js",
+        "./enums": "./dist/enums/index.js",
+        "./types": "./dist/types/index.js",
+        "./utils": "./dist/utils/index.js"
+    },
+    "scripts": {
+        "lint": "eslint .",
+        "type-check": "tsc --noEmit",
+        "dev": "rm -rf dist && tsc --watch  && tsc-alias",
+        "build": "tsc"
+    },
+    "dependencies": {
+        "drizzle-orm": "^0.39.3",
+        "drizzle-zod": "0.5.1",
+        "i": "^0.3.7",
+        "pnpm": "^10.4.1",
+        "zod": "^3.24.2"
+    },
+    "devDependencies": {
+        "tsc-alias": "^1.8.11",
+        "typescript": "^5.0.0"
+    }
+}
