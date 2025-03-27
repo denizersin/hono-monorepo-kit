@@ -7,9 +7,11 @@ const loginEmailAndPasswordFormSchema = z.object({
     password: z.string().min(8),
 })
 
-const registerFormSchema = userValidator.userBaseInsertSchema.omit({
-    role: true,
-    companyId: true,
+const registerFormSchema = userValidator.userBaseInsertSchema.pick({
+    email: true,
+    password: true,
+    name: true,
+    surname: true,
 })
 
 

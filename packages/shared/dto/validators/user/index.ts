@@ -9,8 +9,9 @@ const userBaseSelectSchema = createSelectSchema(tblUser,{
     role: z.enum(SahredEnums.getEnumValuesForZod(SahredEnums.Role))
 })
 
-const userBaseInsertSchema = createInsertSchema(tblUser,{
-    role: z.enum(SahredEnums.getEnumValuesForZod(SahredEnums.Role))
+const userBaseInsertSchema = createInsertSchema(tblUser, {
+    role: z.enum(SahredEnums.getEnumValuesForZod(SahredEnums.Role)),
+    password: z.string().min(8)
 })
 
 
