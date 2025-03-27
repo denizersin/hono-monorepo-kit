@@ -1,6 +1,7 @@
 import db from "@server/modules/infrastructure/database"
 import { schema } from "@server/modules/infrastructure/database/schema"
 import { SahredEnums } from "@repo/shared/enums"
+import { CustomError } from "@server/lib/errors"
 
 
 
@@ -33,7 +34,7 @@ export class LookUpEnumsValidation {
                 enumStatusName !== statusName ||
                 enumStatusId !== status.id
             ) {
-                throw new Error(`Mail confirmation status ${status.name} is not valid`)
+                throw new CustomError({message: `Mail confirmation status ${status.name} is not valid`})
             }
 
         })

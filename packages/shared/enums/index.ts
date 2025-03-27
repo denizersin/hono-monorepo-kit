@@ -23,6 +23,31 @@ const EnumMailConfirmationStatusId: Record<TMailConfirmationStatus, number> = {
 } as const;
 //look up example
 
+const TesEnum = {
+    key1: 'value1',
+    key2: 'value2',
+    key3: 'value3'
+} as const;
+
+
+const STATUS_CODES = {
+    NOT_FOUND_ERROR: 404,
+    CONFLICT_ERROR: 409,
+    VALIDATION_ERROR: 400,
+    AUTHENTICATION_ERROR: 401,
+    AUTHORIZATION_ERROR: 403,
+    INTERNAL_SERVER_ERROR: 500,
+    UNAUTHORIZED: 401,
+    FORBIDDEN: 403,
+    NOT_FOUND: 404,
+    CONFLICT: 409,
+    BAD_REQUEST: 400,
+    CUSTOM_ERROR1: 400,
+
+} as const;
+
+
+type TTestEnum = typeof TesEnum[keyof typeof TesEnum]
 
 export const SahredEnums = {
     // -----------------------------ENUMS--------------------------------
@@ -31,6 +56,7 @@ export const SahredEnums = {
     Role: EnumRole,
     MailConfirmationStatus: EnumMailConfirmationStatus,
     MailConfirmationStatusId: EnumMailConfirmationStatusId,
+    STATUS_CODES: STATUS_CODES,
     // -----------------------------ENUMS--------------------------------
 
 
@@ -84,18 +110,18 @@ const confirmationStatusKey = SahredEnums.getKeyFromIdEnum({
     value: confirmationStatusId
 })
 
-const id=SahredEnums.getIdFromKeyEnum({
+const id = SahredEnums.getIdFromKeyEnum({
     Enum: SahredEnums.MailConfirmationStatusId,
     key: confirmationStatusKey
 })
 
 
-const values=SahredEnums.getEnumValues(SahredEnums.Role)
+const values = SahredEnums.getEnumValues(SahredEnums.Role)
 // ?~ ('admin', 'user', 'owner')[]
 
 
 
-const keys=SahredEnums.getEnumKeys(SahredEnums.Role)
+const keys = SahredEnums.getEnumKeys(SahredEnums.Role)
 
 // ?~ ('ADMIN', 'USER', 'OWNER')[]
 

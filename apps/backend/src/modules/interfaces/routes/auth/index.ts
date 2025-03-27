@@ -1,63 +1,76 @@
 import { zValidator } from "@hono/zod-validator"
-import { TUserValidator } from "@repo/shared/userInsertSchema"
+import { TSession } from "@repo/shared/types"
 import { authValidator } from "@repo/shared/validators"
-import { createSuccessResponse, handleError } from "@server/lib/errors"
+import { EnumCookieKeys } from "@server/lib/enums"
+import { AuthenticationError, createErrorResponse, createSuccessResponse } from "@server/lib/errors"
+import honoFactory from "@server/lib/hono/hono-factory"
+import { tryCatchSync } from "@server/lib/utils"
 import { AuthService } from "@server/modules/application/services/auth/Auth"
 import { UserRepositoryImpl } from "@server/modules/infrastructure/repositories/user/UserRepositoryImpl"
-import { TPublicMiddlewareContext } from "@server/modules/shared/middlewares/auth"
-import { Hono } from "hono"
-import { z } from "zod"
-import { SahredEnums } from "@repo/shared/enums"
-import { TRole, TSession } from "@repo/shared/types";
+import {
+    deleteCookie,
+    getCookie,
+    getSignedCookie,
+    setCookie,
+    setSignedCookie
+} from 'hono/cookie'
 
 // import {  } from "@repo/shared/dto/validators/auth"
 
 
-const authApp = new Hono<{
-    Variables: {
-        publicMiddlewareContext: TPublicMiddlewareContext
-    }
-}>()
-    .get('/', (c) => {
-        return c.json(createSuccessResponse({
-            messageFromAuth: 'Helqwelo from Hon o2 123!',
-        }))
+// const authApp = new Hono<{
+//     Variables: {
+//         publicMiddlewareContext: TPublicMiddlewareContext
+//     }
+// }>()
+
+const authApp = honoFactory.createApp()
+    .get('/get-session', async (c) => {
+        // const authToken = c.req.header(EnumHeaderKeys.AUTHORIZATION) || ''
+        const sessionToken = getCookie(c, EnumCookieKeys.SESSION) || ''
+        const userRepository = new UserRepositoryImpl()
+        const authService = new AuthService(userRepository)
+        const { data: session, error: err } = tryCatchSync(() => authService.verifyToken(sessionToken))
+        if (err) {
+            throw new AuthenticationError({message: 'Invalid token',})
+        }
+        return c.json(createSuccessResponse(session))
+
+
     })
+    .post('/logout',
+        async (c) => {
+            deleteCookie(c, EnumCookieKeys.SESSION)
+            return c.json(createSuccessResponse({}))
+        })
     .post('/login',
         zValidator('json', authValidator.loginEmailAndPasswordFormSchema),
         async (c) => {
-            try {
+
+
+
+            const body = c.req.valid('json')
+            const userRepository = new UserRepositoryImpl()
+            const authService = new AuthService(userRepository)
+            const result = await authService.login(body)
+
+            setCookie(c, EnumCookieKeys.SESSION, result.token)
+            return c.json(createSuccessResponse(result))
+
+        }).post('/register',
+            zValidator('json', authValidator.registerFormSchema),
+            async (c) => {
+
                 const body = c.req.valid('json')
                 const userRepository = new UserRepositoryImpl()
                 const authService = new AuthService(userRepository)
-                const result = await authService.login(body)
-
-
-
-                return c.json(createSuccessResponse(result))
-                // return c.json(createSuccessResponse({
-                //     test:SahredEnums.Role
-                // }))
-            } catch (error) {
-                return handleError(c, error)
-            }
-        })
-    .post('/register',
-        zValidator('json', z.object({
-            email: z.string().email(),
-            password: z.string().min(8),
-            name: z.string().min(2),
-        })),
-        async (c) => {
-            try {
-                const body = await c.req.json() as TUserValidator.TUserCreateSchema
-                const userRepository = new UserRepositoryImpl()
-                const authService = new AuthService(userRepository)
                 const result = await authService.register(body)
+
+                setCookie(c, EnumCookieKeys.SESSION, result.token)
+
                 return c.json(createSuccessResponse(result))
-            } catch (error) {
-                return handleError(c, error)
-            }
-        })
+
+
+            })
 
 export default authApp

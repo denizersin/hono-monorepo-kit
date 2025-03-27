@@ -3,10 +3,13 @@ import Image, { type ImageProps } from "next/image";
 import styles from "./page.module.css";
 // import { hc, InferResponseType } from 'hono/client'
 import { useEffect } from "react";
-import { TRole, TSession } from "@repo/shared/types";
 
 import { SahredEnums } from "@repo/shared/enums";
 import { clientWithType } from "@web/lib/api-client";
+import { userQueryOptions, useUserMeQuery } from "@web/hooks/queries/user";
+import { isErrorResponse } from "@web/lib/utils";
+import { useQuery } from "@tanstack/react-query";
+import { useLogoutMutation } from "@web/hooks/queries/auth";
 
 // userValidator.userBaseInsertSchema.parse({
 //   email:"asd",
@@ -64,21 +67,21 @@ export default function Home() {
 
 
     clientWithType.auth.login.$post({
-      json:{
-        email:"asd",
-        password:"asd",
+      json: {
+        email: "asd",
+        password: "asd",
 
       }
     }).then(r => {
       r.json().then(data => {
         console.log(data)
-        if(data.success){
+        if (data.success) {
         }
       })
     })
 
     clientWithType.user["with-id"][":id"].$get({
-      param:{
+      param: {
         id: '2'
       }
     }).then(r => {
@@ -106,6 +109,26 @@ export default function Home() {
 
   }, [])
 
+  const { data, error, isLoading } = useQuery({
+    ...userQueryOptions,
+  })
+
+  const { mutate: logout, isPending: isLogoutPending } = useLogoutMutation()
+
+  useEffect(() => {
+    if (!error) return
+    console.log('has error')
+    if (error && isErrorResponse(error)) {
+      console.log(error)
+
+    }
+  }, [error])
+
+  console.log(data, error, isLoading)
+
+  console.log(error, 'error2323')
+
+
   return (
     <div className={styles.page}>
       <main className={styles.main}>
@@ -122,7 +145,7 @@ export default function Home() {
           <li className="text-red-500">
             Get started by editing <code>apps/web/app/page.tsx</code>
           </li>
-          <li>Save and see your changes instantly.</li>
+          <li>Save and see your changes instantly2232zx.</li>
         </ol>
 
         <div className={styles.ctas}>
@@ -152,6 +175,11 @@ export default function Home() {
         </div>
         <button className={styles.secondary}>
           Open alert
+        </button>
+        <button className={styles.secondary} onClick={() => {
+          logout()
+        }}>
+          {isLogoutPending ? 'Logging out...' : 'Logout'}
         </button>
       </main>
       <footer className={styles.footer}>

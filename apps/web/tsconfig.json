@@ -29,7 +29,8 @@
       ],
       "@repo/*": [
         "../../packages/*"
-      ]
+      ],
+
     },
     "allowJs": true,
     "noEmit": true,

@@ -1,19 +1,19 @@
 import { SahredEnums } from "@repo/shared/enums";
 import { TRole, TSession } from "@repo/shared/types";
 import { TAuthValidator } from "@repo/shared/validators";
-import { AuthenticationError, ConflictError } from "@server/lib/errors";
+import { AuthenticationError, ConflictError, CustomError } from "@server/lib/errors";
 import { IUserRepository } from "@server/modules/domain/repositories/IUserRepository";
 import { JwtService } from "../jwtService";
 
 export class AuthService {
-    
+
     constructor(private readonly userRepository: IUserRepository) { }
 
     async login(userData: TAuthValidator.TLoginEmailAndPasswordFormSchema) {
-        
+
         const user = await this.userRepository.getUserByEmailAndPassword(userData.email, userData.password)
         if (!user) {
-            throw new AuthenticationError("Invalid email or password")
+            throw new AuthenticationError({message: 'Invalid email or password',toast:true})
         }
 
         const userWithoutPassword = await this.userRepository.getSessionUser(user)
@@ -29,26 +29,45 @@ export class AuthService {
         return {
             session: session as TSession,
             token
-        } 
+        }
     }
 
-    async register(userData: TAuthValidator.TRegisterFormSchema) {
+    async register(userData: TAuthValidator.TRegisterFormSchema): Promise<{
+        session: TSession,
+        token: string
+    }> {
+
         const existingUser = await this.userRepository.getUserByEmail(userData.email)
         if (existingUser) {
-            throw new ConflictError("User with this email already exists")
+            throw new ConflictError({message: 'User with this email already exists'})
         }
 
         const userId = await this.userRepository.createUser({
             ...userData,
             companyId: 1,
             role: SahredEnums.Role.USER,
+            fullName: `${userData.name} ${userData.surname}`,
+            mailConfirmationStatusId: SahredEnums.MailConfirmationStatusId.pending,
+            test: '',
         })
         if (!userId) {
-            throw new Error("Failed to create user")
+            throw new CustomError({message: 'Failed to create user'})
+        }
+
+        const user = await this.userRepository.getUserById(userId)
+        if (!user) {
+            throw new CustomError({message: 'User not found'})
+        }
+
+        const session: TSession = {
+            companyId: user.companyId,
+            role: user.role as TRole,
+            user: user
         }
 
         return {
-            userId
+            session,
+            token: this.generateToken(session)
         }
     }
 
@@ -65,7 +84,7 @@ export class AuthService {
             const payload = JwtService.verifyToken(token) as TSession
             return payload
         } catch (error) {
-            throw new AuthenticationError("Invalid token")
+            throw new AuthenticationError({message: 'Invalid token'})
         }
     }
 

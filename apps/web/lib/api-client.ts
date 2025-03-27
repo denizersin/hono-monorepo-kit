@@ -1,45 +1,32 @@
-import { hcWithType } from "@repo/api-client";
+import { hcWithType, TErrorResponse } from "@repo/api-client";
 import ky from "ky";
-
+import { tryCatch } from "@repo/shared/utils";
 const baseUrl = 'http://localhost:3002'
 const kyapi = ky.extend({
-    hooks: {
-        beforeRequest: [(request) => { 
-            // console.log('request',request)
-        }],
-        afterResponse: [
-            (_, __, response: Response) => {
-                // console.log('response',response);
-                if (response.ok) {
-                    return response;
-                } else if (response.status === 401) {
-                    // TODO 
-                    throw new Error(response.statusText);
-                } else {
-                    throw new Error(response.statusText);
-                }
-            },
-        ],
-    },
+  hooks: {
+    beforeRequest: [(request) => {
+      // console.log('request',request)
+    }],
+    // afterResponse: [
+
+    // ],
+  },
 });
 
 export const clientWithType = hcWithType(baseUrl,
-    {
-        fetch: (input: RequestInfo | URL, requestInit?: RequestInit) => {
-            const method = requestInit?.method ?? 'GET'
-          return kyapi(input, {
-            method,
-            headers: {
-              'content-type': 'application/json',
-              ...requestInit?.headers,
-            },
-            body: method === 'GET' ? null : requestInit?.body,
-          }).then((res) => {
-            if (res.status === 401) {
-              window.location.href = '/login'
-            }
-            return res
-          })
+  {
+    fetch: (input: RequestInfo | URL, requestInit?: RequestInit) => {
+      const method = requestInit?.method ?? 'GET'
+      return fetch(input, {
+        method,
+        headers: {
+          'content-type': 'application/json',
+          ...requestInit?.headers,
         },
-      }
+        credentials: 'include',
+        body: method === 'GET' ? null : requestInit?.body,
+      })
+    },
+  }
 )
+

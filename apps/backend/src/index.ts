@@ -11,6 +11,8 @@ import userApp from './modules/interfaces/routes/user'
 import { honoPublicMiddleware, TPublicMiddlewareContext } from './modules/shared/middlewares/auth'
 import { zValidator } from '@hono/zod-validator'
 import { z } from 'zod'
+import { handleAppError } from './lib/errors'
+import examplesApp from './modules/interfaces/routes/test'
 
 
 const port = process.env.PORT || 3002
@@ -34,19 +36,26 @@ const app = new Hono<{
   }
 }>()
 
+app.onError((err, c) => {
+  return handleAppError(c, err)
+})
+
+
+
+app.use(
+  '/*',
+  cors({
+    origin: ['http://localhost:3000'], // Web uygulamasına izin ver
+    // allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowHeaders: ['Content-Type', 'Authorization', 'Set-Cookie'], // Çerezleri içeren yanıtları al
+    exposeHeaders: ['Content-Length', 'X-Requested-With', 'Set-Cookie'], // Tarayıcının bu header'ları okumasını sağlar
+    maxAge: 86400,
+    credentials: true, // Çerezlerin gönderilmesini sağla
+  })
+);
 
 
 app.use(honoPublicMiddleware)
-
-
-app.use('/*', cors({
-  origin: ['http://localhost:3003'], // Allow web app running on port 3003
-  allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowHeaders: ['Content-Type', 'Authorization'],
-  exposeHeaders: ['Content-Length', 'X-Requested-With'],
-  maxAge: 86400,
-  credentials: true
-}))
 
 
 
@@ -65,24 +74,6 @@ app.use('/*', async (c, next) => {
 
 
 
-app.get('/',
-  // honoAuthMiddleware,
-  createMiddleware<{
-    Variables: {
-      test: 's'
-    }
-  }>((c, next) => {
-    c.set('test', 's')
-    return next()
-  }), (c) => {
-
-    return c.json({
-      message: 'Hello from Hono!',
-      version: '1.0.0',
-      environment: ENV.NODE_ENV,
-      isDev: ENV._runtime.IS_DEV,
-    })
-  })
 
 
 // app.get('/api/health', (c) => {
@@ -109,17 +100,10 @@ const routes = app
       message: 'Hello from Hono!',
     })
   })
-  .post('/test',zValidator('json',z.object({
-    name:z.string(),
-    age:z.number(),
-  })),
-  (c)=>{
-    return c.json({
-      message: 'Hello from Hono!',
-    })
-  })
+
   .route('/auth', authApp)
   .route('/user', userApp)
+  .route('/examples', examplesApp)
   
   export { routes }
 

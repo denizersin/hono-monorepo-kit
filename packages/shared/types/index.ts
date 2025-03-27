@@ -35,3 +35,6 @@ export interface TOwnerSession extends TBaseSession {
 export type TSession = TAdminSession | TUserSession | TOwnerSession
 
 //--------------------------AUTHENTICATION--------------------------------
+
+
+export type TErrorCode = keyof typeof SahredEnums.STATUS_CODES

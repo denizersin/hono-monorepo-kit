@@ -1,6 +1,6 @@
 import { validator } from "hono/validator";
 import { ZodSchema } from "zod";
-import { handleError } from "./errors";
+import { handleAppError } from "./errors";
 
 // Types for the result object with discriminated union
 type Success<T> = {
@@ -43,7 +43,7 @@ export const validateWithZod = (method:TValidationTargetByMethod, schema: ZodSch
         if(result.success){
             return result.data
         }else{
-            handleError(c, result.error)
+            handleAppError(c, result.error)
         }
     }) 
 }

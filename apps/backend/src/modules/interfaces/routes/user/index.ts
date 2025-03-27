@@ -1,30 +1,27 @@
-import { createSuccessResponse, handleError } from "@server/lib/errors"
+import { createSuccessResponse, handleAppError } from "@server/lib/errors"
+import honoFactory from "@server/lib/hono/hono-factory"
 import { wait } from "@server/lib/utils"
-import { honoAuthMiddleware, TAuthMiddlewareContext, TPublicMiddlewareContext } from "@server/modules/shared/middlewares/auth"
-import { Hono } from "hono"
+import { honoAuthMiddleware } from "@server/modules/shared/middlewares/auth"
 
-const userApp = new Hono<{
-    Variables: {
-        publicMiddlewareContext: TPublicMiddlewareContext,
-        authMiddlewareContext: TAuthMiddlewareContext
-    }
-}>()
+// const userApp = new Hono<{
+//     Variables: {
+//         publicMiddlewareContext: TPublicMiddlewareContext,
+//         authMiddlewareContext: TAuthMiddlewareContext
+//     }
+// }>()
+
+const userApp = honoFactory.createApp()
     .use(honoAuthMiddleware)
     .get('/', (c) => {
-    
         return c.json({
             message: 'Hello from Hono!',
         })
     })
     .get('/me', async (c) => {
-        try {
-            await wait(1000)
-            return c.json(createSuccessResponse({
-                message: 'Hello from Hono!',
-            }))
-        } catch (error) {
-            return handleError(c, error)
-        }
+        await wait(1000)
+        return c.json(createSuccessResponse({
+            message: 'Hello from Hono!',
+        }))
     })
     .get('/with-id/:id', async (c) => {
         const id = c.req.param('id')
@@ -36,7 +33,8 @@ const userApp = new Hono<{
 
 
 userApp.get('/', (c) => {
-    const users = c.var.publicMiddlewareContext.db.query.tblUser.findMany()
+
+    const users = c.var.db.query.tblUser.findMany()
     return c.json({
         message: 'Hello from Hono!',
         users
