@@ -8,7 +8,6 @@ export const queryClient = new QueryClient({
             retry: false,
 
         },
-
     },
     queryCache: new QueryCache({
         onError: (error, query) => {
