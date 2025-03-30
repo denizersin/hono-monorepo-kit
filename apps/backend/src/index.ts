@@ -1,18 +1,16 @@
-import { ENV } from '@server/env'
-import { LookUpEnumsValidation } from '@server/modules/domain/validate-lookup/validateLookUp'
 import { serve } from '@hono/node-server'
+import { createNodeWebSocket } from '@hono/node-ws'
+import { LookUpEnumsValidation } from '@server/modules/domain/validate-lookup/validateLookUp'
 import { Hono } from 'hono'
 import { hc } from 'hono/client'
 import { cors } from 'hono/cors'
-import { createMiddleware } from 'hono/factory'
+import { handleAppError } from './lib/errors'
 import ValidateLookUpEnums from './modules/domain/validate-lookup/validateLookUp'
 import authApp from './modules/interfaces/routes/auth'
-import userApp from './modules/interfaces/routes/user'
-import { honoPublicMiddleware, TPublicMiddlewareContext } from './modules/shared/middlewares/auth'
-import { zValidator } from '@hono/zod-validator'
-import { z } from 'zod'
-import { handleAppError } from './lib/errors'
 import examplesApp from './modules/interfaces/routes/test'
+import userApp from './modules/interfaces/routes/user'
+import { createWebSocketRoute } from './modules/interfaces/routes/websocket/websocket'
+import { honoPublicMiddleware, TPublicMiddlewareContext } from './modules/shared/middlewares/auth'
 
 
 const port = process.env.PORT || 3002
@@ -30,11 +28,16 @@ LookUpEnumsValidation.validate()
 
 
 
+
+
 const app = new Hono<{
   Variables: {
     publicMiddlewareContext: TPublicMiddlewareContext
   }
 }>()
+
+const { injectWebSocket, upgradeWebSocket } = createNodeWebSocket({ app })
+
 
 app.onError((err, c) => {
   return handleAppError(c, err)
@@ -65,29 +68,8 @@ app.use('/*', async (c, next) => {
 })
 
 
-// app.use('/*', honoAuthMiddleware2, (c,next) => {
-//   return next()
-// })
 
 
-
-
-
-
-
-
-// app.get('/api/health', (c) => {
-//   return c.json({
-//     status: 'ok',
-//     timestamp: new Date().toISOString(),
-//     data: {
-//       message: 'Hello from Hono!',
-//       version: '1.0.0',
-//       environment: ENV.NODE_ENV,
-//       isDev: ENV._runtime.IS_DEV,
-//     }
-//   })
-// })
 
 
 //grouping routes
@@ -100,19 +82,27 @@ const routes = app
       message: 'Hello from Hono!',
     })
   })
-
   .route('/auth', authApp)
   .route('/user', userApp)
   .route('/examples', examplesApp)
-  
-  export { routes }
+  .route('/websocket', createWebSocketRoute(upgradeWebSocket))
 
 
 
-serve({
+
+
+
+
+export { routes }
+
+
+const server = serve({
   fetch: app.fetch,
   port: Number(port)
 })
+
+injectWebSocket(server)
+
 
 export type AppType = typeof routes
 

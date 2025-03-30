@@ -48,6 +48,19 @@ export default function Home() {
   console.log(SahredEnums.MailConfirmationStatus)
   useEffect(() => {
 
+    const websocket = clientWithType.websocket["panel-events"].$ws()
+
+    websocket.addEventListener('open', () => {
+      console.log('WebSocket opened')
+    })
+
+    websocket.addEventListener('message', (event) => {
+      console.log('WebSocket message', event)
+    })
+
+    websocket.addEventListener('error', (event) => {
+      console.log('WebSocket error', event)
+    })
 
     clientWithType.index.$get().then(r => r.json()).then(data => {
       if (data.message) {
