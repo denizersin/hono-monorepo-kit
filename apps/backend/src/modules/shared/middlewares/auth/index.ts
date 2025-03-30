@@ -51,6 +51,7 @@ const createAuthContextForMiddleware = async ({
 
 
 
+//we use createFactory instead of publicMiddlewareContext 
 
 export const honoPublicMiddleware = createMiddleware<{
     Variables: {

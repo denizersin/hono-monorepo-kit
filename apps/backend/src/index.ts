@@ -11,6 +11,7 @@ import examplesApp from './modules/interfaces/routes/test'
 import userApp from './modules/interfaces/routes/user'
 import { createWebSocketRoute } from './modules/interfaces/routes/websocket/websocket'
 import { honoPublicMiddleware, TPublicMiddlewareContext } from './modules/shared/middlewares/auth'
+import honoFactory from './lib/hono/hono-factory'
 
 
 const port = process.env.PORT || 3002
@@ -30,11 +31,7 @@ LookUpEnumsValidation.validate()
 
 
 
-const app = new Hono<{
-  Variables: {
-    publicMiddlewareContext: TPublicMiddlewareContext
-  }
-}>()
+const app = honoFactory.createApp()
 
 const { injectWebSocket, upgradeWebSocket } = createNodeWebSocket({ app })
 
@@ -58,7 +55,6 @@ app.use(
 );
 
 
-app.use(honoPublicMiddleware)
 
 
 
@@ -105,8 +101,6 @@ injectWebSocket(server)
 
 
 export type AppType = typeof routes
-
-export const test = {}
 
 
 const client = hc<typeof routes>('')

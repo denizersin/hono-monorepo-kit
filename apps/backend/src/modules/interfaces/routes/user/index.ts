@@ -19,8 +19,13 @@ const userApp = honoFactory.createApp()
     })
     .get('/me', async (c) => {
         await wait(1000)
+        const db = c.var.db
+        const sesion=c.var.authMiddlewareContext.session
+        // const users =await db.query.tblUser.findMany()
         return c.json(createSuccessResponse({
             message: 'Hello from Hono!',
+            // users,
+            sesion
         }))
     })
     .get('/with-id/:id', async (c) => {

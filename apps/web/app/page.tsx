@@ -124,6 +124,7 @@ export default function Home() {
 
   const { data, error, isLoading } = useQuery({
     ...userQueryOptions,
+    enabled: false
   })
 
   const { mutate: logout, isPending: isLogoutPending } = useLogoutMutation()

@@ -9,10 +9,10 @@ export default createFactory<AppBindings>({
       c.set("db", db);
       await next();
     });
-    app.use(async (c, next) => {
-    //   const auth = getAuth(c);
-    //   c.set("auth", auth);
-      await next();
-    });
+    // app.use(async (c, next) => {
+    // //   const auth = getAuth(c);
+    // //   c.set("auth", auth);
+    //   await next();
+    // });
   },
 });
