@@ -78,6 +78,11 @@ export default function Home() {
       })
     })
 
+    clientWithType.user["test-handles"].$get().then(r => {
+      r.json().then(data => {
+        console.log(data)
+      })
+    })
 
     clientWithType.auth.login.$post({
       json: {

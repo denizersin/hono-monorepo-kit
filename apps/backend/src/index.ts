@@ -1,17 +1,15 @@
 import { serve } from '@hono/node-server'
 import { createNodeWebSocket } from '@hono/node-ws'
 import { LookUpEnumsValidation } from '@server/modules/domain/validate-lookup/validateLookUp'
-import { Hono } from 'hono'
 import { hc } from 'hono/client'
 import { cors } from 'hono/cors'
 import { handleAppError } from './lib/errors'
+import honoFactory from './lib/hono/hono-factory'
 import ValidateLookUpEnums from './modules/domain/validate-lookup/validateLookUp'
 import authApp from './modules/interfaces/routes/auth'
 import examplesApp from './modules/interfaces/routes/test'
 import userApp from './modules/interfaces/routes/user'
 import { createWebSocketRoute } from './modules/interfaces/routes/websocket/websocket'
-import { honoPublicMiddleware, TPublicMiddlewareContext } from './modules/shared/middlewares/auth'
-import honoFactory from './lib/hono/hono-factory'
 
 
 const port = process.env.PORT || 3002

@@ -12,22 +12,24 @@ import { honoAuthMiddleware } from "@server/modules/shared/middlewares/auth"
 
 const userApp = honoFactory.createApp()
     .use(honoAuthMiddleware)
-    .get('/', (c) => {
-        return c.json({
-            message: 'Hello from Hono!',
+    .get('/',
+        (c) => {
+            return c.json({
+                message: 'Hello from Hono!',
+            })
         })
-    })
-    .get('/me', async (c) => {
-        await wait(1000)
-        const db = c.var.db
-        const sesion=c.var.authMiddlewareContext.session
-        // const users =await db.query.tblUser.findMany()
-        return c.json(createSuccessResponse({
-            message: 'Hello from Hono!',
-            // users,
-            sesion
-        }))
-    })
+    .get('/me',
+        async (c) => {
+            await wait(1000)
+            const db = c.var.db
+            const sesion = c.var.authMiddlewareContext.session
+            // const users =await db.query.tblUser.findMany()
+            return c.json(createSuccessResponse({
+                message: 'Hello from Hono!',
+                // users,
+                sesion
+            }))
+        })
     .get('/with-id/:id', async (c) => {
         const id = c.req.param('id')
         return c.json({
@@ -35,6 +37,7 @@ const userApp = honoFactory.createApp()
             id
         })
     })
+    .get('test-handles',)
 
 
 userApp.get('/', (c) => {
@@ -45,6 +48,7 @@ userApp.get('/', (c) => {
         users
     })
 })
+
 
 
 

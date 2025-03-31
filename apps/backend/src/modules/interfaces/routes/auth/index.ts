@@ -15,29 +15,22 @@ import {
     setSignedCookie
 } from 'hono/cookie'
 
-// import {  } from "@repo/shared/dto/validators/auth"
-
-
-// const authApp = new Hono<{
-//     Variables: {
-//         publicMiddlewareContext: TPublicMiddlewareContext
-//     }
-// }>()
 
 const authApp = honoFactory.createApp()
-    .get('/get-session', async (c) => {
-        // const authToken = c.req.header(EnumHeaderKeys.AUTHORIZATION) || ''
-        const sessionToken = getCookie(c, EnumCookieKeys.SESSION) || ''
-        const userRepository = new UserRepositoryImpl()
-        const authService = new AuthService(userRepository)
-        const { data: session, error: err } = tryCatchSync(() => authService.verifyToken(sessionToken))
-        if (err) {
-            throw new AuthenticationError({message: 'Invalid token',})
-        }
-        return c.json(createSuccessResponse(session))
+    .get('/get-session',
+        async (c) => {
+            // const authToken = c.req.header(EnumHeaderKeys.AUTHORIZATION) || ''
+            const sessionToken = getCookie(c, EnumCookieKeys.SESSION) || ''
+            const userRepository = new UserRepositoryImpl()
+            const authService = new AuthService(userRepository)
+            const { data: session, error: err } = tryCatchSync(() => authService.verifyToken(sessionToken))
+            if (err) {
+                throw new AuthenticationError({ message: 'Invalid token', })
+            }
+            return c.json(createSuccessResponse(session))
 
 
-    })
+        })
     .post('/logout',
         async (c) => {
             deleteCookie(c, EnumCookieKeys.SESSION)
