@@ -10,8 +10,8 @@ import authApp from './modules/interfaces/routes/auth'
 import examplesApp from './modules/interfaces/routes/test'
 import userApp from './modules/interfaces/routes/user'
 import { createWebSocketRoute } from './modules/interfaces/routes/websocket/websocket'
-
-
+import { logger } from 'hono/logger'
+import { limiter } from './lib/hono/rate-limitter'
 const port = process.env.PORT || 3002
 console.log(`Server is running on port ${port}`)
 
@@ -38,6 +38,10 @@ app.onError((err, c) => {
   return handleAppError(c, err)
 })
 
+
+
+app.use(logger())
+// app.use(limiter)
 
 
 app.use(
