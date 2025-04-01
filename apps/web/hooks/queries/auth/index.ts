@@ -1,7 +1,6 @@
 import { MutationOptions, queryOptions, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { clientWithType } from "@web/lib/api-client"
 import { TCustomResponseError } from "@web/lib/global"
-import { setToLocalStorage } from "@web/lib/utils"
 import type { InferRequestType, InferResponseType } from 'hono/client'
 
 
@@ -18,11 +17,27 @@ const authQueryOptions = queryOptions({
     staleTime: Infinity
 })
 
-export const useAuthQuery = () => {
-    return useQuery({
+
+
+
+export const useSession = () => {
+    const query = useQuery({
         ...authQueryOptions,
     })
+
+    const isLoading=query.isLoading||query.isPending
+    const isError=query.isError
+    const isAuthenticated = !isLoading && !isError && query.data
+    
+    return {
+        isLoading,
+        isError,
+        isAuthenticated,
+        session: query.data
+    }
 }
+
+
 
 type TLoginRequest = InferRequestType<typeof clientWithType.auth.login.$post>['json']
 type TLoginResponse = InferResponseType<typeof clientWithType.auth.login.$post>

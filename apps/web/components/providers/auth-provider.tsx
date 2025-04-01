@@ -1,5 +1,5 @@
 import { TSession } from "@repo/shared/types"
-import { useAuthQuery } from "@web/hooks/queries/auth"
+import {  useSession } from "@web/hooks/queries/auth"
 import { usePathname, useRouter } from "next/navigation"
 import { useEffect } from "react"
 
@@ -13,21 +13,19 @@ type TAuthContext = {
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
-    const sessionQuery = useAuthQuery()
+    const pathname = usePathname()
+    const isAuthRoute = pathname.includes('/auth')
 
+    const { isAuthenticated, isLoading, isError } = useSession()
 
     const router = useRouter()
-    console.log('sessionQuery')
-    console.log(sessionQuery.data, sessionQuery.isError)
-    const pathname = usePathname()
+
     useEffect(() => {
-        if (sessionQuery.isPending || sessionQuery.isLoading) return;
-        const isAuthRoute = pathname.includes('/auth')
-        if (isAuthRoute) return;
-        if (!sessionQuery.data || sessionQuery.isError) {
+        if (isLoading||isAuthRoute) return;
+        if (!isAuthenticated) {
             router.push('/auth/login')
         }
-    }, [sessionQuery.data, sessionQuery.isPending, sessionQuery.isLoading, sessionQuery.isError])
+    }, [isAuthenticated, isLoading, isError])
 
 
     return <>{children}</>

@@ -1,6 +1,6 @@
 "use client"
-import { useAuthQuery } from '@web/hooks/queries/auth'
-import { useRouter } from 'next/navigation'
+import {  useSession } from '@web/hooks/queries/auth'
+import { usePathname, useRouter } from 'next/navigation'
 import React, { useEffect } from 'react'
 
 type Props = {
@@ -9,13 +9,24 @@ type Props = {
 
 const Layout = ({ children }: Props) => {
 
-    const sessionQuery = useAuthQuery()
+    const {
+        isAuthenticated,
+        isLoading,
+        isError
+    } = useSession()
     const router = useRouter()
+    const pathname = usePathname()
     useEffect(() => {
-        if (sessionQuery.data && !sessionQuery.isPending) {
+        if (isLoading) return;
+
+        if (isAuthenticated) {
             router.push('/')
         }
-    }, [sessionQuery.data, sessionQuery.isPending])
+
+        if (isError || !isAuthenticated) {
+            router.push('/auth/login')
+        }
+    }, [isAuthenticated, isLoading, isError])
 
     return children
 }

@@ -48,65 +48,65 @@ export default function Home() {
   console.log(SahredEnums.MailConfirmationStatus)
   useEffect(() => {
 
-    const websocket = clientWithType.websocket["panel-events"].$ws()
+    // const websocket = clientWithType.websocket["panel-events"].$ws()
 
-    websocket.addEventListener('open', () => {
-      console.log('WebSocket opened')
-    })
+    // websocket.addEventListener('open', () => {
+    //   console.log('WebSocket opened')
+    // })
 
-    websocket.addEventListener('message', (event) => {
-      console.log('WebSocket message', event)
-    })
+    // websocket.addEventListener('message', (event) => {
+    //   console.log('WebSocket message', event)
+    // })
 
-    websocket.addEventListener('error', (event) => {
-      console.log('WebSocket error', event)
-    })
+    // websocket.addEventListener('error', (event) => {
+    //   console.log('WebSocket error', event)
+    // })
 
-    clientWithType.index.$get().then(r => r.json()).then(data => {
-      if (data.message) {
-        console.log(data.message)
-      }
-    })
+    // clientWithType.index.$get().then(r => r.json()).then(data => {
+    //   if (data.message) {
+    //     console.log(data.message)
+    //   }
+    // })
 
-    console.log(clientWithType.user["with-id"][":id"].$url())
+    // console.log(clientWithType.user["with-id"][":id"].$url())
 
-    console.log(clientWithType.user.me.$url())
+    // console.log(clientWithType.user.me.$url())
 
-    clientWithType.user.me.$get().then(r => {
-      r.json().then(data => {
-        console.log(data)
-      })
-    })
+    // clientWithType.user.me.$get().then(r => {
+    //   r.json().then(data => {
+    //     console.log(data)
+    //   })
+    // })
 
-    clientWithType.user["test-handles"].$get().then(r => {
-      r.json().then(data => {
-        console.log(data)
-      })
-    })
+    // clientWithType.user["test-handles"].$get().then(r => {
+    //   r.json().then(data => {
+    //     console.log(data)
+    //   })
+    // })
 
-    clientWithType.auth.login.$post({
-      json: {
-        email: "asd",
-        password: "asd",
+    // clientWithType.auth.login.$post({
+    //   json: {
+    //     email: "asd",
+    //     password: "asd",
 
-      }
-    }).then(r => {
-      r.json().then(data => {
-        console.log(data)
-        if (data.success) {
-        }
-      })
-    })
+    //   }
+    // }).then(r => {
+    //   r.json().then(data => {
+    //     console.log(data)
+    //     if (data.success) {
+    //     }
+    //   })
+    // })
 
-    clientWithType.user["with-id"][":id"].$get({
-      param: {
-        id: '2'
-      }
-    }).then(r => {
-      r.json().then(data => {
-        console.log(data)
-      })
-    })
+    // clientWithType.user["with-id"][":id"].$get({
+    //   param: {
+    //     id: '2'
+    //   }
+    // }).then(r => {
+    //   r.json().then(data => {
+    //     console.log(data)
+    //   })
+    // })
 
 
 
@@ -143,9 +143,7 @@ export default function Home() {
     }
   }, [error])
 
-  console.log(data, error, isLoading)
 
-  console.log(error, 'error2323')
 
 
   return (
