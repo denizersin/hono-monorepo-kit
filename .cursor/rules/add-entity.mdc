@@ -1,0 +1,76 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+drizzle kullandığımız için entity'lerimizi drizzle'dan alıyoruz
+
+örneğin use için
+
+1.adım önce drizzle db schema yazılır 
+packages/shared/dto/schema/[user.ts]  (burada istenirse gruplandirma yapilabilir. örneğin packages/shared/dto/schema/[user]/[userPayment]) gibi
+table oluşturldktan sonra aynı dosyada table type'ı export edilir bunları entity'de kullancağız
+
+drizzle table tanımlandı...
+
+export namespace TSchemaUser{
+    export type TTblUserSelect = typeof tblUser.$inferSelect;
+    export type TTblUserInsert = typeof tblUser.$inferInsert;
+
+    export type TTblRoleSelect = typeof tblRole.$inferSelect;
+    export type TTblRoleInsert = typeof tblRole.$inferInsert;
+
+    export type TTblMailConfirmationStatusSelect = typeof tblMailConfirmationStatus.$inferSelect;
+    export type TTblMailConfirmationStatusInsert = typeof tblMailConfirmationStatus.$inferInsert;
+}
+
+
+2.adım ardından entity dosyalari ekleninir burada db 
+dosya oluşturulur apps/backend/src/modules/domain/entities/[user]/[User.ts]
+
+import { TSchemaUser } from "@repo/shared/schema"
+
+namespace TUserEntity {
+    export type TUser = TSchemaUser.TTblUserSelect
+    export type TUserInsert = TSchemaUser.TTblUserInsert
+}
+
+export default  TUserEntity 
+
+3.adım Entity için eğer repository interface'ı kullanılır. burada crud işlemlerinde input output type ları için TEntity typeı kullanılır 
+
+dosya oluşturulur: apps/backend/src/modules/domain/repositories/IUserRepository.ts
+
+import TUserEntity from "../entities/user/User";
+
+export interface IUserRepository {
+    getUserById(id: number): Promise<TUserEntity.TUser|undefined>
+    getUserByEmail(email: string): Promise<TUserEntity.TUser|undefined>
+    createUser(user: TUserEntity.TUserInsert): Promise<number>
+    getUserByEmailAndPassword(email: string, password: string): Promise<TUserEntity.TUser|undefined>
+    getSessionUser(user:TUserEntity.TUser): Promise<TSession['user']>
+}
+
+
+ardından 'infrastructure' modulunde repositoryİnterface implementasyonuna geçilir
+
+apps/backend/src/modules/infrastructure/repositories/user/UserRepositoryImpl.ts
+
+import { IUserRepository } from "@server/modules/domain/repositories/IUserRepository";
+import TUserEntity from "@server/modules/domain/entities/user/User";
+import db from "../../database";
+import { and, eq } from "drizzle-orm";
+import schema from "../../database/schema";
+import { TSession } from "@repo/shared/types";
+
+
+export class UserRepositoryImpl implements IUserRepository {
+
+    async getUserById(id: number): Promise<TUserEntity.TUser|undefined> {
+        const user = await db.query.tblUser.findFirst({
+            where: eq(schema.tblUser.id, id)
+        })
+        return user;
+    }
+    ...CRUD operations
+    }

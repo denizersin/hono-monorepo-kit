@@ -1,4 +1,4 @@
-import type { TEnum, TMailConfirmationStatus, TRole } from "../types/index";
+import type { TChatType, TEnum, TMailConfirmationStatus, TModel, TRole } from "../types/index";
 
 
 const EnumRole = {
@@ -46,6 +46,30 @@ const STATUS_CODES = {
 
 } as const;
 
+const CompanyId = {
+    default: 1
+} as const;
+
+const ChatType: Record<TChatType, TChatType> = {
+    private: 'private',
+    group: 'group'
+} as const;
+
+const ChatTypeId: Record<TChatType, number> = {
+    private: 1,
+    group: 2
+} as const;
+
+const Model: Record<TModel, TModel> = {
+    "GEMINI_2.5_FLASH": 'GEMINI_2.5_FLASH',
+    "GEMINI_2.5_PRO": 'GEMINI_2.5_PRO'
+} as const;
+
+const ModelId: Record<TModel, number> = {
+    "GEMINI_2.5_FLASH": 1,
+    "GEMINI_2.5_PRO": 2
+} as const;
+
 
 type TTestEnum = typeof TesEnum[keyof typeof TesEnum]
 
@@ -57,6 +81,11 @@ export const SahredEnums = {
     MailConfirmationStatus: EnumMailConfirmationStatus,
     MailConfirmationStatusId: EnumMailConfirmationStatusId,
     STATUS_CODES: STATUS_CODES,
+    CompanyId: CompanyId,
+    ChatType: ChatType,
+    ChatTypeId: ChatTypeId,
+    Model: Model,
+    ModelId: ModelId,
     // -----------------------------ENUMS--------------------------------
 
 

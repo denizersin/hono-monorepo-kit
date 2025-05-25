@@ -9,7 +9,7 @@ import { clientWithType } from "@web/lib/api-client";
 import { userQueryOptions, useUserMeQuery } from "@web/hooks/queries/user";
 import { isErrorResponse } from "@web/lib/utils";
 import { useQuery } from "@tanstack/react-query";
-import { useLogoutMutation } from "@web/hooks/queries/auth";
+import { useLogoutMutation, useSession } from "@web/hooks/queries/auth";
 
 // userValidator.userBaseInsertSchema.parse({
 //   email:"asd",
@@ -125,12 +125,17 @@ export default function Home() {
 
 
 
+
   }, [])
 
   const { data, error, isLoading } = useQuery({
     ...userQueryOptions,
     enabled: false
   })
+
+  const { session} = useSession()
+
+  console.log(session)
 
   const { mutate: logout, isPending: isLogoutPending } = useLogoutMutation()
 

@@ -9,8 +9,14 @@ export type TRoles={
   [key in TRole]:key
 } 
 
+
+//Enum Types
 export type TMailConfirmationStatus = "pending" | "confirmed" | "rejected"
 
+export type TChatType = "private" | "group"
+
+
+export type TModel = "GEMINI_2.5_FLASH" | "GEMINI_2.5_PRO" 
 
 // -------------------------AUTHENTICATION--------------------------------
 interface TBaseSession {

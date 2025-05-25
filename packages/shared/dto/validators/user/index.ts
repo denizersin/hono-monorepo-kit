@@ -12,12 +12,15 @@ const userBaseSelectSchema = createSelectSchema(tblUser,{
 const userBaseInsertSchema = createInsertSchema(tblUser, {
     role: z.enum(SahredEnums.getEnumValuesForZod(SahredEnums.Role)),
     password: z.string().min(8)
-})
+})  
 
 
 
 const adminCreateUserSchema = userBaseInsertSchema.omit({
 })
+
+
+
 
 const userCreateSchema = userBaseInsertSchema.omit({
     role: true,
@@ -40,7 +43,6 @@ export const userValidator = {
     userBaseInsertSchema,
     adminCreateUserSchema,
     loginEmailAndPasswordSchema,
-
     userCreateSchema,
 }
 
@@ -61,5 +63,7 @@ export namespace TUserValidator {
     export type TUserCreateSchema = z.infer<typeof userCreateSchema>;
     export type TLoginEmailAndPasswordSchema = z.infer<typeof loginEmailAndPasswordSchema>;
 }
+
+
 
 

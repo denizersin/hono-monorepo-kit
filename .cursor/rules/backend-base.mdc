@@ -1,0 +1,18 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+Hono kullanan bir backendimiz var. Mimari olarak clean archituctre kullanıyoruz.
+
+apps/backend/src/modules/interfaces/routes 'den gelen istek ya use-case'a ya de service'i kullanir.
+
+çok complex durumlarda use-case yazacağız.
+    --örneğin birden fazla servis kullanımı
+    --role ayrımlı usecase
+    
+basit crud işlemlerinde direkt servis yazıp kullanacağız.
+
+* apps/backend/src/modules/application/services
+* apps/backend/src/modules/application/use-cases
+

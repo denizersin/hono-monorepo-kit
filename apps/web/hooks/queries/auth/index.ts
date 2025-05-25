@@ -2,11 +2,12 @@ import { MutationOptions, queryOptions, useMutation, useQuery, useQueryClient } 
 import { clientWithType } from "@web/lib/api-client"
 import { TCustomResponseError } from "@web/lib/global"
 import type { InferRequestType, InferResponseType } from 'hono/client'
+import { QUERY_KEYS } from ".."
 
 
 
 const authQueryOptions = queryOptions({
-    queryKey: [clientWithType.auth["get-session"].$url().pathname],
+    queryKey: [QUERY_KEYS.GET_SESSION],
     queryFn: async () => {
         const response = await clientWithType.auth["get-session"].$get()
         const data = await response.json()
@@ -19,16 +20,15 @@ const authQueryOptions = queryOptions({
 
 
 
-
 export const useSession = () => {
     const query = useQuery({
         ...authQueryOptions,
     })
 
-    const isLoading=query.isLoading||query.isPending
-    const isError=query.isError
+    const isLoading = query.isLoading || query.isPending
+    const isError = query.isError
     const isAuthenticated = !isLoading && !isError && query.data
-    
+
     return {
         isLoading,
         isError,
@@ -57,7 +57,9 @@ export const useLoginMutation = (options?: MutationOptions<TLoginResponse, TCust
             if (options?.onSuccess) {
                 options.onSuccess(data, variables, context)
             }
-            queryClient.invalidateQueries({ queryKey: [clientWithType.auth["get-session"].$url().pathname] })
+            if (data.data.session.user.isPhoneVerified) {
+                queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.GET_SESSION] })
+            }
         },
         onError: (error, variables, context) => {
             if (options?.onError) {
@@ -85,7 +87,7 @@ export const useRegisterMutation = (options?: MutationOptions<TRegisterResponse,
             if (options?.onSuccess) {
                 options.onSuccess(data, variables, context)
             }
-            queryClient.invalidateQueries({ queryKey: [clientWithType.auth["get-session"].$url().pathname] })
+            // queryClient.invalidateQueries({queryKey:[QUERY_KEYS.GET_SESSION]})
         },
         onError: (error, variables, context) => {
             if (options?.onError) {
@@ -103,7 +105,35 @@ export const useLogoutMutation = () => {
             await clientWithType.auth.logout.$post()
         },
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: [clientWithType.auth["get-session"].$url().pathname] })
+            queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.GET_SESSION] })
         }
     })
 }
+const fn=clientWithType.auth["verify-code"].$post
+type TVerifyCodeRequest = InferRequestType<typeof fn>['json']
+type TVerifyCodeResponse =InferResponseType<typeof fn>
+
+export const useVerifyCodeMutation = (options?: MutationOptions<TVerifyCodeResponse, TCustomResponseError, TVerifyCodeRequest>) => {
+    const queryClient = useQueryClient()
+    return useMutation({
+        mutationFn: async (data: TVerifyCodeRequest) => {
+            const response = await clientWithType.auth["verify-code"].$post({ json: data })
+            const responseData = await response.json()
+            if (!response.ok) throw responseData
+            return responseData
+        },
+        ...options,
+        onSuccess: (data, variables, context) => {
+            if (options?.onSuccess) {
+                options.onSuccess(data, variables, context)
+            }
+            queryClient.invalidateQueries({queryKey:[QUERY_KEYS.GET_SESSION]})
+        },
+        onError: (error, variables, context) => {
+            if (options?.onError) {
+                options.onError(error, variables, context)
+            }
+        }
+    })
+}
+
