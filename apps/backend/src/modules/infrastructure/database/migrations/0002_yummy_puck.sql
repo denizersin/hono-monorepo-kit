@@ -1,0 +1,1 @@
+ALTER TABLE `character` ADD `exampleUserInstructions` json DEFAULT ('[]') NOT NULL;

@@ -15,9 +15,10 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "initialize-db": "tsx ./src/modules/infrastructure/database/scripts/initialize-db.ts",
+    "initialize-new-look-up": "tsx ./src/modules/infrastructure/database/scripts/initialize-new-look-up.ts",
     "update-db": "pnpm run db:generate && pnpm run db:migrate",
     "recreate-db": "tsx ./src/modules/infrastructure/database/scripts/re-create-db.ts",
-    "reset-db": "pnpm run recreate-db && pnpm run update-db && pnpm run initialize-db"
+    "reset-db": "rm -rf ./src/modules/infrastructure/database/migrations && pnpm run recreate-db && pnpm run update-db && pnpm run initialize-db"
   },
   "dependencies": {
     "@hono/node-server": "^1.8.2",

@@ -7,5 +7,12 @@ export interface IUserRepository {
     createUser(user: TUserEntity.TUserInsert): Promise<number>
     getUserByEmailAndPassword(email: string, password: string): Promise<TUserEntity.TUser|undefined>
     getSessionUser(user:TUserEntity.TUser): Promise<TSession['user']>
+    updateUser({
+        id,
+        data
+    }: {
+        id: number,
+        data: Partial<TUserEntity.TUser>
+    }): Promise<void>
 }
 

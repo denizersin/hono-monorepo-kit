@@ -1,0 +1,11 @@
+const APP_NAME = "AI-CHAT"
+
+const APP_BUNDLE_ID = "com.ai-chat.app"
+
+const PHONE_VERIFICATION_CODE_EXPIRATION_TIME = 3 * 60 * 1000 // 3 minutes
+
+export const APP_CONSTANTS = {
+    APP_NAME,
+    APP_BUNDLE_ID,
+    PHONE_VERIFICATION_CODE_EXPIRATION_TIME
+}

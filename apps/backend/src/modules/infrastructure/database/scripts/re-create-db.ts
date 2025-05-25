@@ -1,7 +1,5 @@
 import { ENV } from "@server/env";
 import mysql from "mysql2/promise";
-import db from "..";
-import { sql } from "drizzle-orm";
 
 
 console.log('reCreateDb executing..')

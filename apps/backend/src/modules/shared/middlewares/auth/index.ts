@@ -13,12 +13,22 @@ import {
     setSignedCookie,
     deleteCookie,
 } from 'hono/cookie'
+import { WhatsappService } from "@server/modules/application/services/whatsapp"
+import { CountryRepository } from "@server/modules/infrastructure/repositories/data/CountryRepository"
+import { VerifyCodeRepositoryImpl } from "@server/modules/infrastructure/repositories/verifyCode/VerifyCodeRepositoryImpl"
 
-export const honoAuthMiddleware = createMiddleware<{
+const userRepository = new UserRepositoryImpl()
+const wpClientService = new WhatsappService()
+const countryRepository = new CountryRepository()
+const verifyCodeRepository = new VerifyCodeRepositoryImpl()
+const authService = new AuthService(userRepository, wpClientService, countryRepository, verifyCodeRepository)
+
+export type TAuthMiddlewareContextWithVariables = {
     Variables: {
         authMiddlewareContext: TAuthMiddlewareContext
     }
-}>(async (c, next) => {
+}
+export const honoAuthMiddleware = createMiddleware<TAuthMiddlewareContextWithVariables>(async (c, next) => {
     // const token = c.req.header(EnumHeaderKeys.AUTHORIZATION) || ''
     const sessionToken = getCookie(c, EnumCookieKeys.SESSION) || ''
     const authMiddlewareContext = await createAuthContextForMiddleware({
@@ -28,18 +38,18 @@ export const honoAuthMiddleware = createMiddleware<{
     await next()
 })
 
+
 const createAuthContextForMiddleware = async ({
     authToken
 }: {
     authToken: string
 }): Promise<TAuthMiddlewareContext> => {
-    const userRepository = new UserRepositoryImpl()
-    const authService = new AuthService(userRepository)
+
 
     const { data: session, error: err } = tryCatchSync(() => authService.verifyToken(authToken))
 
     if (err) {
-        throw new AuthenticationError({message: 'Invalid token'})
+        throw new AuthenticationError({ message: 'Invalid token' })
     }
 
     return {

@@ -1,14 +1,21 @@
-import { createSuccessResponse, handleAppError } from "@server/lib/errors"
+import { SahredEnums } from "@repo/shared/enums"
+import { TUserValidator, userValidator } from "@repo/shared/userInsertSchema"
+import { validateMultipleSchemas } from "@repo/shared/utils"
+import { AuthenticationError, createSuccessResponse } from "@server/lib/errors"
 import honoFactory from "@server/lib/hono/hono-factory"
 import { wait } from "@server/lib/utils"
-import { honoAuthMiddleware } from "@server/modules/shared/middlewares/auth"
+import { UserService } from "@server/modules/application/services/user/UserService"
+import { CreateUserUseCase } from "@server/modules/application/use-cases/user/CreateUserUseCase"
+import { UserRepositoryImpl } from "@server/modules/infrastructure/repositories/user/UserRepositoryImpl"
+import { honoAuthMiddleware, TAuthMiddlewareContextWithVariables } from "@server/modules/shared/middlewares/auth"
+import { honoRoleMiddleware } from "@server/modules/shared/middlewares/role"
+import { Context } from "hono"
+import { validator } from "hono/validator"
 
-// const userApp = new Hono<{
-//     Variables: {
-//         publicMiddlewareContext: TPublicMiddlewareContext,
-//         authMiddlewareContext: TAuthMiddlewareContext
-//     }
-// }>()
+
+
+const userService = new UserService(new UserRepositoryImpl())
+const createUserUseCase = new CreateUserUseCase(userService)
 
 const userApp = honoFactory.createApp()
     .use(honoAuthMiddleware)
@@ -38,6 +45,38 @@ const userApp = honoFactory.createApp()
         })
     })
     .get('test-handles',)
+    .post('/create-user',
+        honoRoleMiddleware([SahredEnums.Role.ADMIN,SahredEnums.Role.USER]),
+        validator('json', async(value, c: Context<TAuthMiddlewareContextWithVariables>) => {
+            const role = c.var.authMiddlewareContext.session.role
+            return validateMultipleSchemas({
+                map: {
+                    [SahredEnums.Role.ADMIN]: userValidator.adminCreateUserSchema,
+                    [SahredEnums.Role.USER]: userValidator.userCreateSchema
+                },
+                key: role,
+                data: value
+            })
+            
+        }),
+        async (c) => {
+            const userData = c.req.valid('json')
+            const session = c.var.authMiddlewareContext.session
+
+            if (session.role == SahredEnums.Role.ADMIN) {
+                const result = await createUserUseCase.executeAsAdmin(userData as TUserValidator.TAdminCreateUserSchema)
+                return c.json(createSuccessResponse(result))
+            } else if (session.role == SahredEnums.Role.USER) {
+                const result = await createUserUseCase.executeAsUser(userData as TUserValidator.TUserCreateSchema)
+                return c.json(createSuccessResponse(result))
+            } else {
+                throw new AuthenticationError({ message: 'you are not authorized to create a user', toast: true })
+            }
+
+
+        })
+
+
 
 
 userApp.get('/', (c) => {

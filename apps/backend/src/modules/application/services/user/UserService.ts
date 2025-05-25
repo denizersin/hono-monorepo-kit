@@ -1,19 +1,15 @@
-import { IUserRepository } from "@server/modules/domain/repositories/IUserRepository";
-import { SahredEnums } from "@repo/shared/enums";
 import { TUserValidator } from "@repo/shared/userInsertSchema";
+import { IUserRepository } from "@server/modules/domain/repositories/IUserRepository";
 
 export class UserService {
     constructor(private readonly userRepository: IUserRepository) {}
 
-    async createUser(userData: TUserValidator.TUserCreateSchema): Promise<number> {
-        return this.userRepository.createUser({
-            ...userData,
-            role: SahredEnums.Role.USER,
-        })
-    }
-
-    async createUserAdmin(userData: TUserValidator.TAdminCreateUserSchema){
+    async createUser(userData: TUserValidator.TblUserInsert): Promise<number> {
         return this.userRepository.createUser(userData)
     }
+
+    
+    
+
 }
 

@@ -41,4 +41,7 @@ export class UserRepositoryImpl implements IUserRepository {
         const {password, ...userWithoutPassword} = user
         return userWithoutPassword
     }
+    async updateUser({id, data}: {id: number, data: Partial<TUserEntity.TUser>}): Promise<void> {
+        await db.update(schema.tblUser).set(data).where(eq(schema.tblUser.id, id))
+    }
 }
