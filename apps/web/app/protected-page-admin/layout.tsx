@@ -1,11 +1,12 @@
+import { SahredEnums } from "@repo/shared/enums"
+import { AuthProtected } from "@web/components/protected/auth-protected"
 
 export default function Layout({
     children,
 }: {
     children: React.ReactNode
 }) {
-    // return <ProtectedPage roles={[SahredEnums.Role.ADMIN]} redirectPath="/">
-    //     {children}
-    // </ProtectedPage>
-    return <>{children}</>
+    return <AuthProtected roles={[SahredEnums.Role.ADMIN]}>
+        {children}
+    </AuthProtected>
 }

@@ -1,6 +1,6 @@
 import { boolean, float, int, mysqlEnum, mysqlTable, timestamp, varchar } from 'drizzle-orm/mysql-core';
-import type { TMailConfirmationStatus, TRole } from '../../types';
 import { SahredEnums } from '../../enums/index';
+import { getDefaultTableFields } from './schemaHelpers';
 
 export const tblUser = mysqlTable('user', {
     id: int('id').primaryKey().autoincrement(),
@@ -17,24 +17,26 @@ export const tblUser = mysqlTable('user', {
     invitationCode: varchar('invitation_code', { length: 255 }).notNull(),
     refCode: varchar('ref_code', { length: 255 }),
     fullPhone: varchar('full_phone', { length: 255 }).notNull(),
-    
-    role: mysqlEnum('role',SahredEnums.getEnumValuesForZod(SahredEnums.Role)),
+
+    role: mysqlEnum('role', SahredEnums.getStringEnumValuesForZod(SahredEnums.Role)),
     test: varchar('test', { length: 255 }).notNull(),
     mailConfirmationStatusId: int('mail_confirmation_status_id').notNull(),
     phoneVerificationCodeSendAt: timestamp('phone_verification_code_send_at'),
     isPhoneVerified: boolean('is_phone_verified').notNull().default(false),
-    // testTyped: varchar('test_typed', { length: 255 }).notNull().$type<TRole>(),
+
+    ...getDefaultTableFields(),
+    deletedAt: timestamp('deleted_at'),
 });
 
 export const tblRole = mysqlTable('role', {
     id: int('id').primaryKey().notNull(),
-    name: varchar('name', { length: 255 }).notNull().$type<TMailConfirmationStatus>(),
+    name: mysqlEnum('name', SahredEnums.getStringEnumValuesForZod(SahredEnums.Role)).notNull(),
 });
 
 
 export const tblMailConfirmationStatus = mysqlTable('mail_confirmation_status', {
     id: int('id').primaryKey().notNull(),
-    name: varchar('name', { length: 255 }).notNull().$type<TMailConfirmationStatus>(),
+    name: mysqlEnum('name', SahredEnums.getStringEnumValuesForZod(SahredEnums.MailConfirmationStatus)).notNull(),
 });
 
 
@@ -52,4 +54,6 @@ export namespace TSchemaUser {
     export type TTblMailConfirmationStatusSelect = typeof tblMailConfirmationStatus.$inferSelect;
     export type TTblMailConfirmationStatusInsert = typeof tblMailConfirmationStatus.$inferInsert;
 }
+
+
 

@@ -133,6 +133,11 @@ export const SahredEnums = {
         type Value = typeof enumType[Key]
         return Object.values(enumType) as [Value, ...Value[]]
     },
+    getStringEnumValuesForZod: <T extends Record<string, string>>(enumType: T) => {
+        type Key = keyof T;
+        type Value = T[Key] extends string ? T[Key] : never;
+        return Object.values(enumType) as [Value, ...Value[]]
+    },
 
     getKeyFromIdEnum: <T extends Record<string, number>>({
         Enum,

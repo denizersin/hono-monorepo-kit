@@ -12,7 +12,7 @@ import {
 } from "@web/components/ui/card"
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@web/components/ui/form"
 import { Input } from "@web/components/ui/input"
-import { useRegisterMutation } from "@web/hooks/queries/auth"
+import { useRegisterMutation, useSession } from "@web/hooks/queries/auth"
 import { useCountriesSelectData } from "@web/hooks/queries/select-data"
 import { cn } from "@web/lib/utils"
 import { useState } from "react"
@@ -27,6 +27,7 @@ export default function Page() {
     const form = useForm<TAuthValidator.TRegisterFormSchema>({
         resolver: zodResolver(authValidator.registerFormSchema)
     })
+    console.log('Register11')
 
     const {
         selectData: countriesSelectData,
@@ -42,6 +43,10 @@ export default function Page() {
     const onSubmit = ((data: TAuthValidator.TRegisterFormSchema) => {
         register(data)
     })
+
+    const { isAuthenticated, isLoading, isError, session } = useSession()
+
+    if (isAuthenticated || isLoading) return null
     return (
         <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
             <div className="w-full max-w-sm">

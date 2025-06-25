@@ -15,7 +15,7 @@ const authQueryOptions = queryOptions({
         return data
     },
     select: (data) => data.data,
-    staleTime: Infinity
+    staleTime: Infinity,
 })
 
 

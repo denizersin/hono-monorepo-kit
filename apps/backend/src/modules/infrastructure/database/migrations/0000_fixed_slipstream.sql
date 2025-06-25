@@ -1,12 +1,12 @@
 CREATE TABLE `mail_confirmation_status` (
 	`id` int NOT NULL,
-	`name` varchar(255) NOT NULL,
+	`name` enum('pending','confirmed','rejected') NOT NULL,
 	CONSTRAINT `mail_confirmation_status_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
 CREATE TABLE `role` (
 	`id` int NOT NULL,
-	`name` varchar(255) NOT NULL,
+	`name` enum('ADMIN','USER','OWNER') NOT NULL,
 	CONSTRAINT `role_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
@@ -30,6 +30,9 @@ CREATE TABLE `user` (
 	`mail_confirmation_status_id` int NOT NULL,
 	`phone_verification_code_send_at` timestamp,
 	`is_phone_verified` boolean NOT NULL DEFAULT false,
+	`created_at` timestamp NOT NULL DEFAULT (now()),
+	`updated_at` timestamp NOT NULL DEFAULT (now()),
+	`deleted_at` timestamp,
 	CONSTRAINT `user_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint

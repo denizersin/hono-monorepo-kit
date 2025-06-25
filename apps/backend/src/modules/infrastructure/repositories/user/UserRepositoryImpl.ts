@@ -15,6 +15,14 @@ export class UserRepositoryImpl implements IUserRepository {
         return user;
     }
 
+    async getUserByIdStrict(id: number): Promise<TUserEntity.TUser> {
+        const user = await this.getUserById(id)
+        if(!user) {
+            throw new Error("User Entity not found")
+        }
+        return user
+    }
+
     async getUserByEmail(email: string): Promise<TUserEntity.TUser|undefined> {
         const user = await db.query.tblUser.findFirst({
             where: eq(tblUser.email, email)

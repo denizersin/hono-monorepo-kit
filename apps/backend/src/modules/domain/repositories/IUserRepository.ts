@@ -3,6 +3,7 @@ import TUserEntity from "../entities/user/User";
 
 export interface IUserRepository {
     getUserById(id: number): Promise<TUserEntity.TUser|undefined>
+    getUserByIdStrict(id: number): Promise<TUserEntity.TUser>
     getUserByEmail(email: string): Promise<TUserEntity.TUser|undefined>
     createUser(user: TUserEntity.TUserInsert): Promise<number>
     getUserByEmailAndPassword(email: string, password: string): Promise<TUserEntity.TUser|undefined>

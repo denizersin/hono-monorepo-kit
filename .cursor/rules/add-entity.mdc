@@ -5,11 +5,11 @@ alwaysApply: false
 ---
 drizzle kullandığımız için entity'lerimizi drizzle'dan alıyoruz
 
-örneğin use için
+örneğin user için
 
 1.adım önce drizzle db schema yazılır 
 packages/shared/dto/schema/[user.ts]  (burada istenirse gruplandirma yapilabilir. örneğin packages/shared/dto/schema/[user]/[userPayment]) gibi
-table oluşturldktan sonra aynı dosyada table type'ı export edilir bunları entity'de kullancağız
+table oluşturldktan sonra aynı dosyada table type'ı export edilir bunları entity'de kullancağız 
 
 drizzle table tanımlandı...
 
@@ -37,7 +37,7 @@ namespace TUserEntity {
 
 export default  TUserEntity 
 
-3.adım Entity için eğer repository interface'ı kullanılır. burada crud işlemlerinde input output type ları için TEntity typeı kullanılır 
+3.adım Entity için  repository interface'ı kullanılır. burada crud işlemlerinde input output type ları için TEntity typeı kullanılır 
 
 dosya oluşturulur: apps/backend/src/modules/domain/repositories/IUserRepository.ts
 

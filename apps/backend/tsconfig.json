@@ -8,6 +8,7 @@
     "module": "ESNext",
     "moduleResolution": "bundler",
     "moduleDetection": "force",
+    "emitDeclarationOnly": true,
     // "isolatedModules": true,
     "target": "ESNext",
     "allowJs": true,

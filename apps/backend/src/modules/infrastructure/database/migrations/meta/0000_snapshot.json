@@ -1,7 +1,7 @@
 {
   "version": "5",
   "dialect": "mysql",
-  "id": "1c77b497-84cc-4e12-b6ea-1490c86bdf82",
+  "id": "b9c7dc5c-ab1b-4460-9274-c55c8d107b59",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "mail_confirmation_status": {
@@ -16,7 +16,7 @@
         },
         "name": {
           "name": "name",
-          "type": "varchar(255)",
+          "type": "enum('pending','confirmed','rejected')",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -47,7 +47,7 @@
         },
         "name": {
           "name": "name",
-          "type": "varchar(255)",
+          "type": "enum('ADMIN','USER','OWNER')",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -204,6 +204,29 @@
           "notNull": true,
           "autoincrement": false,
           "default": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(now())"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(now())"
+        },
+        "deleted_at": {
+          "name": "deleted_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
         }
       },
       "indexes": {},

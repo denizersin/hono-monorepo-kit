@@ -3,7 +3,7 @@ import _countryData from '@server/data/db/country.json'
 import { tblCountry, TSchemaData } from "@repo/shared/schema";
 
 // const countryData = _countryData 
-export class InitializeDbData {
+export class InitializeDbPrededfinedDatas {
 
     static async initializeCountryData() {
         console.log("initializeCountryData")
@@ -17,7 +17,7 @@ export class InitializeDbData {
         console.log("initializeCountryData completed")
     }
 
-    static async initializeDbData() {
+    static async initializeDbPrededfinedDatas() {
         await this.initializeCountryData()
     }
 }

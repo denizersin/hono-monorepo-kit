@@ -46,14 +46,14 @@ export class AuthService {
 
 
 
-    async register(userData: TAuthValidator.TRegisterFormSchema): Promise<{
+    async register(userData: TAuthValidator.TRegisterFormSchema,isPhoneVerified:boolean): Promise<{
         session: TSession,
         token: string
     }> {
 
         const existingUser = await this.userRepository.getUserByEmail(userData.email)
         if (existingUser) {
-            throw new ConflictError({ message: 'User with this email already exists' })
+            throw new ConflictError({ message: 'User with this email already exists' ,toast:true})
         }
         const country = await this.countryRepository.getCountryById(userData.phoneCodeId)
         const fullPhone = `${country.phoneCode}${userData.phoneNumber}`
@@ -68,7 +68,7 @@ export class AuthService {
             test: '',
             fullPhone: fullPhone,
             invitationCode: generateAlphanumericCode(6),
-            isPhoneVerified: false,
+            isPhoneVerified: isPhoneVerified,
             phoneVerificationCodeSendAt: new Date(),
 
         })
@@ -98,7 +98,7 @@ export class AuthService {
 
         const existingUser = await this.userRepository.getUserByEmail(userData.email)
         if (existingUser) {
-            throw new ConflictError({ message: 'User with this email already exists' })
+            throw new ConflictError({ message: 'User with this email already exists' ,toast:true})
         }
         const fullPhone = await this.getFullPhoneWithoutPlus(userData.phoneCodeId, userData.phoneNumber)
         const existingVerifyCode = await this.verifyCodeRepository.getVerifyCodeByPhoneOrMail(fullPhone)
@@ -173,7 +173,7 @@ export class AuthService {
         // await this.register
         await this.verifyCodeRepository.deleteVerifyCode(verifyCode.id)
 
-        const result = this.register(code.registerForm)
+        const result = this.register(code.registerForm,true)
         return result
     }
 
@@ -226,6 +226,7 @@ export class AuthService {
     async getFullPhoneWithoutPlus(phoneCodeId: number, phoneNumber: string) {
         const country = await this.countryRepository.getCountryById(phoneCodeId)
         const phone = `${country.phoneCode}${phoneNumber}`
+        console.log(phoneCodeId,country)
         return phone.replace('+', '')
     }
 

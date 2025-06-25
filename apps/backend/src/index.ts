@@ -112,3 +112,8 @@ const client = hc<typeof routes>('')
 
 export type Client = typeof client
 
+
+
+export interface Test {
+  a: number;
+}

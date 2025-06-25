@@ -1,16 +1,16 @@
 import { SahredEnums } from "@repo/shared/enums"
 import { UserService } from "@server/modules/application/services/user/UserService"
 import { UserRepositoryImpl } from "../../repositories/user/UserRepositoryImpl"
-import { InitializeDbData } from "../helpers/init-data"
+import { InitializeDbPrededfinedDatas } from "../helpers/init-data"
 import LookUpEnumsValidation from "../helpers/validate-lookup"
 
 
 
 
 async function initializeDb() {
-    console.log("initialize db data")
-    await InitializeDbData.initializeDbData()
-    console.log("initialize db data completed")
+    console.log("initialize db prededfined data")
+    await InitializeDbPrededfinedDatas.initializeDbPrededfinedDatas()
+    console.log("initialize db prededfined data completed")
 
 
 
@@ -23,8 +23,8 @@ async function initializeDb() {
     console.log("initializeAdminUser")
     const userService = new UserService(new UserRepositoryImpl())
     await userService.createUser({
-        email: "admin@admin.com",
-        password: "admin",
+        email: "admin@gmail.com",
+        password: "admin123",
         role: SahredEnums.Role.ADMIN,
         name: "Admin",
         surname: "Admin",
@@ -38,7 +38,7 @@ async function initializeDb() {
         fullPhone: "1234567890",
         isPhoneVerified: true,
     })
-    console.log("initialize AdminUser co  23mpl   eted ")
+    console.log("initialize AdminUser completed")
 
 
     process.exit(0)

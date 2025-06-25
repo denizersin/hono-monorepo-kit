@@ -6,6 +6,7 @@ import { hc } from 'hono/client'
 const test={
   name: 'test',
   age: 10,
+  
 }
 export type { AppType }
 export { test }

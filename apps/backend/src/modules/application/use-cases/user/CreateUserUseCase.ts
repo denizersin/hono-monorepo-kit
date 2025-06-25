@@ -11,7 +11,6 @@ export class CreateUserUseCase {
     }
 
     async executeAsUser(userData: TUserValidator.TUserCreateSchema) {
-
         return this.userService.createUser({
             ...userData,
             role: SahredEnums.Role.USER
