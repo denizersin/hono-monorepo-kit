@@ -1,4 +1,4 @@
-import { queryOptions, UseQueryOptions } from '@tanstack/react-query'
+import { queryOptions, type UseQueryOptions } from '@tanstack/react-query'
 import { clientWithType } from '@web/lib/api-client'
 export const QUERY_KEYS = {
     USER_ME:clientWithType.user.me.$url().pathname,

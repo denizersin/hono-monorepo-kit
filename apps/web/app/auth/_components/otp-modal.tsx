@@ -1,4 +1,4 @@
-import { TAuthValidator } from "@repo/shared/validators"
+import type { TAuthValidator } from "@repo/shared/validators"
 import { Button } from "@web/components/ui/button"
 import { Dialog, DialogTitle, DialogContent, DialogHeader, DialogDescription } from "@web/components/ui/dialog"
 import { Input } from "@web/components/ui/input"

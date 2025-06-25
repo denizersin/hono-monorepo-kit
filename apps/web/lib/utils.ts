@@ -1,4 +1,4 @@
-import { TErrorResponse } from "@repo/api-client";
+import type { TErrorResponse } from "@repo/api-client";
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 

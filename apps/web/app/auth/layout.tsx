@@ -1,7 +1,8 @@
 "use client"
 import { SahredEnums } from '@repo/shared/enums'
 import { useSession } from '@web/hooks/queries/auth'
-import React, { useEffect } from 'react'
+import type React from 'react'
+import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 
 type Props = {

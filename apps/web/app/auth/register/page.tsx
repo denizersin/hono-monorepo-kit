@@ -1,6 +1,6 @@
 "use client"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { TAuthValidator, authValidator } from "@repo/shared/validators"
+import { type TAuthValidator, authValidator } from "@repo/shared/validators"
 import { CustomComboSelect } from "@web/components/custom-ui/custom-combo-select"
 import { Button } from "@web/components/ui/button"
 import {

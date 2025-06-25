@@ -1,6 +1,6 @@
-import { MutationOptions, queryOptions, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { type MutationOptions, queryOptions, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { clientWithType } from "@web/lib/api-client"
-import { TCustomResponseError } from "@web/lib/global"
+import type { TCustomResponseError } from "@web/lib/global"
 import type { InferRequestType, InferResponseType } from 'hono/client'
 import { QUERY_KEYS } from ".."
 
