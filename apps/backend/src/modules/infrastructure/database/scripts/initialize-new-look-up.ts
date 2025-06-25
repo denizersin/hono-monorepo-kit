@@ -7,7 +7,8 @@ async function initializeNewLookUp() {
 
 
 
-    await LookUpEnumsValidation.initializeChatTypeToDb()
+    // await LookUpEnumsValidation.initializeLanguageToDb()
+
 
     await LookUpEnumsValidation.validate()
 

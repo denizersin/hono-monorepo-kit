@@ -12,9 +12,7 @@ import { SahredEnums } from "@repo/shared/enums"
 
 const examplesApp = honoFactory.createApp()
     .get('/', async (c) => {
-
-
-
+        
     })
     .post('/upload',
         async (c) => {
@@ -23,7 +21,7 @@ const examplesApp = honoFactory.createApp()
             console.log(body)
             console.log(body['file']) // File | string
 
-     
+
             return c.json(createSuccessResponse({
                 message: 'File uploaded successfully!'
             }))

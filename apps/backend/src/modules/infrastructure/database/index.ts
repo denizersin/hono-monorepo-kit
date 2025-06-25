@@ -1,10 +1,7 @@
-import { AppBindings } from "@server/lib/hono/types";
 import { drizzle, type MySql2Database } from "drizzle-orm/mysql2";
-import { Context } from "hono";
 import mysql from "mysql2/promise";
 import { ENV } from "../../../env";
-import { schema } from "./schema";
-
+import schema from "./schema";
 // Use the appropriate database URL based on environment
 const dbUrl = ENV._runtime.IS_DEV ? ENV.DATABASE_URL_DEV : ENV.DATABASE_URL_PROD;
 

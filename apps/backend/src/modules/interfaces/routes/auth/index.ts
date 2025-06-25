@@ -1,9 +1,9 @@
 import { zValidator } from "@hono/zod-validator"
 import { authValidator } from "@repo/shared/validators"
-import { EnumCookieKeys } from "@server/lib/enums"
+import { EnumCookieKeys, EnumHeaderKeys } from "@server/lib/enums"
 import { AuthenticationError, createSuccessResponse } from "@server/lib/errors"
 import honoFactory from "@server/lib/hono/hono-factory"
-import { tryCatchSync } from "@server/lib/utils"
+import { getTokenFromAuthHeader, tryCatchSync } from "@server/lib/utils"
 import { AuthService } from "@server/modules/application/services/auth/Auth"
 import { WhatsappService } from "@server/modules/application/services/whatsapp"
 import { CountryRepository } from "@server/modules/infrastructure/repositories/data/CountryRepository"
@@ -30,8 +30,10 @@ const authApp = honoFactory.createApp()
             console.log('get-session')
             // const authToken = c.req.header(EnumHeaderKeys.AUTHORIZATION) || ''
             const sessionToken = getCookie(c, EnumCookieKeys.SESSION) || ''
+            const authHeaderToken = getTokenFromAuthHeader(c.req.header(EnumHeaderKeys.AUTHORIZATION) || '')
+            const { data: session, error: err } = tryCatchSync(() => authService.verifyToken(sessionToken || authHeaderToken!))
 
-            const { data: session, error: err } = tryCatchSync(() => authService.verifyToken(sessionToken))
+
             if (err) {
                 throw new AuthenticationError({ message: 'Invalid token', })
             }
@@ -68,12 +70,13 @@ const authApp = honoFactory.createApp()
 
             })
     .get('/get-session-with-token',
-        
+
         zValidator('query', z.object({
             token: z.string()
         })),
         async (c) => {
             const sessionToken = c.req.valid('query').token
+            
             const { data: session, error: err } = tryCatchSync(() => authService.verifyToken(sessionToken))
             if (err) {
                 throw new AuthenticationError({ message: 'Invalid token', })

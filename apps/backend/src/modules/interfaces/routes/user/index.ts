@@ -1,6 +1,8 @@
+import { zValidator } from "@hono/zod-validator"
 import { SahredEnums } from "@repo/shared/enums"
 import { TUserValidator, userValidator } from "@repo/shared/userInsertSchema"
 import { validateMultipleSchemas } from "@repo/shared/utils"
+import { EnumCookieKeys } from "@server/lib/enums"
 import { AuthenticationError, createSuccessResponse } from "@server/lib/errors"
 import honoFactory from "@server/lib/hono/hono-factory"
 import { wait } from "@server/lib/utils"
@@ -10,6 +12,7 @@ import { UserRepositoryImpl } from "@server/modules/infrastructure/repositories/
 import { honoAuthMiddleware, TAuthMiddlewareContextWithVariables } from "@server/modules/shared/middlewares/auth"
 import { honoRoleMiddleware } from "@server/modules/shared/middlewares/role"
 import { Context } from "hono"
+import { getCookie, setCookie } from "hono/cookie"
 import { validator } from "hono/validator"
 
 
@@ -44,10 +47,31 @@ const userApp = honoFactory.createApp()
             id
         })
     })
-    .get('test-handles',)
+    .get('get-preferences', async (c) => {
+        // const language = c.var.language
+        const language = getCookie(c, EnumCookieKeys.LANGUAGE)
+        const theme = getCookie(c, EnumCookieKeys.THEME)
+        return c.json({
+            language,
+            theme
+        })
+    })
+    .post('update-preferences',
+        zValidator('json', userValidator.userPreferencesSchema),
+        async (c) => {
+            const language = c.req.valid('json').language
+            const theme = c.req.valid('json').theme
+            setCookie(c, EnumCookieKeys.LANGUAGE, language)
+            setCookie(c, EnumCookieKeys.THEME, theme)
+            return c.json({
+                message: 'Hello from Hono!',
+                language,
+                theme
+            })
+        })
     .post('/create-user',
-        honoRoleMiddleware([SahredEnums.Role.ADMIN,SahredEnums.Role.USER]),
-        validator('json', async(value, c: Context<TAuthMiddlewareContextWithVariables>) => {
+        honoRoleMiddleware([SahredEnums.Role.ADMIN, SahredEnums.Role.USER]),
+        validator('json', async (value, c: Context<TAuthMiddlewareContextWithVariables>) => {
             const role = c.var.authMiddlewareContext.session.role
             return validateMultipleSchemas({
                 map: {
@@ -57,7 +81,7 @@ const userApp = honoFactory.createApp()
                 key: role,
                 data: value
             })
-            
+
         }),
         async (c) => {
             const userData = c.req.valid('json')

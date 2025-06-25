@@ -25,7 +25,7 @@ CREATE TABLE `user` (
 	`invitation_code` varchar(255) NOT NULL,
 	`ref_code` varchar(255),
 	`full_phone` varchar(255) NOT NULL,
-	`role` varchar(255) NOT NULL,
+	`role` enum('ADMIN','USER','OWNER'),
 	`test` varchar(255) NOT NULL,
 	`mail_confirmation_status_id` int NOT NULL,
 	`phone_verification_code_send_at` timestamp,
@@ -97,11 +97,12 @@ CREATE TABLE `ai-model` (
 CREATE TABLE `character` (
 	`id` int AUTO_INCREMENT NOT NULL,
 	`name` varchar(255) NOT NULL,
-	`imageUrl` varchar(255) NOT NULL,
+	`imageUrl` varchar(255),
 	`createdAt` timestamp NOT NULL DEFAULT (now()),
 	`updatedAt` timestamp NOT NULL,
 	`adminInstruction` text NOT NULL,
 	`userInstruction` text,
+	`exampleUserInstructions` json NOT NULL DEFAULT ('[]'),
 	CONSTRAINT `character_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
@@ -113,9 +114,15 @@ CREATE TABLE `country` (
 	CONSTRAINT `country_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
+CREATE TABLE `language` (
+	`id` int AUTO_INCREMENT NOT NULL,
+	`name` varchar(255) NOT NULL,
+	`code` varchar(255) NOT NULL,
+	CONSTRAINT `language_id` PRIMARY KEY(`id`)
+);
+--> statement-breakpoint
 CREATE TABLE `verify_code` (
 	`id` int AUTO_INCREMENT NOT NULL,
-	`user_id` int NOT NULL,
 	`code` int NOT NULL,
 	`is_mobile` boolean DEFAULT false,
 	`is_mail` boolean DEFAULT false,
@@ -131,5 +138,4 @@ ALTER TABLE `group-chat` ADD CONSTRAINT `group-chat_characterId_character_id_fk`
 ALTER TABLE `message` ADD CONSTRAINT `message_chatId_private-chat_id_fk` FOREIGN KEY (`chatId`) REFERENCES `private-chat`(`id`) ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `private-chat` ADD CONSTRAINT `private-chat_userId_user_id_fk` FOREIGN KEY (`userId`) REFERENCES `user`(`id`) ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `private-chat` ADD CONSTRAINT `private-chat_modelId_ai-model_id_fk` FOREIGN KEY (`modelId`) REFERENCES `ai-model`(`id`) ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE `private-chat` ADD CONSTRAINT `private-chat_characterId_character_id_fk` FOREIGN KEY (`characterId`) REFERENCES `character`(`id`) ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE `verify_code` ADD CONSTRAINT `verify_code_user_id_user_id_fk` FOREIGN KEY (`user_id`) REFERENCES `user`(`id`) ON DELETE no action ON UPDATE no action;
+ALTER TABLE `private-chat` ADD CONSTRAINT `private-chat_characterId_character_id_fk` FOREIGN KEY (`characterId`) REFERENCES `character`(`id`) ON DELETE no action ON UPDATE no action;

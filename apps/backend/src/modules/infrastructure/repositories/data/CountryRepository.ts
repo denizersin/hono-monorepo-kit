@@ -1,14 +1,13 @@
-import schema, { TSchemaData } from "@server/modules/infrastructure/database/schema"
-import db from "@server/modules/infrastructure/database/index"
-import { eq } from "drizzle-orm"
+import { tblCountry, TSchemaData } from "@repo/shared/schema"
 import { CustomError } from "@server/lib/errors"
+import db from "@server/modules/infrastructure/database/index"
 
 //TODO add interface 
 export class CountryRepository {
     async getCountryById(id: number): Promise<TSchemaData.TTblCountry> {
         const country = await db.query.tblCountry.findFirst({
-            where: eq(schema.tblCountry.id, id)
         })
+        tblCountry
         if (!country) {
             throw new CustomError({ message: 'country not found', errorCode: 'NOT_FOUND' })
         }

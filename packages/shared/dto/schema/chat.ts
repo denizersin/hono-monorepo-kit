@@ -22,7 +22,6 @@ export const tblPrivateChat = mysqlTable('private-chat', {
 
 })
 
-
 export const tblMessageTable = mysqlTable('message', {
     id: int().primaryKey().autoincrement(),
     chatId: int().references(() => tblPrivateChat.id),

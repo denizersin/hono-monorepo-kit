@@ -14,6 +14,7 @@ import { WhatsappService } from "../whatsapp";
 export class AuthService {
 
     constructor(private readonly userRepository: IUserRepository,
+
         private readonly wpClientService: WhatsappService,
         private readonly countryRepository: CountryRepository,
         private readonly verifyCodeRepository: IVerifyCodeRepository
@@ -26,6 +27,7 @@ export class AuthService {
             throw new AuthenticationError({ message: 'Invalid email or password', toast: true })
         }
 
+        console.log(user,'user2')
         const userWithoutPassword = await this.userRepository.getSessionUser(user)
 
         const session: TSession = {

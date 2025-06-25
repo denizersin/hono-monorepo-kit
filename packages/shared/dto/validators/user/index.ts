@@ -16,6 +16,7 @@ const userBaseInsertSchema = createInsertSchema(tblUser, {
 
 
 
+
 const adminCreateUserSchema = userBaseInsertSchema.omit({
 })
 
@@ -29,11 +30,14 @@ const userCreateSchema = userBaseInsertSchema.omit({
 
 const loginEmailAndPasswordSchema = userBaseSelectSchema.pick({
     email: true,
-    password: true,
+password: true,
 })
 
 
-
+const userPreferencesSchema = z.object({
+    language: z.enum(SahredEnums.getEnumValuesForZod(SahredEnums.Language)),
+    theme: z.enum(SahredEnums.getEnumValuesForZod(SahredEnums.Theme))
+})
 
 
 
@@ -44,6 +48,7 @@ export const userValidator = {
     adminCreateUserSchema,
     loginEmailAndPasswordSchema,
     userCreateSchema,
+    userPreferencesSchema
 }
 
 
@@ -63,7 +68,6 @@ export namespace TUserValidator {
     export type TUserCreateSchema = z.infer<typeof userCreateSchema>;
     export type TLoginEmailAndPasswordSchema = z.infer<typeof loginEmailAndPasswordSchema>;
 }
-
 
 
 

@@ -10,3 +10,8 @@ export const tblCoupon = mysqlTable('coupon', {
     createdAt: timestamp('created_at').notNull().defaultNow(),
     updatedAt: timestamp('updated_at').notNull().$onUpdate(() => new Date()),
 })
+
+
+export type TTblCoupon = typeof tblCoupon.$inferSelect
+export type TTblCouponInsert = typeof tblCoupon.$inferInsert
+

@@ -3,7 +3,7 @@ import { int, json, mysqlTable, text, timestamp, varchar } from 'drizzle-orm/mys
 export const tblCharacter = mysqlTable('character', {
     id: int().primaryKey().autoincrement(),
     name: varchar({length: 255}).notNull(),
-    imageUrl: varchar({length: 255}).notNull(),
+    imageUrl: varchar({length: 255}),
     createdAt: timestamp().notNull().defaultNow(),
     updatedAt: timestamp().notNull().$onUpdate(() => new Date()),
     adminInstruction: text().notNull(),
@@ -12,9 +12,8 @@ export const tblCharacter = mysqlTable('character', {
 })
 
 
-namespace TSchemaCharacter {
-    export const TTblCharacter = tblCharacter
+export namespace TSchemaCharacter {
+    export type TTblCharacter = typeof tblCharacter.$inferSelect
     export type TTblCharacterInsert = typeof tblCharacter.$inferInsert
 }
 
-export default TSchemaCharacter

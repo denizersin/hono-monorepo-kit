@@ -1,7 +1,7 @@
 import { TSession } from "@repo/shared/types"
 import { EnumCookieKeys, EnumHeaderKeys } from "@server/lib/enums"
 import { AuthenticationError, handleAppError } from "@server/lib/errors"
-import { tryCatchSync } from "@server/lib/utils"
+import { getTokenFromAuthHeader, tryCatchSync } from "@server/lib/utils"
 import { AuthService } from "@server/modules/application/services/auth/Auth"
 import db, { TDB } from "@server/modules/infrastructure/database"
 import { UserRepositoryImpl } from "@server/modules/infrastructure/repositories/user/UserRepositoryImpl"
@@ -31,8 +31,14 @@ export type TAuthMiddlewareContextWithVariables = {
 export const honoAuthMiddleware = createMiddleware<TAuthMiddlewareContextWithVariables>(async (c, next) => {
     // const token = c.req.header(EnumHeaderKeys.AUTHORIZATION) || ''
     const sessionToken = getCookie(c, EnumCookieKeys.SESSION) || ''
+    const authHeaderToken = getTokenFromAuthHeader(c.req.header(EnumHeaderKeys.AUTHORIZATION) || '')
+
+
+    if (!sessionToken && !authHeaderToken) {
+        throw new AuthenticationError({ message: 'No token provided' })
+    }
     const authMiddlewareContext = await createAuthContextForMiddleware({
-        authToken: sessionToken
+        authToken: sessionToken || authHeaderToken!
     })
     c.set('authMiddlewareContext', authMiddlewareContext)
     await next()

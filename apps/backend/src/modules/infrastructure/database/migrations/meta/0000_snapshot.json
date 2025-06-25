@@ -1,7 +1,7 @@
 {
   "version": "5",
   "dialect": "mysql",
-  "id": "3aecfe84-210f-4d14-87f2-1e9bee11f8c2",
+  "id": "1c77b497-84cc-4e12-b6ea-1490c86bdf82",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "mail_confirmation_status": {
@@ -171,9 +171,9 @@
         },
         "role": {
           "name": "role",
-          "type": "varchar(255)",
+          "type": "enum('ADMIN','USER','OWNER')",
           "primaryKey": false,
-          "notNull": true,
+          "notNull": false,
           "autoincrement": false
         },
         "test": {
@@ -716,7 +716,7 @@
           "name": "imageUrl",
           "type": "varchar(255)",
           "primaryKey": false,
-          "notNull": true,
+          "notNull": false,
           "autoincrement": false
         },
         "createdAt": {
@@ -747,6 +747,14 @@
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
+        },
+        "exampleUserInstructions": {
+          "name": "exampleUserInstructions",
+          "type": "json",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "('[]')"
         }
       },
       "indexes": {},
@@ -807,6 +815,44 @@
       "uniqueConstraints": {},
       "checkConstraint": {}
     },
+    "language": {
+      "name": "language",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "code": {
+          "name": "code",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {
+        "language_id": {
+          "name": "language_id",
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    },
     "verify_code": {
       "name": "verify_code",
       "columns": {
@@ -816,13 +862,6 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": true
-        },
-        "user_id": {
-          "name": "user_id",
-          "type": "int",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
         },
         "code": {
           "name": "code",
@@ -871,21 +910,7 @@
         }
       },
       "indexes": {},
-      "foreignKeys": {
-        "verify_code_user_id_user_id_fk": {
-          "name": "verify_code_user_id_user_id_fk",
-          "tableFrom": "verify_code",
-          "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
+      "foreignKeys": {},
       "compositePrimaryKeys": {
         "verify_code_id": {
           "name": "verify_code_id",

@@ -2,40 +2,40 @@ import { IVerifyCodeRepository } from "@server/modules/domain/repositories/IVeri
 import TVerifyCodeEntity from "@server/modules/domain/entities/verifyCode/VerifyCode";
 import db from "../../database";
 import { and, eq, lt } from "drizzle-orm";
-import schema from "../../database/schema";
+import { tblVerifyCode } from "@repo/shared/schema";
 
 export class VerifyCodeRepositoryImpl implements IVerifyCodeRepository {
     async getVerifyCodeById(id: number): Promise<TVerifyCodeEntity.TVerifyCode | undefined> {
         const verifyCode = await db.query.tblVerifyCode.findFirst({
-            where: eq(schema.tblVerifyCode.id, id)
+            where: eq(tblVerifyCode.id, id)
         });
         return verifyCode;
     }
 
     async getVerifyCodeByPhoneOrMail(phoneOrMail: string): Promise<TVerifyCodeEntity.TVerifyCode | undefined> {
         const verifyCode = await db.query.tblVerifyCode.findFirst({
-            where: eq(schema.tblVerifyCode.generatedForPhoneOrMail, phoneOrMail)
+            where: eq(tblVerifyCode.generatedForPhoneOrMail, phoneOrMail)
         });
         return verifyCode;
     }
 
     async createVerifyCode(verifyCode: TVerifyCodeEntity.TVerifyCodeInsert) {
-        await db.insert(schema.tblVerifyCode).values(verifyCode)
+        await db.insert(tblVerifyCode).values(verifyCode)
     }
 
     async deleteVerifyCode(id: number): Promise<void> {
-        await db.delete(schema.tblVerifyCode)
-            .where(eq(schema.tblVerifyCode.id, id));
+        await db.delete(tblVerifyCode)
+            .where(eq(tblVerifyCode.id, id));
     }
 
     async deleteExpiredVerifyCodes(): Promise<void> {
         const now = new Date();
-        await db.delete(schema.tblVerifyCode)
-            .where(lt(schema.tblVerifyCode.expiresAt, now));
+        await db.delete(tblVerifyCode)
+            .where(lt(tblVerifyCode.expiresAt, now));
     }
 
     async deleteVerifyCodeByPhoneOrMail(phoneOrMail: string): Promise<void> {
-        await db.delete(schema.tblVerifyCode)
-            .where(eq(schema.tblVerifyCode.generatedForPhoneOrMail, phoneOrMail));
+        await db.delete(tblVerifyCode)
+            .where(eq(tblVerifyCode.generatedForPhoneOrMail, phoneOrMail));
     }
 } 

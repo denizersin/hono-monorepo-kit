@@ -50,3 +50,9 @@ export const validateWithZod = (method:TValidationTargetByMethod, schema: ZodSch
 
 
 export const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
+
+
+export const getTokenFromAuthHeader = (header: string) => {
+    const token = header.split("Bearer ")[1]
+    return token
+}

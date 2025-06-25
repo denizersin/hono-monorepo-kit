@@ -1,10 +1,10 @@
-import type { TChatType, TEnum, TMailConfirmationStatus, TModel, TRole } from "../types/index";
+import type { TChatType, TEnum, TLanguage, TMailConfirmationStatus, TModel, TRole, TTheme } from "../types/index";
 
 
-const EnumRole = {
-    ADMIN: 'admin',
-    USER: 'user',
-    OWNER: 'owner'
+const EnumRole: Record<TRole, TRole> = {
+    ADMIN: 'ADMIN',
+    USER: 'USER',
+    OWNER: 'OWNER'
 } as const;
 
 
@@ -27,6 +27,23 @@ const TesEnum = {
     key1: 'value1',
     key2: 'value2',
     key3: 'value3'
+} as const;
+
+const EnumLanguage: Record<TLanguage, TLanguage> = {
+    tr: 'tr',
+    en: 'en',
+    es: 'es'
+} as const;
+
+const EnumLanguageId: Record<TLanguage, number> = {
+    tr: 1,
+    en: 2,
+    es: 3
+} as const;
+
+const EnumTheme: Record<TTheme, TTheme> = {
+    light: 'light',
+    dark: 'dark'
 } as const;
 
 
@@ -71,6 +88,12 @@ const ModelId: Record<TModel, number> = {
 } as const;
 
 
+
+
+
+
+
+
 type TTestEnum = typeof TesEnum[keyof typeof TesEnum]
 
 export const SahredEnums = {
@@ -86,6 +109,9 @@ export const SahredEnums = {
     ChatTypeId: ChatTypeId,
     Model: Model,
     ModelId: ModelId,
+    Language: EnumLanguage,
+    LanguageId: EnumLanguageId,
+    Theme: EnumTheme,
     // -----------------------------ENUMS--------------------------------
 
 

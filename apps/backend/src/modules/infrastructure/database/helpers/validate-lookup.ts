@@ -1,7 +1,7 @@
 import db from "@server/modules/infrastructure/database"
-import { schema } from "@server/modules/infrastructure/database/schema"
 import { SahredEnums } from "@repo/shared/enums"
 import { CustomError } from "@server/lib/errors"
+import { tblChatType, tblLanguage, tblMailConfirmationStatus } from "@repo/shared/schema"
 
 
 
@@ -42,7 +42,7 @@ export class LookUpEnumsValidation {
 
         LookUpEnumsValidation.validationPromise = Promise.resolve()
 
-        console.log('LookUpEnumsValidation validation completed')
+        console.log('LookUpEnumsValidation validation completed successfully')
 
         //role
     }
@@ -50,7 +50,7 @@ export class LookUpEnumsValidation {
 
     //initialize mail confirmation status to db
     static async initializeMailConfirmationStatusToDb() {
-        await db.insert(schema.tblMailConfirmationStatus).values(
+        await db.insert(tblMailConfirmationStatus).values(
             Object.values(SahredEnums.MailConfirmationStatus).map(status => ({
                 name: status,
                 id: SahredEnums.MailConfirmationStatusId[status]
@@ -60,7 +60,7 @@ export class LookUpEnumsValidation {
 
     //initialize chat type to db
     static async initializeChatTypeToDb() {
-        await db.insert(schema.tblChatType).values(
+        await db.insert(tblChatType).values(
             Object.values(SahredEnums.ChatType).map((type) => ({
                 name: type,
                 id: SahredEnums.ChatTypeId[type]
@@ -68,6 +68,18 @@ export class LookUpEnumsValidation {
         )
     }
 
+    //initialize language to db
+    static async initializeLanguageToDb() {
+
+        await db.insert(tblLanguage).values(
+            Object.values(SahredEnums.Language).map((language) => ({
+                name: language,
+                code: language,
+                id: SahredEnums.LanguageId[language]
+            }))
+        )
+
+    }
 
 
     static async initializeLookUpToDb() {

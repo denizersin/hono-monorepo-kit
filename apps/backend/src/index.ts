@@ -13,6 +13,10 @@ import { limiter } from './lib/hono/rate-limitter'
 import LookUpEnumsValidation from './modules/infrastructure/database/helpers/validate-lookup'
 import constantsApp from './modules/interfaces/routes/constants'
 import webHookApp from './modules/interfaces/routes/web-hook'
+import { languageDetector } from 'hono/language'
+import { SahredEnums } from '@repo/shared/enums'
+
+
 const port = process.env.PORT || 3002
 console.log(`Server is running on port ${port}`)
 
@@ -61,13 +65,6 @@ app.use(
 
 
 
-app.use('/*', async (c, next) => {
-  await LookUpEnumsValidation.validationPromise
-  await next()
-})
-
-
-
 
 
 
@@ -96,12 +93,16 @@ const routes = app
 export { routes }
 
 
-const server = serve({
-  fetch: app.fetch,
-  port: Number(port)
-})
+async function startServer() {
+  await LookUpEnumsValidation.validationPromise
+  const server = serve({
+    fetch: app.fetch,
+    port: Number(port)
+  })
+  injectWebSocket(server)
+}
 
-injectWebSocket(server)
+startServer()
 
 
 export type AppType = typeof routes

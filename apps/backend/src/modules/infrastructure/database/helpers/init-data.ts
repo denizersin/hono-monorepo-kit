@@ -1,6 +1,6 @@
 import db from "@server/modules/infrastructure/database"
 import _countryData from '@server/data/db/country.json'
-import schema, { TSchemaData } from "@server/modules/infrastructure/database/schema";
+import { tblCountry, TSchemaData } from "@repo/shared/schema";
 
 // const countryData = _countryData 
 export class InitializeDbData {
@@ -13,7 +13,7 @@ export class InitializeDbData {
             phoneCode: country.phoneCode,
             code: country.code
         }))
-        await db.insert(schema.tblCountry).values(countryDataInsert)
+        await db.insert(tblCountry).values(countryDataInsert)
         console.log("initializeCountryData completed")
     }
 
