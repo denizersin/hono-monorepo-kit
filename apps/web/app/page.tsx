@@ -10,6 +10,7 @@ import { userQueryOptions, useUserMeQuery } from "@web/hooks/queries/user";
 import { isErrorResponse } from "@web/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { useLogoutMutation, useSession } from "@web/hooks/queries/auth";
+import { QUERY_KEYS } from "@web/hooks/queries";
 
 // userValidator.userBaseInsertSchema.parse({
 //   email:"asd",
@@ -138,6 +139,15 @@ export default function Home() {
   console.log(session)
 
   const { mutate: logout, isPending: isLogoutPending } = useLogoutMutation()
+
+  const { data: userMe } = useQuery({
+    queryKey: [QUERY_KEYS.USER_ME],
+    queryFn: () => {
+      return clientWithType.user.me.$get().then(r => r.json())
+    }
+  })
+
+  console.log(userMe, 'userMe')
 
   useEffect(() => {
     if (!error) return

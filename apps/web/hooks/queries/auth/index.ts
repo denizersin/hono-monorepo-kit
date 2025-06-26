@@ -38,7 +38,6 @@ export const useSession = () => {
 }
 
 
-
 type TLoginRequest = InferRequestType<typeof clientWithType.auth.login.$post>['json']
 type TLoginResponse = InferResponseType<typeof clientWithType.auth.login.$post>
 
@@ -46,6 +45,7 @@ export const useLoginMutation = (options?: MutationOptions<TLoginResponse, TCust
 
     const queryClient = useQueryClient()
     return useMutation({
+        mutationKey: ['login'],
         mutationFn: async (data: TLoginRequest) => {
             const response = await clientWithType.auth.login.$post({ json: data })
             const responseData = await response.json()
@@ -106,12 +106,13 @@ export const useLogoutMutation = () => {
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.GET_SESSION] })
-        }
+        },
+        mutationKey: ['logout']
     })
 }
-const fn=clientWithType.auth["verify-code"].$post
+const fn = clientWithType.auth["verify-code"].$post
 type TVerifyCodeRequest = InferRequestType<typeof fn>['json']
-type TVerifyCodeResponse =InferResponseType<typeof fn>
+type TVerifyCodeResponse = InferResponseType<typeof fn>
 
 export const useVerifyCodeMutation = (options?: MutationOptions<TVerifyCodeResponse, TCustomResponseError, TVerifyCodeRequest>) => {
     const queryClient = useQueryClient()
@@ -127,7 +128,7 @@ export const useVerifyCodeMutation = (options?: MutationOptions<TVerifyCodeRespo
             if (options?.onSuccess) {
                 options.onSuccess(data, variables, context)
             }
-            queryClient.invalidateQueries({queryKey:[QUERY_KEYS.GET_SESSION]})
+            queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.GET_SESSION] })
         },
         onError: (error, variables, context) => {
             if (options?.onError) {

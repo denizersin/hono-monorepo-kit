@@ -1,6 +1,7 @@
 import { hcWithType, TErrorResponse } from "@repo/api-client";
 import ky from "ky";
 import { tryCatch } from "@repo/shared/utils";
+import { ClientResponse } from "hono/client";
 const baseUrl = 'http://localhost:3002'
 const kyapi = ky.extend({
   hooks: {
@@ -29,4 +30,5 @@ export const clientWithType = hcWithType(baseUrl,
     },
   }
 )
+
 

@@ -8,6 +8,15 @@ export const QUERY_KEYS = {
     COUNTRIES:clientWithType.constants.countries.$url().pathname
 } as const
 
+
+
+export const MUTATION_KEYS = {
+    LOGIN: 'login',
+    REGISTER: 'register',
+    LOGOUT: 'logout',
+    VERIFY_CODE: 'verify-code',
+} as const
+
 export const _baseQueryOptions:Omit<UseQueryOptions,'queryKey' | 'queryFn'>={
     refetchOnWindowFocus: false,
     refetchOnMount: false,

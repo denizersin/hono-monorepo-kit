@@ -3,6 +3,7 @@ import { MutationCache, QueryCache, QueryClient, QueryClientProvider } from "@ta
 import { isErrorResponse } from "@web/lib/utils"
 import { toast } from "react-toastify"
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import { MUTATION_KEYS, QUERY_KEYS } from "@web/hooks/queries";
 
 export const queryClient = new QueryClient({
     defaultOptions: {
@@ -40,6 +41,13 @@ export const queryClient = new QueryClient({
                 })
             }
         },
+        onSuccess(data, variables, context, mutation) {
+            console.log('onSuccess', data, variables, context, mutation)
+            if (mutation.options.mutationKey?.map(k => k === MUTATION_KEYS.LOGOUT)) {
+                queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.USER_ME] })
+            }
+        },
+
     })
 })
 
