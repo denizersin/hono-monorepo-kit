@@ -28,6 +28,7 @@ export const clientWithType = hcWithType(baseUrl,
         body: method === 'GET' ? null : requestInit?.body,
       })
     },
+    
   }
 )
 

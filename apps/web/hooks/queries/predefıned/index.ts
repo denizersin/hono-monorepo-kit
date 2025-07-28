@@ -1,15 +1,17 @@
 import { useQuery } from "@tanstack/react-query"
 import { clientWithType } from "@web/lib/api-client"
+import { QUERY_KEYS } from ".."
 
 export const useGetCountries = () => {
     return useQuery({
-        queryKey: ['countries'],
+        queryKey: [QUERY_KEYS.COUNTRIES],
         queryFn: async () => {
             const response = await clientWithType.constants.countries.$get()
             const data = await response.json()
             return data
         },
-        select: (data) => data.data
+        select: (data) => data.data,
+        staleTime:Infinity
     })
 }
 

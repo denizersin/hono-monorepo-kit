@@ -5,7 +5,7 @@ import { toast } from "react-toastify"
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { MUTATION_KEYS, QUERY_KEYS } from "@web/hooks/queries";
 
-export const queryClient = new QueryClient({
+export const queryClient: QueryClient = new QueryClient({
     defaultOptions: {
         queries: {
             retry: false,
@@ -26,6 +26,8 @@ export const queryClient = new QueryClient({
             // console.log('error', error)
         }
     }),
+
+    //!This runs first then useMutation.onsuccses runs
     mutationCache: new MutationCache({
         onError(error, variables, context, mutation) {
             console.log('error', error)
@@ -46,8 +48,18 @@ export const queryClient = new QueryClient({
             if (mutation.options.mutationKey?.map(k => k === MUTATION_KEYS.LOGOUT)) {
                 queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.USER_ME] })
             }
+            if (mutation.options.meta?.invalidates) {
+                mutation.options.meta.invalidates.forEach(key => {
+                    queryClient.invalidateQueries({ queryKey: [key] })
+                })
+            }
+            if (mutation.options.meta?.invalidateAndAwait) {
+                const _promisesToAwait = mutation.options.meta.invalidateAndAwait.map(key => {
+                    return queryClient.invalidateQueries({ queryKey: [key] })
+                })
+                return Promise.all(_promisesToAwait)
+            }
         },
-
     })
 })
 

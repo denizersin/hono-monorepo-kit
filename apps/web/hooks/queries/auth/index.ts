@@ -2,11 +2,11 @@ import { type MutationOptions, queryOptions, useMutation, useQuery, useQueryClie
 import { clientWithType } from "@web/lib/api-client"
 import type { TCustomResponseError } from "@web/lib/global"
 import type { InferRequestType, InferResponseType } from 'hono/client'
-import { QUERY_KEYS } from ".."
+import { MUTATION_KEYS, QUERY_KEYS } from ".."
 
 
 
-const authQueryOptions = queryOptions({
+export const authQueryOptions = queryOptions({
     queryKey: [QUERY_KEYS.GET_SESSION],
     queryFn: async () => {
         const response = await clientWithType.auth["get-session"].$get()
@@ -38,6 +38,8 @@ export const useSession = () => {
 }
 
 
+
+
 type TLoginRequest = InferRequestType<typeof clientWithType.auth.login.$post>['json']
 type TLoginResponse = InferResponseType<typeof clientWithType.auth.login.$post>
 
@@ -61,11 +63,6 @@ export const useLoginMutation = (options?: MutationOptions<TLoginResponse, TCust
                 queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.GET_SESSION] })
             }
         },
-        onError: (error, variables, context) => {
-            if (options?.onError) {
-                options.onError(error, variables, context)
-            }
-        }
     })
 }
 
@@ -74,7 +71,6 @@ type TRegisterRequest = InferRequestType<typeof clientWithType.auth.register.$po
 type TRegisterResponse = InferResponseType<typeof clientWithType.auth.register.$post>
 
 export const useRegisterMutation = (options?: MutationOptions<TRegisterResponse, TCustomResponseError, TRegisterRequest>) => {
-    const queryClient = useQueryClient()
     return useMutation({
         mutationFn: async (data: TRegisterRequest) => {
             const response = await clientWithType.auth.register.$post({ json: data })
@@ -82,6 +78,7 @@ export const useRegisterMutation = (options?: MutationOptions<TRegisterResponse,
             if (!response.ok) throw responseData
             return responseData
         },
+        meta: { invalidates: [QUERY_KEYS.GET_SESSION] },
         ...options,
         onSuccess: (data, variables, context) => {
             if (options?.onSuccess) {
@@ -89,11 +86,7 @@ export const useRegisterMutation = (options?: MutationOptions<TRegisterResponse,
             }
             // queryClient.invalidateQueries({queryKey:[QUERY_KEYS.GET_SESSION]})
         },
-        onError: (error, variables, context) => {
-            if (options?.onError) {
-                options.onError(error, variables, context)
-            }
-        }
+
     })
 }
 
@@ -107,7 +100,7 @@ export const useLogoutMutation = () => {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.GET_SESSION] })
         },
-        mutationKey: ['logout']
+        mutationKey: [MUTATION_KEYS.LOGOUT]
     })
 }
 const fn = clientWithType.auth["verify-code"].$post

@@ -13,7 +13,7 @@ import {
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@web/components/ui/form"
 import { Input } from "@web/components/ui/input"
 import { useRegisterMutation, useSession } from "@web/hooks/queries/auth"
-import { useCountriesSelectData } from "@web/hooks/queries/select-data"
+import { useCountriesSelectData } from "@web/hooks/queries/predefıned"
 import { cn } from "@web/lib/utils"
 import { useState } from "react"
 import { useForm } from "react-hook-form"

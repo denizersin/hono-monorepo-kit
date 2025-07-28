@@ -15,14 +15,18 @@ export const OtpModal = ({ isOpen, setIsOpen, registerFormData }: OtpModalProps)
 
     const [otp, setOtp] = useState('')
 
-    const { mutate: verifyCode, isPending } = useVerifyCodeMutation({
+    const { mutate: verifyCode, isPending,error,isError } = useVerifyCodeMutation({
         onSuccess: () => {
             setIsOpen(false)
         },
         onError: (error) => {
+            console.log('onError')
             setOtp('')
         }
     })
+
+    console.log('error', error)
+    console.log('isError', isError)
 
 
     function handleVerifyCode() {

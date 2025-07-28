@@ -6,8 +6,10 @@ export const QUERY_KEYS = {
 
     //CONSTANTS
     COUNTRIES:clientWithType.constants.countries.$url().pathname
+    
 } as const
 
+export type TQueryKey = typeof QUERY_KEYS[keyof typeof QUERY_KEYS]
 
 
 export const MUTATION_KEYS = {
@@ -29,6 +31,6 @@ export const _baseQueryOptions:Omit<UseQueryOptions,'queryKey' | 'queryFn'>={
 export const baseQueryOptions=(options:UseQueryOptions)=>{
     return queryOptions({
         ..._baseQueryOptions,
-        ...options
+        ...options,
     })
 }
