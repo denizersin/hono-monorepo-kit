@@ -1,13 +1,13 @@
 import { zValidator } from "@hono/zod-validator"
 import { wpClientValidator } from "@repo/shared/validators"
 import { createSuccessResponse } from "@server/lib/errors"
-import honoFactory from "@server/lib/hono/hono-factory"
+import honoFactory, { createHonoApp } from "@server/lib/hono/hono-factory"
 
 
 
 
 
-const webHookApp = honoFactory.createApp()
+const webHookApp = createHonoApp()
     // .use(honoAuthMiddleware)
     .post('/handle-wp-client-message', zValidator('json', wpClientValidator.handleMessage), async (c) => {
         const body = c.req.valid('json')

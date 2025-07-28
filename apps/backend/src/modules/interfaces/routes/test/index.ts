@@ -1,5 +1,5 @@
 import { AuthenticationError, createSuccessResponse, CustomError } from "@server/lib/errors"
-import honoFactory from "@server/lib/hono/hono-factory"
+import honoFactory, { createHonoApp } from "@server/lib/hono/hono-factory"
 import { SahredEnums } from "@repo/shared/enums"
 // import {  } from "@repo/shared/dto/validators/auth"
 
@@ -10,7 +10,7 @@ import { SahredEnums } from "@repo/shared/enums"
 //     }
 // }>()
 
-const examplesApp = honoFactory.createApp()
+const examplesApp = createHonoApp()
     .get('/', async (c) => {
         
     })

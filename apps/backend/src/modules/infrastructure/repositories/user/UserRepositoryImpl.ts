@@ -53,3 +53,6 @@ export class UserRepositoryImpl implements IUserRepository {
         await db.update(tblUser).set(data).where(eq(tblUser.id, id))
     }
 }
+
+
+

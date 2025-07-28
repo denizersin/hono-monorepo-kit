@@ -4,6 +4,7 @@ export * from './model';
 export * from './character';
 export * from './data';
 export * from './verifyCode';
+export * from './log';
 
 
 

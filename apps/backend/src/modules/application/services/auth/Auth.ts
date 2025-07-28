@@ -10,14 +10,18 @@ import { IVerifyCodeRepository } from "@server/modules/domain/repositories/IVeri
 import { CountryRepository } from "@server/modules/infrastructure/repositories/data/CountryRepository";
 import { JwtService } from "../jwtService";
 import { WhatsappService } from "../whatsapp";
+import { EventBus } from "../../event";
+import { getApiContext } from "@server/lib/hono/utils";
+import { ENUM_ALL_EVENTS } from "../../event/interface";
+import { ENUM_USER_EVENTS } from "../../event/interface/user";
 
 export class AuthService {
 
-    constructor(private readonly userRepository: IUserRepository,
-
+    constructor(
+        private readonly userRepository: IUserRepository,
         private readonly wpClientService: WhatsappService,
         private readonly countryRepository: CountryRepository,
-        private readonly verifyCodeRepository: IVerifyCodeRepository
+        private readonly verifyCodeRepository: IVerifyCodeRepository,
     ) { }
 
     async login(userData: TAuthValidator.TLoginEmailAndPasswordFormSchema) {
@@ -27,7 +31,7 @@ export class AuthService {
             throw new AuthenticationError({ message: 'Invalid email or password', toast: true })
         }
 
-        console.log(user,'user2')
+        console.log(user, 'user2')
         const userWithoutPassword = await this.userRepository.getSessionUser(user)
 
         const session: TSession = {
@@ -46,14 +50,14 @@ export class AuthService {
 
 
 
-    async register(userData: TAuthValidator.TRegisterFormSchema,isPhoneVerified:boolean): Promise<{
+    async register(userData: TAuthValidator.TRegisterFormSchema, isPhoneVerified: boolean): Promise<{
         session: TSession,
         token: string
     }> {
 
         const existingUser = await this.userRepository.getUserByEmail(userData.email)
         if (existingUser) {
-            throw new ConflictError({ message: 'User with this email already exists' ,toast:true})
+            throw new ConflictError({ message: 'User with this email already exists', toast: true })
         }
         const country = await this.countryRepository.getCountryById(userData.phoneCodeId)
         const fullPhone = `${country.phoneCode}${userData.phoneNumber}`
@@ -72,6 +76,21 @@ export class AuthService {
             phoneVerificationCodeSendAt: new Date(),
 
         })
+
+
+        EventBus.emit(ENUM_USER_EVENTS.USER_REGISTERED, {
+            ctx: getApiContext(),
+            type: ENUM_USER_EVENTS.USER_REGISTERED,
+            withDefaultLog: true,
+            logData: {
+                type: ENUM_ALL_EVENTS.USER_REGISTERED,
+                occurredAt: new Date(),
+                creatorName: 'System',
+                newString: `${userData.name} ${userData.surname} - id:${userId}`,
+                description: 'User registered',
+            }
+        })
+
         if (!userId) {
             throw new CustomError({ message: 'Failed to create user' })
         }
@@ -82,10 +101,12 @@ export class AuthService {
             throw new CustomError({ message: 'User not found' })
         }
 
+        const { password, ...userWithoutPassword } = user
+        
         const session: TSession = {
             companyId: user.companyId,
             role: user.role as TRole,
-            user: user
+            user: userWithoutPassword
         }
 
         return {
@@ -98,11 +119,11 @@ export class AuthService {
 
         const existingUser = await this.userRepository.getUserByEmail(userData.email)
         if (existingUser) {
-            throw new ConflictError({ message: 'User with this email already exists' ,toast:true})
+            throw new ConflictError({ message: 'User with this email already exists', toast: true })
         }
         const fullPhone = await this.getFullPhoneWithoutPlus(userData.phoneCodeId, userData.phoneNumber)
         const existingVerifyCode = await this.verifyCodeRepository.getVerifyCodeByPhoneOrMail(fullPhone)
-        
+
         if (existingVerifyCode) {
             await this.verifyCodeRepository.deleteVerifyCodeByPhoneOrMail(fullPhone)
         }
@@ -116,7 +137,7 @@ export class AuthService {
 
         console.log(sendMessageResult, 'result')
 
-        console.log(fullPhone,'fullPhone1')
+        console.log(fullPhone, 'fullPhone1')
 
         if (error) {
             console.log(error)
@@ -153,27 +174,27 @@ export class AuthService {
 
         const fullPhone = await this.getFullPhoneWithoutPlus(code.registerForm.phoneCodeId, code.registerForm.phoneNumber)
         const verifyCode = await this.verifyCodeRepository.getVerifyCodeByPhoneOrMail(fullPhone)
-        console.log(fullPhone,'fullPhone2',verifyCode)
+        console.log(fullPhone, 'fullPhone2', verifyCode)
         if (!verifyCode) {
             throw new AuthenticationError({ message: 'code not found' })
         }
-        console.log(verifyCode,'verifyCode')
+        console.log(verifyCode, 'verifyCode')
         if (verifyCode.generatedForPhoneOrMail !== fullPhone && verifyCode.generatedForPhoneOrMail !== code.registerForm.email) {
-            throw new AuthenticationError({ message: 'Invalid code' ,toast:true})
+            throw new AuthenticationError({ message: 'Invalid code', toast: true })
         }
         if (verifyCode.expiresAt < new Date()) {
-            throw new AuthenticationError({ message: 'Code expired' ,toast:true})
+            throw new AuthenticationError({ message: 'Code expired', toast: true })
         }
         if (!verifyCode.isMobile) {
-            throw new AuthenticationError({ message: 'Code is not mobile' ,toast:true})
+            throw new AuthenticationError({ message: 'Code is not mobile', toast: true })
         }
         if (verifyCode.code !== code.code) {
-            throw new AuthenticationError({ message: 'Invalid code' ,toast:true})
+            throw new AuthenticationError({ message: 'Invalid code', toast: true })
         }
         // await this.register
         await this.verifyCodeRepository.deleteVerifyCode(verifyCode.id)
 
-        const result = this.register(code.registerForm,true)
+        const result = this.register(code.registerForm, true)
         return result
     }
 
@@ -226,7 +247,7 @@ export class AuthService {
     async getFullPhoneWithoutPlus(phoneCodeId: number, phoneNumber: string) {
         const country = await this.countryRepository.getCountryById(phoneCodeId)
         const phone = `${country.phoneCode}${phoneNumber}`
-        console.log(phoneCodeId,country)
+        console.log(phoneCodeId, country)
         return phone.replace('+', '')
     }
 

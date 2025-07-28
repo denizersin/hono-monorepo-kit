@@ -4,7 +4,7 @@ import { TUserValidator, userValidator } from "@repo/shared/userInsertSchema"
 import { validateMultipleSchemas } from "@repo/shared/utils"
 import { EnumCookieKeys } from "@server/lib/enums"
 import { AuthenticationError, createSuccessResponse } from "@server/lib/errors"
-import honoFactory from "@server/lib/hono/hono-factory"
+import honoFactory, { apiContext, createHonoApp } from "@server/lib/hono/hono-factory"
 import { wait } from "@server/lib/utils"
 import { UserService } from "@server/modules/application/services/user/UserService"
 import { CreateUserUseCase } from "@server/modules/application/use-cases/user/CreateUserUseCase"
@@ -20,7 +20,7 @@ import { validator } from "hono/validator"
 const userService = new UserService(new UserRepositoryImpl())
 const createUserUseCase = new CreateUserUseCase(userService)
 
-const userApp = honoFactory.createApp()
+const userApp = createHonoApp()
     .use(honoAuthMiddleware)
     .get('/',
         (c) => {
@@ -30,9 +30,13 @@ const userApp = honoFactory.createApp()
         })
     .get('/me',
         async (c) => {
+            // const store = context.getStore()
+            // console.log(store?.session?.user.email,'store')
+
+            const store = apiContext.getStore()
             await wait(1000)
             const db = c.var.db
-            const sesion = c.var.authMiddlewareContext.session
+            const sesion = c.var.session
             // const users =await db.query.tblUser.findMany()
             return c.json(createSuccessResponse({
                 message: 'Hello from Hono!',
@@ -72,7 +76,7 @@ const userApp = honoFactory.createApp()
     .post('/create-user',
         honoRoleMiddleware([SahredEnums.Role.ADMIN, SahredEnums.Role.USER]),
         validator('json', async (value, c: Context<TAuthMiddlewareContextWithVariables>) => {
-            const role = c.var.authMiddlewareContext.session.role
+            const role = c.var.session.role
             return validateMultipleSchemas({
                 map: {
                     [SahredEnums.Role.ADMIN]: userValidator.adminCreateUserSchema,
@@ -85,7 +89,7 @@ const userApp = honoFactory.createApp()
         }),
         async (c) => {
             const userData = c.req.valid('json')
-            const session = c.var.authMiddlewareContext.session
+            const session = c.var.session
 
             if (session.role == SahredEnums.Role.ADMIN) {
                 const result = await createUserUseCase.executeAsAdmin(userData as TUserValidator.TAdminCreateUserSchema)

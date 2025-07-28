@@ -1,9 +1,10 @@
 import { zValidator } from "@hono/zod-validator"
 import { authValidator } from "@repo/shared/validators"
-import { EnumCookieKeys, EnumHeaderKeys } from "@server/lib/enums"
+// import { context } from "@server/index"
+import { EnumCookieKeys } from "@server/lib/enums"
 import { AuthenticationError, createSuccessResponse } from "@server/lib/errors"
-import honoFactory from "@server/lib/hono/hono-factory"
-import { getTokenFromAuthHeader, tryCatchSync } from "@server/lib/utils"
+import { createHonoApp } from "@server/lib/hono/hono-factory"
+import { tryCatchSync } from "@server/lib/utils"
 import { AuthService } from "@server/modules/application/services/auth/Auth"
 import { WhatsappService } from "@server/modules/application/services/whatsapp"
 import { CountryRepository } from "@server/modules/infrastructure/repositories/data/CountryRepository"
@@ -11,7 +12,6 @@ import { UserRepositoryImpl } from "@server/modules/infrastructure/repositories/
 import { VerifyCodeRepositoryImpl } from "@server/modules/infrastructure/repositories/verifyCode/VerifyCodeRepositoryImpl"
 import {
     deleteCookie,
-    getCookie,
     setCookie
 } from 'hono/cookie'
 import { z } from "zod"
@@ -24,19 +24,19 @@ const verifyCodeRepository = new VerifyCodeRepositoryImpl()
 const authService = new AuthService(userRepository, wpClientService, countryRepository, verifyCodeRepository)
 
 
-const authApp = honoFactory.createApp()
+const authApp = createHonoApp()
     .get('/get-session',
         async (c) => {
-            console.log('get-session')
-            // const authToken = c.req.header(EnumHeaderKeys.AUTHORIZATION) || ''
-            const sessionToken = getCookie(c, EnumCookieKeys.SESSION) || ''
-            const authHeaderToken = getTokenFromAuthHeader(c.req.header(EnumHeaderKeys.AUTHORIZATION) || '')
-            const { data: session, error: err } = tryCatchSync(() => authService.verifyToken(sessionToken || authHeaderToken!))
 
 
-            if (err) {
-                throw new AuthenticationError({ message: 'Invalid token', })
+            const session = c.var.session
+
+            if (!session) {
+                throw new AuthenticationError({ message: 'No session found', })
             }
+
+
+
             return c.json(createSuccessResponse(session))
 
 
@@ -76,7 +76,7 @@ const authApp = honoFactory.createApp()
         })),
         async (c) => {
             const sessionToken = c.req.valid('query').token
-            
+
             const { data: session, error: err } = tryCatchSync(() => authService.verifyToken(sessionToken))
             if (err) {
                 throw new AuthenticationError({ message: 'Invalid token', })

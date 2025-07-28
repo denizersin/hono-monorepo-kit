@@ -18,7 +18,8 @@
     "initialize-new-look-up": "tsx ./src/modules/infrastructure/database/scripts/initialize-new-look-up.ts",
     "update-db": "pnpm run db:generate && pnpm run db:migrate",
     "recreate-db": "tsx ./src/modules/infrastructure/database/scripts/re-create-db.ts",
-    "reset-db": "rm -rf ./src/modules/infrastructure/database/migrations && pnpm run recreate-db && pnpm run update-db && pnpm run initialize-db"
+    "reset-db": "rm -rf ./src/modules/infrastructure/database/migrations && pnpm run recreate-db && pnpm run update-db && pnpm run initialize-db",
+    "drizzle-studio": "npx drizzle-kit studio"
   },
   "dependencies": {
     "@hono/node-server": "^1.8.2",
@@ -33,6 +34,7 @@
     "hono-rate-limiter": "0.1.0",
     "jsonwebtoken": "^9.0.2",
     "mysql2": "^3.12.0",
+    "winston": "^3.17.0",
     "zod": "^3.24.2"
   },
   "devDependencies": {

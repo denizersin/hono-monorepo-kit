@@ -1,9 +1,11 @@
-import { TChatType } from '#/types/index';
 import { relations } from 'drizzle-orm';
-import { boolean, int, mysqlTable, text, timestamp, varchar } from 'drizzle-orm/mysql-core';
-import { tblAiModel } from './model';
+import { boolean, int, mysqlEnum, mysqlTable, text, varchar } from 'drizzle-orm/mysql-core';
 import { tblCharacter } from './character';
+import { tblAiModel } from './model';
+import { getDefaultTableFields, getDefaultTableFieldsWithDeletedAt } from './schemaHelpers';
 import { tblUser } from './user';
+import { SahredEnums } from '#/enums/index';
+import { tblCountry } from './data';
 
 export const tblPrivateChat = mysqlTable('private-chat', {
 
@@ -16,24 +18,43 @@ export const tblPrivateChat = mysqlTable('private-chat', {
     promptTokens: int().notNull().default(0),
     completionTokens: int().notNull().default(0),
     totalTokens: int().notNull().default(0),
-
-    createdAt: timestamp().notNull().defaultNow(),
-    updatedAt: timestamp().notNull().$onUpdate(() => new Date()),
-
+    chatLanguageId: int().references(() => tblCountry.id),
+    ...getDefaultTableFieldsWithDeletedAt(),
 })
+
+export const tblPrivateChatMessages = mysqlTable('private-chat-messages', {
+    id: int().primaryKey().autoincrement(),
+    privateChatId: int().references(() => tblPrivateChat.id),
+    messageId: int().references(() => tblMessageTable.id),
+
+    ...getDefaultTableFieldsWithDeletedAt(),
+})
+
+export const tblPrivateChatMessagesRelation = relations(tblPrivateChatMessages, ({ one }) => ({
+    privateChat: one(tblPrivateChat, {
+        fields: [tblPrivateChatMessages.privateChatId],
+        references: [tblPrivateChat.id]
+    }),
+    message: one(tblMessageTable, {
+        fields: [tblPrivateChatMessages.messageId],
+        references: [tblMessageTable.id]
+    })
+}))
+
 
 export const tblMessageTable = mysqlTable('message', {
     id: int().primaryKey().autoincrement(),
-    chatId: int().references(() => tblPrivateChat.id),
     isManualWithPrompt: boolean().$default(() => false),
     imageBase64: text(),
     message: text().notNull(),
+
+    ...getDefaultTableFields()
 })
 
 
 
 export const tblPrivateChatRelation = relations(tblPrivateChat, ({ many, one }) => ({
-    messages: many(tblMessageTable),
+    messages: many(tblPrivateChatMessages),
     user: one(tblUser, {
         fields: [tblPrivateChat.userId],
         references: [tblUser.id]
@@ -61,15 +82,33 @@ export const tblGroupChat = mysqlTable('group-chat', {
     completionTokens: int().notNull().default(0),
     totalTokens: int().notNull().default(0),
 
-    createdAt: timestamp().notNull().defaultNow(),
-    updatedAt: timestamp().notNull().$onUpdate(() => new Date()),
-
+    ...getDefaultTableFieldsWithDeletedAt(),
 
 })
 
+export const tblGroupChatMessages = mysqlTable('group-chat-messages', {
+    id: int().primaryKey().autoincrement(),
+    groupChatId: int().references(() => tblGroupChat.id),
+    messageId: int().references(() => tblMessageTable.id),
+
+    ...getDefaultTableFieldsWithDeletedAt(),
+})
+
+
+export const tblGroupChatMessagesRelation = relations(tblGroupChatMessages, ({ one }) => ({
+
+    groupChat: one(tblGroupChat, {
+        fields: [tblGroupChatMessages.groupChatId],
+        references: [tblGroupChat.id]
+    }),
+    message: one(tblMessageTable, {
+        fields: [tblGroupChatMessages.messageId],
+        references: [tblMessageTable.id]
+    })
+}))
 
 export const tblGroupChatRelations = relations(tblGroupChat, ({ many, one }) => ({
-    messages: many(tblMessageTable),
+    messages: many(tblGroupChatMessages),
     user: one(tblUser, {
         fields: [tblGroupChat.userId],
         references: [tblUser.id]
@@ -90,11 +129,4 @@ export const tblGroupChatRelations = relations(tblGroupChat, ({ many, one }) => 
 
 
 
-
-export const tblChatType = mysqlTable('chat-type', {
-
-    id: int().primaryKey().notNull(),
-    name: varchar({ length: 255 }).notNull().unique().$type<TChatType>(),
-
-})
 

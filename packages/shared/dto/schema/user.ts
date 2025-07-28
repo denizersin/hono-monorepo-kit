@@ -18,7 +18,7 @@ export const tblUser = mysqlTable('user', {
     refCode: varchar('ref_code', { length: 255 }),
     fullPhone: varchar('full_phone', { length: 255 }).notNull(),
 
-    role: mysqlEnum('role', SahredEnums.getStringEnumValuesForZod(SahredEnums.Role)),
+    role: mysqlEnum('role', SahredEnums.getStringEnumValuesForZod(SahredEnums.Role)).notNull(),
     test: varchar('test', { length: 255 }).notNull(),
     mailConfirmationStatusId: int('mail_confirmation_status_id').notNull(),
     phoneVerificationCodeSendAt: timestamp('phone_verification_code_send_at'),

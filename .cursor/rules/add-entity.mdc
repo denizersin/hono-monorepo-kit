@@ -13,15 +13,29 @@ table oluşturldktan sonra aynı dosyada table type'ı export edilir bunları en
 
 drizzle table tanımlandı...
 
+tblUserChatRelations
+    chats:many(tblPrivateChat)
+
+
+
 export namespace TSchemaUser{
     export type TTblUserSelect = typeof tblUser.$inferSelect;
     export type TTblUserInsert = typeof tblUser.$inferInsert;
 
-    export type TTblRoleSelect = typeof tblRole.$inferSelect;
-    export type TTblRoleInsert = typeof tblRole.$inferInsert;
+    export type TTblPrivateChatSelect=typeof tbPrivateChat$inferSelect
+    export type TTblPrivateChatInsert=typeof tbPrivateChat$inferInsert
 
-    export type TTblMailConfirmationStatusSelect = typeof tblMailConfirmationStatus.$inferSelect;
-    export type TTblMailConfirmationStatusInsert = typeof tblMailConfirmationStatus.$inferInsert;
+
+    //NOT:eger tablo'nun translation tablosu da varsa
+    export TUserTranslation=typeof tblUserTranslation.$inferSelect;
+    export TUserTranslationInsert=typeof tblUserTranslation.$inferInsert;
+    export TUserWithTranslation=TTblUserSelect&{
+        translations:TUserTranslation[]
+    }
+    export TTUserWithTranslationInsert=TTblUserInsert&{
+        translations:TUserTranslation[]
+    }
+    
 }
 
 
@@ -33,6 +47,10 @@ import { TSchemaUser } from "@repo/shared/schema"
 namespace TUserEntity {
     export type TUser = TSchemaUser.TTblUserSelect
     export type TUserInsert = TSchemaUser.TTblUserInsert
+    ....diger butun tablo type'lari
+    
+    //varsa translation with translation entitiy'leri de tanimla
+    ...export type TTUserWithTranslationInsert=TSchemaUser.TTUserWithTranslationInsert
 }
 
 export default  TUserEntity 
@@ -40,6 +58,7 @@ export default  TUserEntity
 3.adım Entity için  repository interface'ı kullanılır. burada crud işlemlerinde input output type ları için TEntity typeı kullanılır 
 
 dosya oluşturulur: apps/backend/src/modules/domain/repositories/IUserRepository.ts
+
 
 import TUserEntity from "../entities/user/User";
 
@@ -49,6 +68,13 @@ export interface IUserRepository {
     createUser(user: TUserEntity.TUserInsert): Promise<number>
     getUserByEmailAndPassword(email: string, password: string): Promise<TUserEntity.TUser|undefined>
     getSessionUser(user:TUserEntity.TUser): Promise<TSession['user']>
+
+    //eger varsa translation...
+    createUserWithTranslation(user: TUserEntity.TTUserWithTranslationInsert): Promise<number>
+    getUserWithTranslationById(id: number,languageId:number): Promise<TUserEntity.TUser|undefined>
+
+    //eger many iliskisi varsa optional olarak many proplari da tanimlanir
+    createUser({user: TUserEntity.TUserInsert,}): Promise<number>
 }
 
 

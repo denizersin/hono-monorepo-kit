@@ -7,3 +7,12 @@ export const getDefaultTableFields = () => {
         updatedAt: timestamp('updated_at').notNull().defaultNow(),
     }
 }
+
+
+export const getDefaultTableFieldsWithDeletedAt = () => {
+
+    return {
+        ...getDefaultTableFields(),
+        deletedAt: timestamp('deleted_at'),
+    }
+}

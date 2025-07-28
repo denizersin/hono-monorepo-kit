@@ -1,8 +1,33 @@
-import db from "@server/modules/infrastructure/database"
+import db, { TDbTable, TDbTableName } from "@server/modules/infrastructure/database"
 import { SahredEnums } from "@repo/shared/enums"
 import { CustomError } from "@server/lib/errors"
-import { tblChatType, tblLanguage, tblMailConfirmationStatus } from "@repo/shared/schema"
+import { tblLanguage, tblMailConfirmationStatus, tblLogStatus } from "@repo/shared/schema"
+import { ENUM_ALL_EVENT_IDS, ENUM_ALL_EVENTS } from "@server/modules/application/event/interface"
+import logger from "@server/lib/logger"
 
+
+
+//lookups with only id and name (enum string) like tblStatus={id:1,name:'active'}
+const LookUpRecords: Record<string, {
+    enumString: Record<string, string>,
+    enumId: Record<string, number>,
+    dbTable: TDbTable,
+    dbName: TDbTableName,
+}> = {
+    mailConfirmationStatus: {
+        enumString: SahredEnums.MailConfirmationStatus,
+        enumId: SahredEnums.MailConfirmationStatusId,
+        dbTable: tblMailConfirmationStatus,
+        dbName: 'tblMailConfirmationStatus',
+    },
+    logStatus: {
+        enumString: ENUM_ALL_EVENTS,
+        enumId: ENUM_ALL_EVENT_IDS,
+        dbTable: tblLogStatus,
+        dbName: 'tblLogStatus',
+    },
+
+}
 
 
 export class LookUpEnumsValidation {
@@ -21,52 +46,10 @@ export class LookUpEnumsValidation {
         }
         return LookUpEnumsValidation.instance
     }
-    static async validate() {
-        console.log('LookUpEnumsValidation validation started')
-
-        //mail confirmation status
-        const mailConfirmationStatus = await db.query.tblMailConfirmationStatus.findMany()
-        mailConfirmationStatus.forEach(status => {
-            const statusName = status.name
-            const enumStatusName = SahredEnums.MailConfirmationStatus[statusName]
-            const enumStatusId = SahredEnums.MailConfirmationStatusId[statusName]
-
-            if (
-                enumStatusName !== statusName ||
-                enumStatusId !== status.id
-            ) {
-                throw new CustomError({ message: `Mail confirmation status ${status.name} is not valid` })
-            }
-
-        })
-
-        LookUpEnumsValidation.validationPromise = Promise.resolve()
-
-        console.log('LookUpEnumsValidation validation completed successfully')
-
-        //role
-    }
 
 
-    //initialize mail confirmation status to db
-    static async initializeMailConfirmationStatusToDb() {
-        await db.insert(tblMailConfirmationStatus).values(
-            Object.values(SahredEnums.MailConfirmationStatus).map(status => ({
-                name: status,
-                id: SahredEnums.MailConfirmationStatusId[status]
-            }))
-        )
-    }
 
-    //initialize chat type to db
-    static async initializeChatTypeToDb() {
-        await db.insert(tblChatType).values(
-            Object.values(SahredEnums.ChatType).map((type) => ({
-                name: type,
-                id: SahredEnums.ChatTypeId[type]
-            }))
-        )
-    }
+
 
     //initialize language to db
     static async initializeLanguageToDb() {
@@ -82,15 +65,90 @@ export class LookUpEnumsValidation {
     }
 
 
+
+
+    static async initializeAllLookUp(table?: TDbTableName) {
+        for (const record of Object.values(LookUpRecords)) {
+            const { enumString, enumId, dbTable } = record
+            if (table && record.dbName !== table) continue
+            //@ts-ignore
+            await db.insert(dbTable).values(
+                Object.values(enumString).map(name => ({ name, id: enumId[name as keyof typeof enumId] }))
+            )
+        }
+    }
+
+    static async validateAllLookUp() {
+
+        for (const record of Object.values(LookUpRecords)) {
+            const { enumString, enumId, dbName, dbTable } = record
+            //@ts-ignore
+            const records = await db.query[dbName].findMany()
+
+            if (records.length < Object.values(enumString).length) {
+                // throw new CustomError({ message: `Record ${dbName} is not valid` })
+                console.warn(`detected missing records in ${dbName} adding if not exists`)
+                const promises = Object.values(enumString).map(async (name) => {
+                    const record = records.find((record: { name: string, id: number }) => record.name === name)
+                    if (!record) {
+                        //@ts-ignore
+                        await db.insert(dbTable).values({ name, id: enumId[name as keyof typeof enumId] })
+                        console.log(enumString, 'was not found in db. so adding it')
+                        logger.db('detected missing records in tblMailConfirmationStatus adding if not exists', { name, id: enumId[name as keyof typeof enumId] })
+                    }
+                })
+
+                await Promise.all(promises)
+
+            }
+
+
+
+
+            records.forEach((record: { name: string, id: number }) => {
+                const recordName = record.name
+                const enumRecordName = enumString[recordName as keyof typeof enumString]
+                const enumRecordId = enumId[enumRecordName as keyof typeof enumId]
+
+                if (
+                    enumRecordName !== recordName ||
+                    enumRecordId !== record.id
+                ) {
+                    throw new CustomError({ message: `Record ${record.name} is not valid` })
+                }
+            })
+        }
+    }
+
+
     static async initializeLookUpToDb() {
 
         //initialize
-        await LookUpEnumsValidation.initializeMailConfirmationStatusToDb()
+        await LookUpEnumsValidation.initializeAllLookUp()
 
         //initialize chat type
-        await LookUpEnumsValidation.initializeChatTypeToDb()
+        // await LookUpEnumsValidation.initializeChatTypeToDb()
 
     }
+
+
+    static async validate() {
+        console.log('LookUpEnumsValidation validation started')
+
+        await LookUpEnumsValidation.validateAllLookUp()
+
+        LookUpEnumsValidation.validationPromise = Promise.resolve()
+
+        console.log('LookUpEnumsValidation validation completed successfully')
+
+        //role
+    }
+
+
+    static async initializeNewLookUpToDb(table: TDbTableName) {
+        await LookUpEnumsValidation.initializeAllLookUp(table)
+    }
+
 
 }
 

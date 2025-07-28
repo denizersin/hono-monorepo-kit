@@ -9,6 +9,7 @@ async function initializeNewLookUp() {
 
     // await LookUpEnumsValidation.initializeLanguageToDb()
 
+    // await LookUpEnumsValidation.initializeLogStatusToDb()
 
     await LookUpEnumsValidation.validate()
 

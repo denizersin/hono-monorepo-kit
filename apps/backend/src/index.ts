@@ -2,19 +2,18 @@ import { serve } from '@hono/node-server'
 import { createNodeWebSocket } from '@hono/node-ws'
 import { hc } from 'hono/client'
 import { cors } from 'hono/cors'
+import { logger } from 'hono/logger'
 import { handleAppError } from './lib/errors'
 import honoFactory from './lib/hono/hono-factory'
+import LookUpEnumsValidation from './modules/infrastructure/database/helpers/validate-lookup'
 import authApp from './modules/interfaces/routes/auth'
+import constantsApp from './modules/interfaces/routes/constants'
 import examplesApp from './modules/interfaces/routes/test'
 import userApp from './modules/interfaces/routes/user'
-import { createWebSocketRoute } from './modules/interfaces/routes/websocket/websocket'
-import { logger } from 'hono/logger'
-import { limiter } from './lib/hono/rate-limitter'
-import LookUpEnumsValidation from './modules/infrastructure/database/helpers/validate-lookup'
-import constantsApp from './modules/interfaces/routes/constants'
 import webHookApp from './modules/interfaces/routes/web-hook'
-import { languageDetector } from 'hono/language'
-import { SahredEnums } from '@repo/shared/enums'
+import { createWebSocketRoute } from './modules/interfaces/routes/websocket/websocket'
+import characterApp from './modules/interfaces/routes/character'
+
 
 
 const port = process.env.PORT || 3002
@@ -64,7 +63,9 @@ app.use(
 
 
 
-
+app.use(async (c, next) => {
+  await next()
+})
 
 
 
@@ -84,6 +85,7 @@ const routes = app
   .route('/websocket', createWebSocketRoute(upgradeWebSocket))
   .route('/constants', constantsApp)
   .route('/web-hook', webHookApp)
+  .route('/character', characterApp)
 
 
 
