@@ -13,6 +13,7 @@ import userApp from './modules/interfaces/routes/user'
 import webHookApp from './modules/interfaces/routes/web-hook'
 import { createWebSocketRoute } from './modules/interfaces/routes/websocket/websocket'
 import characterApp from './modules/interfaces/routes/character'
+import { getApiContext } from './lib/hono/utils'
 
 
 
@@ -65,6 +66,22 @@ app.use(
 
 app.use(async (c, next) => {
   await next()
+
+  //trigger the events that are required to trigger by the end of the request
+  const ctx = getApiContext();
+  const eventCallbackQueue = ctx.eventCallbackQueue
+  const eventCallbackQueueAfterRequest = eventCallbackQueue.filter((callback) => callback.isAfterRequest)
+  const eventCallbackQueueBeforeRequest = eventCallbackQueue.filter((callback) => !callback.isAfterRequest)
+
+  eventCallbackQueueBeforeRequest.forEach((callback) => {
+    callback.callback()
+  })
+
+  setTimeout(() => {
+    eventCallbackQueueAfterRequest.forEach((callback) => {
+      callback.callback()
+    })
+  }, 0)
 })
 
 
@@ -86,6 +103,7 @@ const routes = app
   .route('/constants', constantsApp)
   .route('/web-hook', webHookApp)
   .route('/character', characterApp)
+
 
 
 

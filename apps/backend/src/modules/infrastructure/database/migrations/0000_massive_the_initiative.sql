@@ -118,7 +118,7 @@ CREATE TABLE `character` (
 	`id` int AUTO_INCREMENT NOT NULL,
 	`name` varchar(255) NOT NULL,
 	`imageUrl` varchar(255),
-	`mainPersonaId` int,
+	`mainPersonaId` int NOT NULL,
 	`created_at` timestamp NOT NULL DEFAULT (now()),
 	`updated_at` timestamp NOT NULL DEFAULT (now()),
 	`deleted_at` timestamp,
@@ -204,6 +204,21 @@ CREATE TABLE `verify_code` (
 	`created_at` timestamp NOT NULL DEFAULT (now()),
 	`expires_at` timestamp NOT NULL,
 	CONSTRAINT `verify_code_id` PRIMARY KEY(`id`)
+);
+--> statement-breakpoint
+CREATE TABLE `log` (
+	`id` int AUTO_INCREMENT NOT NULL,
+	`eventId` int NOT NULL,
+	`eventName` varchar(255) NOT NULL,
+	`eventData` json,
+	`createdAt` timestamp NOT NULL DEFAULT (now()),
+	CONSTRAINT `log_id` PRIMARY KEY(`id`)
+);
+--> statement-breakpoint
+CREATE TABLE `log-status` (
+	`id` int AUTO_INCREMENT NOT NULL,
+	`name` varchar(255) NOT NULL,
+	CONSTRAINT `log-status_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
 ALTER TABLE `group-chat` ADD CONSTRAINT `group-chat_userId_user_id_fk` FOREIGN KEY (`userId`) REFERENCES `user`(`id`) ON DELETE no action ON UPDATE no action;--> statement-breakpoint

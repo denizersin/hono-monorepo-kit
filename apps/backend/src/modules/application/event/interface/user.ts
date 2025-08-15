@@ -10,7 +10,10 @@ export const ENUM_USER_EVENTS = {
     USER_LOGGED_IN: 'USER_LOGGED_IN',
 } as const
 
-export const ENUM_USER_EVENT_IDS = {
+export type TUserEvent = keyof typeof ENUM_USER_EVENTS
+
+
+export const ENUM_USER_EVENT_IDS: Record<TUserEvent, number> = {
     USER_CREATED: 101,
     USER_UPDATED: 102,
     USER_DELETED: 103,
@@ -20,7 +23,7 @@ export const ENUM_USER_EVENT_IDS = {
 
 
 
-export type TEventUser = {
+export type TEventUserData = {
     [ENUM_USER_EVENTS.USER_CREATED]: TBaseEvent<'USER_CREATED'> & {
         props: {
             type: typeof ENUM_USER_EVENTS.USER_CREATED,
@@ -32,4 +35,5 @@ export type TEventUser = {
         }
     },
     [ENUM_USER_EVENTS.USER_REGISTERED]: TBaseEvent<'USER_REGISTERED'>
+    [ENUM_USER_EVENTS.USER_LOGGED_IN]: TBaseEvent<'USER_LOGGED_IN'>
 }

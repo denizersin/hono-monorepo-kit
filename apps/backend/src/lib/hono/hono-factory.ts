@@ -33,7 +33,8 @@ export default createFactory<AppBindings>({
         contextData: {},
         updateContextData: (data: unknown) => { },
         startTrx: async () => { },
-        ip: c.req.header('x-forwarded-for') || null
+        ip: c.req.header('x-forwarded-for') || null,
+        eventCallbackQueue: []
       })
 
 

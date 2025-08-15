@@ -1,9 +1,9 @@
+import { tblLog } from "@repo/shared/schema";
+import db from "@server/modules/infrastructure/database";
 import { EventEmitter } from "events";
-import { ENUM_ALL_EVENT_IDS, ENUM_ALL_EVENTS, TBaseEventLogData, TGlobalEvent, TGlobalEvents } from "./interface";
+import { ENUM_ALL_EVENT_IDS, EVENT_SETTINGS, TBaseEventLogData, TGlobalEvents } from "./interface";
 import { ENUM_CHARACTER_EVENTS } from "./interface/character";
 import { ENUM_USER_EVENTS } from "./interface/user";
-import db from "@server/modules/infrastructure/database";
-import { tblLog } from "@repo/shared/schema";
 
 export class TypedEventEmitter<Events extends Record<string, any>> {
     private emitter = new EventEmitter();
@@ -57,7 +57,7 @@ EventBus.onGlobal(async (eventName, payload) => {
     console.log('eventName', eventName)
     if (payload.type === ENUM_CHARACTER_EVENTS.CHARACTER_CREATED) {
 
-        
+
 
     }
 
@@ -66,12 +66,9 @@ EventBus.onGlobal(async (eventName, payload) => {
 
     }
 
-    console.log('payload', payload)
 
 
-
-    if (payload.withDefaultLog && payload.logData) {
-        console.log('ssss222')
+    if (!EVENT_SETTINGS[payload.type]?.withoutLog && payload.logData) {
         await db.insert(tblLog).values({
             eventId: ENUM_ALL_EVENT_IDS[payload.type],
             eventName: payload.type,

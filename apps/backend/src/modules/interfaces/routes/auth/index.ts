@@ -4,7 +4,10 @@ import { authValidator } from "@repo/shared/validators"
 import { EnumCookieKeys } from "@server/lib/enums"
 import { AuthenticationError, createSuccessResponse } from "@server/lib/errors"
 import { createHonoApp } from "@server/lib/hono/hono-factory"
+import { getApiContext } from "@server/lib/hono/utils"
 import { tryCatchSync } from "@server/lib/utils"
+import { EventBus } from "@server/modules/application/event"
+import { ENUM_USER_EVENTS } from "@server/modules/application/event/interface/user"
 import { AuthService } from "@server/modules/application/services/auth/Auth"
 import { WhatsappService } from "@server/modules/application/services/whatsapp"
 import { CountryRepository } from "@server/modules/infrastructure/repositories/data/CountryRepository"
@@ -28,12 +31,22 @@ const authApp = createHonoApp()
     .get('/get-session',
         async (c) => {
 
-
+            const ctx = getApiContext();
+            console.log('11')
+            ctx.eventCallbackQueue.push({
+                callback: () => EventBus.emit(ENUM_USER_EVENTS.USER_LOGGED_IN, {
+                    type: ENUM_USER_EVENTS.USER_LOGGED_IN,
+                    ctx: ctx
+                }),
+                isAfterRequest: true
+            })
+            console.log('22')
             const session = c.var.session
 
             if (!session) {
                 throw new AuthenticationError({ message: 'No session found', })
             }
+
 
 
 

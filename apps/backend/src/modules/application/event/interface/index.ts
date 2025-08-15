@@ -1,8 +1,8 @@
 //example implementation
 
 import { TApiContext } from "@server/lib/hono/utils"
-import { ENUM_CHARACTER_EVENT_IDS, ENUM_CHARACTER_EVENTS, TEventCharacter } from "./character"
-import { ENUM_USER_EVENT_IDS, ENUM_USER_EVENTS, TEventUser } from "./user"
+import { CHARACTER_EVENT_SETTINGS, ENUM_CHARACTER_EVENT_IDS, ENUM_CHARACTER_EVENTS, TEventCharacterData } from "./character"
+import { ENUM_USER_EVENT_IDS, ENUM_USER_EVENTS, TEventUserData } from "./user"
 import { TApiContextRaw } from "@server/lib/hono/types"
 
 
@@ -19,14 +19,25 @@ export const ENUM_ALL_EVENT_IDS = {
     ...ENUM_CHARACTER_EVENT_IDS,
 } as const
 
-export type TGlobalEvents = TEventUser & TEventCharacter
+export type TEventSettings = {
+    [key in keyof typeof ENUM_ALL_EVENTS]?: {
+        withoutLog?: boolean,
+    }
+}
+
+
+export const EVENT_SETTINGS: TEventSettings = {
+    ...CHARACTER_EVENT_SETTINGS,
+}
+
+export type TGlobalEvents = TEventUserData & TEventCharacterData
 
 export type TGlobalEvent = keyof TGlobalEvents
 
 export type TBaseEventLogData<T extends keyof typeof ENUM_ALL_EVENTS> = {
     type: T,
     creatorId?: number,
-    creatorName?: string, 
+    creatorName?: string,
     previousString?: string,
     newString?: string,
     occurredAt: Date,
@@ -38,7 +49,6 @@ export type TBaseEvent<T extends keyof typeof ENUM_ALL_EVENTS> = {
         type: T,
         ctx: TEventCtx
         logData?: TBaseEventLogData<T>
-        withDefaultLog?: boolean,
     }
 }
 

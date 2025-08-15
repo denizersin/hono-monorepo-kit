@@ -1,4 +1,5 @@
 import { TSession } from "@repo/shared/types";
+import { TGlobalEvent } from "@server/modules/application/event/interface";
 import { TDB, TDBTransaction } from "@server/modules/infrastructure/database";
 import type { Env } from "hono";
 
@@ -23,4 +24,11 @@ export type TApiContextRaw = {
     ip: string | null
     contextData: TEventMoreContextData
     updateContextData: (data: TEventMoreContextData | ((current: TEventMoreContextData) => TEventMoreContextData)) => void
+
+    eventCallbackQueue: {
+        type?: TGlobalEvent
+        isAfterRequest?: boolean
+        callback: Function
+    }[]
 }
+

@@ -25,10 +25,9 @@ export class UserService {
                 newString: `${userData.fullName} - id:${result}`,
                 previousString: '',
                 userField: 'asd',
-                description:'User created'
+                description: 'User created'
             },
             userField: 'asd',
-            withDefaultLog: true,
         })
 
         return result;

@@ -81,7 +81,6 @@ export class AuthService {
         EventBus.emit(ENUM_USER_EVENTS.USER_REGISTERED, {
             ctx: getApiContext(),
             type: ENUM_USER_EVENTS.USER_REGISTERED,
-            withDefaultLog: true,
             logData: {
                 type: ENUM_ALL_EVENTS.USER_REGISTERED,
                 occurredAt: new Date(),
@@ -102,7 +101,7 @@ export class AuthService {
         }
 
         const { password, ...userWithoutPassword } = user
-        
+
         const session: TSession = {
             companyId: user.companyId,
             role: user.role as TRole,
