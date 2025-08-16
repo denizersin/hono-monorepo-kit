@@ -7,7 +7,7 @@ export default defineConfig({
   out: './src/modules/infrastructure/database/migrations',
   schema: './src/modules/infrastructure/database/schema/**/*.ts',
 //   schema: "./src/server/db/schema/**/*.ts",
-  dialect: 'mysql',
+  dialect: 'postgresql',
   dbCredentials: {
     url: ENV.DATABASE_URL,
   },

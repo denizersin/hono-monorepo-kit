@@ -1,18 +1,18 @@
-import { boolean, int, json, mysqlEnum, mysqlTable, text, timestamp, varchar } from 'drizzle-orm/mysql-core';
+import { boolean, integer, jsonb, pgEnum, pgTable, text, timestamp, varchar } from 'drizzle-orm/pg-core';
 
-export const tblLog = mysqlTable('log', {
-    id: int().primaryKey().autoincrement(),
-    eventId: int().notNull(),
+export const tblLog = pgTable('log', {
+    id: integer().primaryKey().generatedByDefaultAsIdentity(),
+    eventId: integer().notNull(),
     eventName: varchar({ length: 255 }).notNull(),
-    eventData: json(),
+    eventData: jsonb(),
     createdAt: timestamp().notNull().defaultNow(),
     
 })
 
 
 
-export const tblLogStatus = mysqlTable('log-status', {
-    id: int().primaryKey().autoincrement(),
+export const tblLogStatus = pgTable('log-status', {
+    id: integer().primaryKey().generatedByDefaultAsIdentity(),
     name: varchar({ length: 255 }).notNull(),
 })
 

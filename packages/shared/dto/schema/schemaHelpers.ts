@@ -1,10 +1,10 @@
-import { timestamp } from "drizzle-orm/mysql-core";
+import { timestamp } from "drizzle-orm/pg-core";
 
 export const getDefaultTableFields = () => {
 
     return {
         createdAt: timestamp('created_at').notNull().defaultNow(),
-        updatedAt: timestamp('updated_at').notNull().defaultNow(),
+        updatedAt: timestamp('updated_at').notNull().defaultNow().$onUpdate(() => new Date()),
     }
 }
 

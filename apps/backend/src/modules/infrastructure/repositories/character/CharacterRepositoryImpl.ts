@@ -133,7 +133,7 @@ export class CharacterRepositoryImpl {
         const [newCharacter] = await db
             .insert(tblCharacter)
             .values(characterData)
-            .$returningId();
+            .returning();
 
         if (!newCharacter) {
             throw new Error("Character not created");
@@ -153,7 +153,7 @@ export class CharacterRepositoryImpl {
                 const [newInstruction] = await db
                     .insert(tblCharacterInstruction)
                     .values({ characterId, ...instruction.characterInstructionData })
-                    .$returningId();
+                    .returning();
 
                 if (!newInstruction) continue;
 
@@ -200,7 +200,7 @@ export class CharacterRepositoryImpl {
      * Create a new persona with its translations.
      */
     async createPersonaWithTranslation({ personaData, translations }: TSchemaCharacter.TCreatePersonaWithTranslation): Promise<number> {
-        const [newPersona] = await db.insert(tblPersona).values(personaData).$returningId();
+        const [newPersona] = await db.insert(tblPersona).values(personaData).returning();
 
         if (!newPersona) {
             throw new Error("Persona not created");
@@ -243,7 +243,7 @@ export class CharacterRepositoryImpl {
         const [newInstruction] = await db
             .insert(tblCharacterInstruction)
             .values(characterInstructionData)
-            .$returningId();
+            .returning();
 
         if (!newInstruction) {
             throw new Error("Character instruction not created");

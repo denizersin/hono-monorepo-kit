@@ -31,7 +31,7 @@ export class UserRepositoryImpl implements IUserRepository {
     }
 
     async createUser(user: TUserEntity.TUserInsert): Promise<number> {
-        const [newUser] = await db.insert(tblUser).values(user).$returningId()
+        const [newUser] = await db.insert(tblUser).values(user).returning({id:tblUser.id})
         if(!newUser) {
             throw new Error("User not created")
         }

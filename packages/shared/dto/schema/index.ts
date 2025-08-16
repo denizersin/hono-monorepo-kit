@@ -8,3 +8,4 @@ export * from './log';
 
 
 
+// !NOT : pgEnum and pgTable name always must be different 

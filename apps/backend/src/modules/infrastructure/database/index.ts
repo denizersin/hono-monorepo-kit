@@ -1,21 +1,27 @@
-import { drizzle, type MySql2Database } from "drizzle-orm/mysql2";
-import mysql from "mysql2/promise";
+import { drizzle } from "drizzle-orm/node-postgres";
+import { Pool } from "pg";
+import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 import { ENV } from "../../../env";
-import schema from "./schema";
-import { MySqlTransaction } from "drizzle-orm/mysql-core";
+import schema, { tblLanguage } from "./schema";
 // Use the appropriate database URL based on environment
 const dbUrl = ENV._runtime.IS_DEV ? ENV.DATABASE_URL_DEV : ENV.DATABASE_URL_PROD;
 
 
 // Parse the database URL to extract connection details
-const connectionUrl = new URL(dbUrl);
+// const connectionUrl = new URL(dbUrl);
 
-const poolConnection = mysql.createPool({
-  host: connectionUrl.hostname,
-  user: connectionUrl.username,
-  password: connectionUrl.password,
-  database: connectionUrl.pathname.substring(1), // Remove leading slash
-  port: connectionUrl.port ? parseInt(connectionUrl.port) : 3306,
+const pool = new Pool({
+  connectionString: dbUrl,
+  // Alternative: individual connection parameters
+  // host: connectionUrl.hostname,
+  // user: connectionUrl.username,
+  // password: connectionUrl.password,
+  // database: connectionUrl.pathname.substring(1),
+  // port: connectionUrl.port ? parseInt(connectionUrl.port) : 5432,
+  ssl: ENV._runtime.IS_DEV ? false : { rejectUnauthorized: false },
+  max: 20, // Maximum number of connections in pool
+  idleTimeoutMillis: 30000, // Close idle clients after 30 seconds
+  connectionTimeoutMillis: 2000, // Return error after 2 seconds if connection could not be established
 });
 
 
@@ -25,7 +31,7 @@ const poolConnection = mysql.createPool({
 
 
 
-export type TDB = MySql2Database<typeof schema>;
+export type TDB = NodePgDatabase<typeof schema>;
 
 export type TDbTableName = keyof typeof schema;
 export type TDbTable = typeof schema[TDbTableName];
@@ -44,7 +50,12 @@ export const startTransactionPromisfy = (): Promise<TDBTransaction> => {
 
 let db: TDB;
 
-db = drizzle(poolConnection, { schema, mode: 'default' });
+db = drizzle({ client: pool, schema });
+
+db.insert(tblLanguage).values({
+  name: 'English',
+  code: 'en'
+})
 
 export default db
 

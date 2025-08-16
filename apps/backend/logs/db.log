@@ -8,3 +8,16 @@
 {"level":"db","message":"test22","timestamp":"2025-07-27T20:47:45.779Z"}
 {"0":{"id":204,"name":"CHARACTER_DELETED_BY_USER"},"level":"db","message":"detected missing records in tblMailConfirmationStatus adding if not exists","timestamp":"2025-08-12T14:41:46.052Z"}
 {"0":{"id":205,"name":"CHARACTER_MINOR_UPDATED"},"level":"db","message":"detected missing records in tblMailConfirmationStatus adding if not exists","timestamp":"2025-08-12T14:50:16.581Z"}
+{"0":{"id":1,"name":"pending"},"level":"db","message":"detected missing records in tblMailConfirmationStatus adding if not exists","timestamp":"2025-08-15T22:00:23.248Z"}
+{"0":{"id":3,"name":"rejected"},"level":"db","message":"detected missing records in tblMailConfirmationStatus adding if not exists","timestamp":"2025-08-15T22:00:23.253Z"}
+{"0":{"id":2,"name":"confirmed"},"level":"db","message":"detected missing records in tblMailConfirmationStatus adding if not exists","timestamp":"2025-08-15T22:00:23.254Z"}
+{"0":{"id":101,"name":"USER_CREATED"},"level":"db","message":"detected missing records in tblMailConfirmationStatus adding if not exists","timestamp":"2025-08-15T22:00:23.257Z"}
+{"0":{"id":102,"name":"USER_UPDATED"},"level":"db","message":"detected missing records in tblMailConfirmationStatus adding if not exists","timestamp":"2025-08-15T22:00:23.258Z"}
+{"0":{"id":103,"name":"USER_DELETED"},"level":"db","message":"detected missing records in tblMailConfirmationStatus adding if not exists","timestamp":"2025-08-15T22:00:23.258Z"}
+{"0":{"id":104,"name":"USER_REGISTERED"},"level":"db","message":"detected missing records in tblMailConfirmationStatus adding if not exists","timestamp":"2025-08-15T22:00:23.262Z"}
+{"0":{"id":202,"name":"CHARACTER_UPDATED"},"level":"db","message":"detected missing records in tblMailConfirmationStatus adding if not exists","timestamp":"2025-08-15T22:00:23.263Z"}
+{"0":{"id":201,"name":"CHARACTER_CREATED"},"level":"db","message":"detected missing records in tblMailConfirmationStatus adding if not exists","timestamp":"2025-08-15T22:00:23.263Z"}
+{"0":{"id":105,"name":"USER_LOGGED_IN"},"level":"db","message":"detected missing records in tblMailConfirmationStatus adding if not exists","timestamp":"2025-08-15T22:00:23.263Z"}
+{"0":{"id":203,"name":"CHARACTER_DELETED"},"level":"db","message":"detected missing records in tblMailConfirmationStatus adding if not exists","timestamp":"2025-08-15T22:00:23.263Z"}
+{"0":{"id":204,"name":"CHARACTER_DELETED_BY_USER"},"level":"db","message":"detected missing records in tblMailConfirmationStatus adding if not exists","timestamp":"2025-08-15T22:00:23.264Z"}
+{"0":{"id":205,"name":"CHARACTER_MINOR_UPDATED"},"level":"db","message":"detected missing records in tblMailConfirmationStatus adding if not exists","timestamp":"2025-08-15T22:00:23.265Z"}

@@ -21,8 +21,8 @@ async function initializeDb() {
 
     //insert admin user
     console.log("initializeAdminUser")
-    const userService = new UserService(new UserRepositoryImpl())
-    await userService.createUser({
+    const userRepository = new UserRepositoryImpl()
+    await userRepository.createUser({
         email: "admin@gmail.com",
         password: "admin123",
         role: SahredEnums.Role.ADMIN,

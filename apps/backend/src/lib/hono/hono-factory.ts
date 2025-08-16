@@ -9,7 +9,7 @@ import { EnumHeaderKeys } from "../enums";
 import { getSafeSessionFromContext } from "@server/modules/shared/middlewares/auth";
 import { AsyncLocalStorage } from 'async_hooks';
 import { Hono } from "hono";
-import { initApiContext } from "./utils";
+import { initApiContext } from "@server/lib/context";
 
 export const apiContext = new AsyncLocalStorage<TApiContextRaw>()
 

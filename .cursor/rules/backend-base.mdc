@@ -16,3 +16,7 @@ basit crud işlemlerinde direkt servis yazıp kullanacağız.
 * apps/backend/src/modules/application/services
 * apps/backend/src/modules/application/use-cases
 
+
+
+// !NOT : pgEnum and pgTable name always must be different 
+ 

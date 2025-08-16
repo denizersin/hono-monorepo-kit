@@ -1,9 +1,9 @@
-import { MySql2Database } from "drizzle-orm/mysql2";
+import { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 
 import * as schema from "./index";
 
 
-type TDb = MySql2Database<typeof schema>
+type TDb = PostgresJsDatabase<typeof schema>
 
 
 export type ReturnTypeOfQuery<T extends (...args: any) => any> = NonNullable<Awaited<ReturnType<T>>>

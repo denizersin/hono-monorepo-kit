@@ -13,8 +13,7 @@ import userApp from './modules/interfaces/routes/user'
 import webHookApp from './modules/interfaces/routes/web-hook'
 import { createWebSocketRoute } from './modules/interfaces/routes/websocket/websocket'
 import characterApp from './modules/interfaces/routes/character'
-import { getApiContext } from './lib/hono/utils'
-
+import { getApiContext } from '@server/lib/context'
 
 
 const port = process.env.PORT || 3002

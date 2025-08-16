@@ -1,5 +1,5 @@
 import { TUserValidator } from "@repo/shared/userInsertSchema";
-import { getApiContext } from "@server/lib/hono/utils";
+import { getApiContext } from "@server/lib/context";
 import { IUserRepository } from "@server/modules/domain/repositories/IUserRepository";
 import { EventBus } from "../../event";
 import { ENUM_USER_EVENTS } from "../../event/interface/user";

@@ -1,18 +1,18 @@
-import { boolean, float, int, json, mysqlTable, text, timestamp, varchar, foreignKey } from 'drizzle-orm/mysql-core';
+import { boolean, doublePrecision, integer, jsonb, pgTable, text, timestamp, varchar, foreignKey } from 'drizzle-orm/pg-core';
 import { tblLanguage } from './data';
 import { relations } from 'drizzle-orm';
 import { mockDb, ReturnTypeOfQuery } from './type';
 import { getDefaultTableFieldsWithDeletedAt } from './schemaHelpers';
 
 
-export const tblCharacter = mysqlTable('character', {
-    id: int().primaryKey().autoincrement(),
+export const tblCharacter = pgTable('character', {
+    id: integer().primaryKey().generatedByDefaultAsIdentity(),
 
     //data
     name: varchar({ length: 255 }).notNull(),
     imageUrl: varchar({ length: 255 }),
     //relations
-    mainPersonaId: int().notNull().references(() => tblPersona.id),
+    mainPersonaId: integer().notNull().references(() => tblPersona.id),
 
 
     //timestamps
@@ -22,16 +22,16 @@ export const tblCharacter = mysqlTable('character', {
 // Relation definitions relying on tables declared above are placed after all table declarations to avoid any temporal-dead-zone issues.
 // (Declaration will be re-added further below)
 
-export const tblCharacterInstruction = mysqlTable('character-instruction', {
-    id: int().primaryKey().autoincrement(),
+export const tblCharacterInstruction = pgTable('character-instruction', {
+    id: integer().primaryKey().generatedByDefaultAsIdentity(),
 
     //data
-    rating: float(),
-    order: int(),
+    rating: doublePrecision(),
+    order: integer(),
     isActive: boolean().notNull().default(true),
     isAdminInstruction: boolean().notNull().default(false),
     //relations
-    characterId: int().notNull().references(() => tblCharacter.id, { onDelete: 'cascade' }),
+    characterId: integer().notNull().references(() => tblCharacter.id, { onDelete: 'cascade' }),
 })
 
 export const tblCharacterInstructionRelation = relations(tblCharacterInstruction, ({ one, many }) => ({
@@ -42,12 +42,12 @@ export const tblCharacterInstructionRelation = relations(tblCharacterInstruction
     translations: many(tblCharacterInstructionTranslation),
 }))
 
-export const tblCharacterInstructionTranslation = mysqlTable(
+export const tblCharacterInstructionTranslation = pgTable(
     'character-instruction-translation',
     {
-        id: int().primaryKey().autoincrement(),
-        characterInstructionId: int().notNull(),
-        languageId: int().notNull(),
+        id: integer().primaryKey().generatedByDefaultAsIdentity(),
+        characterInstructionId: integer().notNull(),
+        languageId: integer().notNull(),
     },
     (table) => ({
         // FK to character-instruction  (short name keeps us < 64 chars)
@@ -78,16 +78,16 @@ export const tblCharacterInstructionTranslationRelation = relations(tblCharacter
 }))
 
 
-export const tblCharacterImage = mysqlTable('character-image', {
-    id: int().primaryKey().autoincrement(),
+export const tblCharacterImage = pgTable('character-image', {
+    id: integer().primaryKey().generatedByDefaultAsIdentity(),
 
 
     //data
     imageUrl: varchar({ length: 255 }).notNull(),
-    width: int(),
-    height: int(),
+    width: integer(),
+    height: integer(),
     //relations
-    characterId: int().notNull().references(() => tblCharacter.id, { onDelete: 'cascade' }),
+    characterId: integer().notNull().references(() => tblCharacter.id, { onDelete: 'cascade' }),
 
     //timestamps
     ...getDefaultTableFieldsWithDeletedAt()
@@ -100,10 +100,10 @@ export const tblCharacterImageRelation = relations(tblCharacterImage, ({ one }) 
     }),
 }))
 
-export const tblCharacterPersona = mysqlTable('character-persona', {
-    id: int().primaryKey().autoincrement(),
-    characterId: int().notNull().references(() => tblCharacter.id, { onDelete: 'cascade' }),
-    personaId: int().notNull().references(() => tblPersona.id, { onDelete: 'cascade' }),
+export const tblCharacterPersona = pgTable('character-persona', {
+    id: integer().primaryKey().generatedByDefaultAsIdentity(),
+    characterId: integer().notNull().references(() => tblCharacter.id, { onDelete: 'cascade' }),
+    personaId: integer().notNull().references(() => tblPersona.id, { onDelete: 'cascade' }),
 })
 
 export const tblCharacterPersonaRelation = relations(tblCharacterPersona, ({ one }) => ({
@@ -121,8 +121,8 @@ export const tblCharacterPersonaRelation = relations(tblCharacterPersona, ({ one
 
 
 
-export const tblPersona = mysqlTable('persona', {
-    id: int().primaryKey().autoincrement(),
+export const tblPersona = pgTable('persona', {
+    id: integer().primaryKey().generatedByDefaultAsIdentity(),
 
     //data
     name: varchar({ length: 255 }).notNull(),
@@ -135,12 +135,12 @@ export const tblPersona = mysqlTable('persona', {
 
 
 
-export const tblPersonaTranslation = mysqlTable('persona-translation', {
-    id: int().primaryKey().autoincrement(),
+export const tblPersonaTranslation = pgTable('persona-translation', {
+    id: integer().primaryKey().generatedByDefaultAsIdentity(),
 
     //data
-    personaId: int().notNull().references(() => tblPersona.id, { onDelete: 'cascade' }),
-    languageId: int().notNull().references(() => tblLanguage.id, { onDelete: 'cascade' }),
+    personaId: integer().notNull().references(() => tblPersona.id, { onDelete: 'cascade' }),
+    languageId: integer().notNull().references(() => tblLanguage.id, { onDelete: 'cascade' }),
     name: varchar({ length: 255 }).notNull(),
 })
 

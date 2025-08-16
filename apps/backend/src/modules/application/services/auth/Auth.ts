@@ -11,7 +11,7 @@ import { CountryRepository } from "@server/modules/infrastructure/repositories/d
 import { JwtService } from "../jwtService";
 import { WhatsappService } from "../whatsapp";
 import { EventBus } from "../../event";
-import { getApiContext } from "@server/lib/hono/utils";
+import { getApiContext } from "@server/lib/context";
 import { ENUM_ALL_EVENTS } from "../../event/interface";
 import { ENUM_USER_EVENTS } from "../../event/interface/user";
 

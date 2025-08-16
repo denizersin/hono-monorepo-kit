@@ -42,7 +42,10 @@ export class InitializeDbPrededfinedDatas {
                 id: isMyEnumValue ? SahredEnums.LanguageId[language.code as TLanguage] : undefined
             }
         })
-        await db.insert(tblLanguage).values(languageDataInsert)
+
+        const myLanguagesData = languageDataInsert.filter(l => l.id !== undefined)
+  
+        await db.insert(tblLanguage).values(myLanguagesData)
     }
 
     static async initializeDbPrededfinedDatas() {

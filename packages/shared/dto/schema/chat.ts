@@ -1,5 +1,5 @@
 import { relations } from 'drizzle-orm';
-import { boolean, int, mysqlEnum, mysqlTable, text, varchar } from 'drizzle-orm/mysql-core';
+import { boolean, integer, pgEnum, pgTable, text, varchar } from 'drizzle-orm/pg-core';
 import { tblCharacter } from './character';
 import { tblAiModel } from './model';
 import { getDefaultTableFields, getDefaultTableFieldsWithDeletedAt } from './schemaHelpers';
@@ -7,25 +7,25 @@ import { tblUser } from './user';
 import { SahredEnums } from '#/enums/index';
 import { tblCountry } from './data';
 
-export const tblPrivateChat = mysqlTable('private-chat', {
+export const tblPrivateChat = pgTable('private-chat', {
 
-    id: int().primaryKey().autoincrement(),
-    userId: int().notNull().references(() => tblUser.id),
+    id: integer().primaryKey().generatedByDefaultAsIdentity(),
+    userId: integer().notNull().references(() => tblUser.id),
     recipientFullPhoneNumber: varchar({ length: 255 }).notNull(),
 
-    modelId: int().notNull().references(() => tblAiModel.id),
-    characterId: int().references(() => tblCharacter.id),
-    promptTokens: int().notNull().default(0),
-    completionTokens: int().notNull().default(0),
-    totalTokens: int().notNull().default(0),
-    chatLanguageId: int().references(() => tblCountry.id),
+    modelId: integer().notNull().references(() => tblAiModel.id),
+    characterId: integer().references(() => tblCharacter.id),
+    promptTokens: integer().notNull().default(0),
+    completionTokens: integer().notNull().default(0),
+    totalTokens: integer().notNull().default(0),
+    chatLanguageId: integer().references(() => tblCountry.id),
     ...getDefaultTableFieldsWithDeletedAt(),
 })
 
-export const tblPrivateChatMessages = mysqlTable('private-chat-messages', {
-    id: int().primaryKey().autoincrement(),
-    privateChatId: int().references(() => tblPrivateChat.id),
-    messageId: int().references(() => tblMessageTable.id),
+export const tblPrivateChatMessages = pgTable('private-chat-messages', {
+    id: integer().primaryKey().generatedByDefaultAsIdentity(),
+    privateChatId: integer().references(() => tblPrivateChat.id),
+    messageId: integer().references(() => tblMessageTable.id),
 
     ...getDefaultTableFieldsWithDeletedAt(),
 })
@@ -42,8 +42,8 @@ export const tblPrivateChatMessagesRelation = relations(tblPrivateChatMessages, 
 }))
 
 
-export const tblMessageTable = mysqlTable('message', {
-    id: int().primaryKey().autoincrement(),
+export const tblMessageTable = pgTable('message', {
+    id: integer().primaryKey().generatedByDefaultAsIdentity(),
     isManualWithPrompt: boolean().$default(() => false),
     imageBase64: text(),
     message: text().notNull(),
@@ -71,25 +71,25 @@ export const tblPrivateChatRelation = relations(tblPrivateChat, ({ many, one }) 
 
 }))
 
-export const tblGroupChat = mysqlTable('group-chat', {
-    id: int().primaryKey().autoincrement(),
-    userId: int().notNull().references(() => tblUser.id),
+export const tblGroupChat = pgTable('group-chat', {
+    id: integer().primaryKey().generatedByDefaultAsIdentity(),
+    userId: integer().notNull().references(() => tblUser.id),
 
 
-    modelId: int().notNull().references(() => tblAiModel.id),
-    characterId: int().references(() => tblCharacter.id),
-    promptTokens: int().notNull().default(0),
-    completionTokens: int().notNull().default(0),
-    totalTokens: int().notNull().default(0),
+    modelId: integer().notNull().references(() => tblAiModel.id),
+    characterId: integer().references(() => tblCharacter.id),
+    promptTokens: integer().notNull().default(0),
+    completionTokens: integer().notNull().default(0),
+    totalTokens: integer().notNull().default(0),
 
     ...getDefaultTableFieldsWithDeletedAt(),
 
 })
 
-export const tblGroupChatMessages = mysqlTable('group-chat-messages', {
-    id: int().primaryKey().autoincrement(),
-    groupChatId: int().references(() => tblGroupChat.id),
-    messageId: int().references(() => tblMessageTable.id),
+export const tblGroupChatMessages = pgTable('group-chat-messages', {
+    id: integer().primaryKey().generatedByDefaultAsIdentity(),
+    groupChatId: integer().references(() => tblGroupChat.id),
+    messageId: integer().references(() => tblMessageTable.id),
 
     ...getDefaultTableFieldsWithDeletedAt(),
 })
