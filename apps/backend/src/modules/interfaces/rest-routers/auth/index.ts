@@ -1,10 +1,11 @@
 import { zValidator } from "@hono/zod-validator"
 import { authValidator } from "@repo/shared/validators"
 // import { context } from "@server/index"
-import { EnumCookieKeys } from "@server/lib/enums"
-import { AuthenticationError, createSuccessResponse } from "@server/lib/errors"
-import { createHonoApp } from "@server/lib/hono/hono-factory"
 import { getApiContext } from "@server/lib/context"
+import { EnumCookieKeys } from "@server/lib/enums"
+import { UnauthorizedError, createSuccessResponse } from "@server/lib/errors"
+import { createHonoApp } from "@server/lib/hono/hono-factory"
+import { customZodValidator } from "@server/lib/hono/utils"
 import { tryCatchSync } from "@server/lib/utils"
 import { EventBus } from "@server/modules/application/event"
 import { ENUM_USER_EVENTS } from "@server/modules/application/event/interface/user"
@@ -44,7 +45,7 @@ const authApp = createHonoApp()
             const session = c.var.session
 
             if (!session) {
-                throw new AuthenticationError({ message: 'No session found', })
+                throw new UnauthorizedError({ message: 'No session found', })
             }
 
 
@@ -60,7 +61,8 @@ const authApp = createHonoApp()
             return c.json(createSuccessResponse({}))
         })
     .post('/login',
-        zValidator('json', authValidator.loginEmailAndPasswordFormSchema),
+        // zValidator('json', authValidator.loginEmailAndPasswordFormSchema),
+        customZodValidator('json', authValidator.loginEmailAndPasswordFormSchema),
         async (c) => {
 
 
@@ -92,7 +94,7 @@ const authApp = createHonoApp()
 
             const { data: session, error: err } = tryCatchSync(() => authService.verifyToken(sessionToken))
             if (err) {
-                throw new AuthenticationError({ message: 'Invalid token', })
+                throw new UnauthorizedError({ message: 'Invalid token', })
             }
             return c.json(createSuccessResponse(session))
         })

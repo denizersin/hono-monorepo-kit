@@ -20,7 +20,7 @@ export const authQueryOptions = queryOptions({
 
 
 
-export const useSession = () => {
+export const useRestSession = () => {
     const query = useQuery({
         ...authQueryOptions,
     })

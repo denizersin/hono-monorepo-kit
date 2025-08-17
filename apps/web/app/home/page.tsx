@@ -1,11 +1,11 @@
 "use client"
 
 import { useQuery, useQueryClient } from "@tanstack/react-query"
-import { QUERY_KEYS } from "@web/hooks/queries"
-import { authQueryOptions, useSession } from "@web/hooks/queries/auth"
+import { QUERY_KEYS } from "@web/hooks/rest-queries"
+import { authQueryOptions } from "@web/hooks/rest-queries/auth"
 
 export default function Home() {
-    const { data, isLoading,isFetching,error } = useQuery({
+    const { data, isLoading, isFetching, error } = useQuery({
         ...authQueryOptions,
     })
     console.log('render', isLoading)

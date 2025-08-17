@@ -13,3 +13,10 @@ export const hcWithType = (...args: Parameters<typeof hc>): Client =>
   hc<typeof ROUTES>(...args);
 
 
+
+
+
+
+
+
+

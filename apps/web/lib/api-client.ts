@@ -1,8 +1,38 @@
-import { hcWithType, TErrorResponse } from "@repo/api-client";
+
+import { ROUTES, } from "@repo/backend/exports"
+import { hc } from "hono/client";
+import { NEXT_ENV } from "@web/next-env";
+
+
+const client = hc<typeof ROUTES>("");
+export type Client = typeof client;
+
+
+export const hcWithType = (...args: Parameters<typeof hc>): Client =>
+  hc<typeof ROUTES>(...args);
+
+
+
+
+
+
+
+
+
+
+
 import ky from "ky";
-import { tryCatch } from "@repo/shared/utils";
-import { ClientResponse } from "hono/client";
-const baseUrl = 'http://localhost:3002'
+
+
+
+
+
+
+
+
+
+// Use environment variable for base URL
+const baseUrl = NEXT_ENV._runtime.NEXT_PUBLIC_API_URL;
 const kyapi = ky.extend({
   hooks: {
     beforeRequest: [(request) => {
@@ -28,7 +58,7 @@ export const clientWithType = hcWithType(baseUrl,
         body: method === 'GET' ? null : requestInit?.body,
       })
     },
-    
+
   }
 )
 

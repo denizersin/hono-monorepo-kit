@@ -1,4 +1,4 @@
-import { TSession } from "@repo/shared/types";
+import { TLanguage, TSession, TTheme } from "@repo/shared/types";
 import { TGlobalEvent } from "@server/modules/application/event/interface";
 import { TDB, TDBTransaction } from "@server/modules/infrastructure/database";
 import type { Env } from "hono";
@@ -10,6 +10,8 @@ export interface AppBindings extends Env {
         db: TDB
         session: TSession | null
         companyId: number | null
+        language: TLanguage
+        theme: TTheme
     }
 }
 

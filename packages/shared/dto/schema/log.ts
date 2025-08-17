@@ -1,4 +1,4 @@
-import { boolean, integer, jsonb, pgEnum, pgTable, text, timestamp, varchar } from 'drizzle-orm/pg-core';
+import { integer, jsonb, pgTable, timestamp, varchar } from 'drizzle-orm/pg-core';
 
 export const tblLog = pgTable('log', {
     id: integer().primaryKey().generatedByDefaultAsIdentity(),

@@ -1,6 +1,6 @@
-import { TSession } from "@repo/shared/types"
+import { TJWTSession, TRole, TSession } from "@repo/shared/types"
 import { EnumCookieKeys, EnumHeaderKeys } from "@server/lib/enums"
-import { AuthenticationError, handleAppError } from "@server/lib/errors"
+import { UnauthorizedError } from "@server/lib/errors"
 import { getTokenFromAuthHeader, tryCatchSync } from "@server/lib/utils"
 import { AuthService } from "@server/modules/application/services/auth/Auth"
 import { WhatsappService } from "@server/modules/application/services/whatsapp"
@@ -32,7 +32,7 @@ export const honoAuthMiddleware = createMiddleware<TAuthMiddlewareContextWithVar
     const session = c.var.session
 
     if (!session) {
-        throw new AuthenticationError({ message: 'No session found' })
+        throw new UnauthorizedError({ message: 'No session found' })
     }
 
     c.set('session', session)
@@ -53,12 +53,12 @@ export const honoAdminAuthMiddleware = createMiddleware<TAdminAuthMiddlewareCont
     const session = c.var.session
 
     if (!session) {
-        throw new AuthenticationError({ message: 'No session found' })
+        throw new UnauthorizedError({ message: 'No session found' })
     }
-    
+
 
     if (session.role !== "ADMIN") {
-        throw new AuthenticationError({ message: 'Unauthorized' })
+        throw new UnauthorizedError({ message: 'Unauthorized' })
     }
 
     c.set('session', session)
@@ -70,26 +70,13 @@ export const honoAdminAuthMiddleware = createMiddleware<TAdminAuthMiddlewareCont
 
 
 
-const createSafeSessionForMiddleware = async ({
-    authToken
-}: {
-    authToken: string
-}): Promise<TSession | null> => {
-
-
-    const { data: session, error: err } = tryCatchSync(() => authService.verifyToken(authToken))
-
-    if (err) {
-        return null
-    }
-
-    return session
-}
 
 export const getSafeSessionFromContext = async (c: Context): Promise<TSession | null> => {
 
     const sessionCookiToken = getCookie(c, EnumCookieKeys.SESSION) || ''
     const sessionHeaderToken = getTokenFromAuthHeader(c.req.header(EnumHeaderKeys.AUTHORIZATION) || '') || ''
+
+
 
     if (!sessionCookiToken && !sessionHeaderToken) {
         return null
@@ -102,7 +89,24 @@ export const getSafeSessionFromContext = async (c: Context): Promise<TSession | 
         return null
     }
 
-    return session
+    return getSessionByJwtSession(session)
+}
+
+export const getSessionByJwtSession = async (jwtSession: TJWTSession): Promise<TSession | null> => {
+    const user = await userRepository.getUserByIdStrict(jwtSession.userId)
+    if (!user) {
+        return null
+    }
+    const userWithoutPassword = {
+        ...user,
+        password: undefined
+    }
+
+    return {
+        role: user.role as TRole,
+        companyId: user.companyId,
+        user: userWithoutPassword
+    }
 }
 
 
@@ -116,23 +120,19 @@ export const honoPublicCompanyMiddleware = createMiddleware<{
         companyId: number
     }
 }>(async (c, next) => {
-    try {
-        const session = await getSafeSessionFromContext(c)
+    const session = await getSafeSessionFromContext(c)
 
-        if (session) {
-            c.set('companyId', session.companyId)
-        }
-        const companyId = c.req.header(EnumHeaderKeys.COMPANY_ID)
-        if (companyId && parseInt(companyId) > 0) {
-            c.set('companyId', parseInt(companyId))
-        } else {
-            throw new AuthenticationError({ message: 'No company id provided' })
-        }
-        c.set('publicMiddlewareContext', {})
-        await next()
-    } catch (error) {
-        return handleAppError(c, error)
+    if (session) {
+        c.set('companyId', session.companyId)
     }
+    const companyId = c.req.header(EnumHeaderKeys.COMPANY_ID)
+    if (companyId && parseInt(companyId) > 0) {
+        c.set('companyId', parseInt(companyId))
+    } else {
+        throw new UnauthorizedError({ message: 'No company id provided' })
+    }
+    c.set('publicMiddlewareContext', {})
+    await next()
 })
 
 

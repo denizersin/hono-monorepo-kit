@@ -18,14 +18,16 @@
     "initialize-new-look-up": "tsx ./src/modules/infrastructure/database/scripts/initialize-new-look-up.ts",
     "update-db": "pnpm run db:generate && pnpm run db:migrate",
     "recreate-db": "tsx ./src/modules/infrastructure/database/scripts/re-create-db.ts",
-    "reset-db": "rm -rf ./src/modules/infrastructure/database/migrations && pnpm run recreate-db && pnpm run update-db && pnpm run initialize-db",
+    "reset-db": "pnpm run recreate-db && pnpm run update-db && pnpm run initialize-db && rm -rf ./src/modules/infrastructure/database/migrations",
     "drizzle-studio": "npx drizzle-kit studio"
   },
   "dependencies": {
     "@hono/node-server": "^1.8.2",
     "@hono/node-ws": "^1.1.0",
+    "@hono/trpc-server": "^0.4.0",
     "@hono/zod-validator": "^0.4.3",
     "@repo/shared": "workspace:*",
+    "@trpc/server": "^11.4.4",
     "@types/jsonwebtoken": "^9.0.9",
     "dotenv": "^16.4.7",
     "drizzle-orm": "^0.39.3",
@@ -34,6 +36,7 @@
     "hono-rate-limiter": "0.1.0",
     "jsonwebtoken": "^9.0.2",
     "pg": "^8.16.3",
+    "superjson": "^2.2.2",
     "winston": "^3.17.0",
     "zod": "^3.24.2"
   },

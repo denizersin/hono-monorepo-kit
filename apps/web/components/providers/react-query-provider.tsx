@@ -3,7 +3,7 @@ import { MutationCache, QueryCache, QueryClient, QueryClientProvider } from "@ta
 import { isErrorResponse } from "@web/lib/utils"
 import { toast } from "react-toastify"
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
-import { MUTATION_KEYS, QUERY_KEYS } from "@web/hooks/queries";
+import { MUTATION_KEYS, QUERY_KEYS } from "@web/hooks/rest-queries";
 
 export const queryClient: QueryClient = new QueryClient({
     defaultOptions: {

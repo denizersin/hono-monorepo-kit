@@ -1,7 +1,9 @@
 "use client"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { type TAuthValidator, authValidator } from "@repo/shared/validators"
+import { useMutation } from "@tanstack/react-query"
 import { CustomComboSelect } from "@web/components/custom-ui/custom-combo-select"
+import { useTRPC } from "@web/components/providers/trpc/trpc-provider"
 import { Button } from "@web/components/ui/button"
 import {
     Card,
@@ -12,8 +14,8 @@ import {
 } from "@web/components/ui/card"
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@web/components/ui/form"
 import { Input } from "@web/components/ui/input"
-import { useRegisterMutation, useSession } from "@web/hooks/queries/auth"
-import { useCountriesSelectData } from "@web/hooks/queries/predefıned"
+import { useSession } from "@web/hooks/common"
+import { useSelectDataForCountries } from "@web/hooks/constant-queries"
 import { cn } from "@web/lib/utils"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
@@ -21,8 +23,8 @@ import { OtpModal } from "../_components/otp-modal"
 
 
 
-
 export default function Page() {
+    const trpc = useTRPC()
     const [isOtpModalOpen, setIsOtpModalOpen] = useState(false)
     const form = useForm<TAuthValidator.TRegisterFormSchema>({
         resolver: zodResolver(authValidator.registerFormSchema)
@@ -32,13 +34,14 @@ export default function Page() {
     const {
         selectData: countriesSelectData,
         isLoading: isLoadingCountries,
-    } = useCountriesSelectData()
+    } = useSelectDataForCountries()
 
-    const { mutate: register, isPending } = useRegisterMutation({
+
+    const { mutate: register, isPending } = useMutation(trpc.auth.register.mutationOptions({
         onSuccess: () => {
             setIsOtpModalOpen(true)
         }
-    })
+    }))
 
     const onSubmit = ((data: TAuthValidator.TRegisterFormSchema) => {
         register(data)

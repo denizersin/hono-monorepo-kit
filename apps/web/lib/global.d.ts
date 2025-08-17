@@ -1,9 +1,10 @@
-import { TErrorResponse } from '@repo/api-client'
 import '@tanstack/react-query'
-import { TQueryKey } from '@web/hooks/queries'
+import { TQueryKey } from '@web/hooks/rest-queries'
+import { TErrorResponse } from '@repo/backend/exports'
+import { TTrpcErrorServer } from '@repo/backend/exports'
 
 
-type TCustomResponseError = Error | TErrorResponse
+type TCustomResponseError = Error | TErrorResponse | TTrpcErrorServer
 
 declare module '@tanstack/react-query' {
     interface Register {
@@ -11,7 +12,7 @@ declare module '@tanstack/react-query' {
         mutationMeta: {
             invalidates?: Array<TQueryKey>
             invalidateAndAwait?: Array<TQueryKey>
-            
+
         }
     }
 

@@ -6,11 +6,13 @@ import { useEffect } from "react";
 
 import { SahredEnums } from "@repo/shared/enums";
 import { clientWithType } from "@web/lib/api-client";
-import { userQueryOptions, useUserMeQuery } from "@web/hooks/queries/user";
+import { userQueryOptions, useUserMeQuery } from "@web/hooks/rest-queries/user";
 import { isErrorResponse } from "@web/lib/utils";
 import { useQuery } from "@tanstack/react-query";
-import { useLogoutMutation, useSession } from "@web/hooks/queries/auth";
-import { QUERY_KEYS } from "@web/hooks/queries";
+import { useLogoutMutation } from "@web/hooks/rest-queries/auth";
+import { QUERY_KEYS } from "@web/hooks/rest-queries";
+import { useTRPC } from "@web/components/providers/trpc/trpc-provider";
+import { useSession } from "@web/hooks/common";
 
 // userValidator.userBaseInsertSchema.parse({
 //   email:"asd",
@@ -47,6 +49,15 @@ const ThemeImage = (props: Props) => {
 
 export default function Home() {
   console.log(SahredEnums.MailConfirmationStatus)
+
+  const trpc = useTRPC()
+
+  const query2 = useQuery(trpc.auth.getSession.queryOptions())
+
+  console.log(query2.data, 'query2')
+
+
+
   useEffect(() => {
 
     // const websocket = clientWithType.websocket["panel-events"].$ws()
@@ -134,7 +145,7 @@ export default function Home() {
     enabled: false
   })
 
-  const { session} = useSession()
+  const { session } = useSession()
 
   console.log(session)
 

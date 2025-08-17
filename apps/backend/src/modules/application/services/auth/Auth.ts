@@ -1,8 +1,8 @@
 import { SahredEnums } from "@repo/shared/enums";
-import { TRole, TSession } from "@repo/shared/types";
+import { TJWTSession, TRole, TSession } from "@repo/shared/types";
 import { TAuthValidator } from "@repo/shared/validators";
 import { APP_CONSTANTS } from "@server/lib/constants";
-import { AuthenticationError, ConflictError, CustomError } from "@server/lib/errors";
+import { UnauthorizedError, ConflictError, CustomError } from "@server/lib/errors";
 import { tryCatch } from "@server/lib/utils";
 import { generateAlphanumericCode } from "@server/lib/uuid-code";
 import { IUserRepository } from "@server/modules/domain/repositories/IUserRepository";
@@ -28,7 +28,7 @@ export class AuthService {
 
         const user = await this.userRepository.getUserByEmailAndPassword(userData.email, userData.password)
         if (!user) {
-            throw new AuthenticationError({ message: 'Invalid email or password', toast: true })
+            throw new UnauthorizedError({ message: 'Invalid email or password', toast: true })
         }
 
         console.log(user, 'user2')
@@ -40,7 +40,15 @@ export class AuthService {
             user: userWithoutPassword
         }
 
-        const token = this.generateToken(session)
+        const jwtSession: TJWTSession = {
+            role: user.role as TRole,
+            companyId: user.companyId,
+            userId: user.id,
+            email: user.email,
+            fullName: user.fullName
+        }
+        const token = this.generateToken(jwtSession)
+        
 
         return {
             session: session as TSession,
@@ -108,9 +116,17 @@ export class AuthService {
             user: userWithoutPassword
         }
 
+        const jwtSession: TJWTSession = {
+            role: user.role as TRole,
+            companyId: user.companyId,
+            userId: user.id,
+            email: user.email,
+            fullName: user.fullName
+        }
+
         return {
             session,
-            token: this.generateToken(session)
+            token: this.generateToken(jwtSession)
         }
     }
 
@@ -175,20 +191,20 @@ export class AuthService {
         const verifyCode = await this.verifyCodeRepository.getVerifyCodeByPhoneOrMail(fullPhone)
         console.log(fullPhone, 'fullPhone2', verifyCode)
         if (!verifyCode) {
-            throw new AuthenticationError({ message: 'code not found' })
+            throw new UnauthorizedError({ message: 'code not found' })
         }
         console.log(verifyCode, 'verifyCode')
         if (verifyCode.generatedForPhoneOrMail !== fullPhone && verifyCode.generatedForPhoneOrMail !== code.registerForm.email) {
-            throw new AuthenticationError({ message: 'Invalid code', toast: true })
+            throw new UnauthorizedError({ message: 'Invalid code', toast: true })
         }
         if (verifyCode.expiresAt < new Date()) {
-            throw new AuthenticationError({ message: 'Code expired', toast: true })
+            throw new UnauthorizedError({ message: 'Code expired', toast: true })
         }
         if (!verifyCode.isMobile) {
-            throw new AuthenticationError({ message: 'Code is not mobile', toast: true })
+            throw new UnauthorizedError({ message: 'Code is not mobile', toast: true })
         }
         if (verifyCode.code !== code.code) {
-            throw new AuthenticationError({ message: 'Invalid code', toast: true })
+            throw new UnauthorizedError({ message: 'Invalid code', toast: true })
         }
         // await this.register
         await this.verifyCodeRepository.deleteVerifyCode(verifyCode.id)
@@ -201,7 +217,7 @@ export class AuthService {
         return Math.floor(100000 + Math.random() * 900000)
     }
 
-    generateToken(session: TSession) {
+    generateToken(session: TJWTSession) {
         return JwtService.signToken(session)
     }
 
@@ -211,10 +227,10 @@ export class AuthService {
      */
     verifyToken(token: string) {
         try {
-            const payload = JwtService.verifyToken(token) as TSession
+            const payload = JwtService.verifyToken(token) as TJWTSession
             return payload
         } catch (error) {
-            throw new AuthenticationError({ message: 'Invalid token' })
+            throw new UnauthorizedError({ message: 'Invalid token' })
         }
     }
 

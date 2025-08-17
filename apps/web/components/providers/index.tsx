@@ -5,6 +5,7 @@ import React from "react";
 import { ToastContainer } from 'react-toastify';
 import { AuthProvider } from "./auth-provider";
 import { ReactQueryProvider } from "./react-query-provider";
+import { TRPCReactProvider } from "./trpc/trpc-provider";
 export const Providers = ({ children, session
 
 }: {
@@ -14,11 +15,11 @@ export const Providers = ({ children, session
 }) => {
     return <React.Fragment>
         <ToastContainer />
-        <ReactQueryProvider>
+        <TRPCReactProvider>
             <AuthProvider>
                 {children}
             </AuthProvider>
-        </ReactQueryProvider>
+        </TRPCReactProvider>
     </React.Fragment>
 
 }

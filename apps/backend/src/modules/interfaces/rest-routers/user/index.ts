@@ -3,8 +3,8 @@ import { SahredEnums } from "@repo/shared/enums"
 import { TUserValidator, userValidator } from "@repo/shared/userInsertSchema"
 import { validateMultipleSchemas } from "@repo/shared/utils"
 import { EnumCookieKeys } from "@server/lib/enums"
-import { AuthenticationError, createSuccessResponse } from "@server/lib/errors"
-import honoFactory, { apiContext, createHonoApp } from "@server/lib/hono/hono-factory"
+import { createSuccessResponse, ForbiddenError } from "@server/lib/errors"
+import { apiContext, createHonoApp } from "@server/lib/hono/hono-factory"
 import { wait } from "@server/lib/utils"
 import { UserService } from "@server/modules/application/services/user/UserService"
 import { CreateUserUseCase } from "@server/modules/application/use-cases/user/CreateUserUseCase"
@@ -98,7 +98,7 @@ const userApp = createHonoApp()
                 const result = await createUserUseCase.executeAsUser(userData as TUserValidator.TUserCreateSchema)
                 return c.json(createSuccessResponse(result))
             } else {
-                throw new AuthenticationError({ message: 'you are not authorized to create a user', toast: true })
+                throw new ForbiddenError({ message: 'you are not authorized to create a user', toast: true })
             }
 
 

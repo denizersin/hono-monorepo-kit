@@ -1,11 +1,10 @@
 import { relations } from 'drizzle-orm';
-import { boolean, integer, pgEnum, pgTable, text, varchar } from 'drizzle-orm/pg-core';
+import { boolean, integer, pgTable, text, varchar } from 'drizzle-orm/pg-core';
 import { tblCharacter } from './character';
+import { tblCountry } from './data';
 import { tblAiModel } from './model';
 import { getDefaultTableFields, getDefaultTableFieldsWithDeletedAt } from './schemaHelpers';
 import { tblUser } from './user';
-import { SahredEnums } from '#/enums/index';
-import { tblCountry } from './data';
 
 export const tblPrivateChat = pgTable('private-chat', {
 

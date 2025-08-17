@@ -1,6 +1,5 @@
-import { AuthenticationError, createSuccessResponse, CustomError } from "@server/lib/errors"
-import honoFactory, { createHonoApp } from "@server/lib/hono/hono-factory"
-import { SahredEnums } from "@repo/shared/enums"
+import { createSuccessResponse } from "@server/lib/errors"
+import { createHonoApp } from "@server/lib/hono/hono-factory"
 // import {  } from "@repo/shared/dto/validators/auth"
 
 

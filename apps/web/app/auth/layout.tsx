@@ -1,9 +1,9 @@
 "use client"
 import { SahredEnums } from '@repo/shared/enums'
-import { useSession } from '@web/hooks/queries/auth'
 import type React from 'react'
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { useSession } from '@web/hooks/common'
 
 type Props = {
     children: React.ReactNode
@@ -11,7 +11,7 @@ type Props = {
 
 const Layout = ({ children }: Props) => {
 
-    const { isAuthenticated, isLoading, isError, session } = useSession()
+    const { isAuthenticated, isLoading, session } = useSession()
 
     const router = useRouter()
 

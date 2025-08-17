@@ -2,7 +2,8 @@ import type { TAuthValidator } from "@repo/shared/validators"
 import { Button } from "@web/components/ui/button"
 import { Dialog, DialogTitle, DialogContent, DialogHeader, DialogDescription } from "@web/components/ui/dialog"
 import { Input } from "@web/components/ui/input"
-import { useVerifyCodeMutation } from "@web/hooks/queries/auth"
+import { useTRPC } from "@web/components/providers/trpc/trpc-provider"
+import { useMutation } from "@tanstack/react-query"
 import { useState } from "react"
 
 type OtpModalProps = {
@@ -12,10 +13,10 @@ type OtpModalProps = {
 }
 
 export const OtpModal = ({ isOpen, setIsOpen, registerFormData }: OtpModalProps) => {
-
+    const trpc = useTRPC()
     const [otp, setOtp] = useState('')
 
-    const { mutate: verifyCode, isPending,error,isError } = useVerifyCodeMutation({
+    const { mutate: verifyCode, isPending, error, isError } = useMutation(trpc.auth.verifyCode.mutationOptions({
         onSuccess: () => {
             setIsOpen(false)
         },
@@ -23,10 +24,8 @@ export const OtpModal = ({ isOpen, setIsOpen, registerFormData }: OtpModalProps)
             console.log('onError')
             setOtp('')
         }
-    })
+    }))
 
-    console.log('error', error)
-    console.log('isError', isError)
 
 
     function handleVerifyCode() {

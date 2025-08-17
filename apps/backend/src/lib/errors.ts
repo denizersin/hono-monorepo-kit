@@ -1,14 +1,19 @@
 import { Context } from 'hono'
 import { SahredEnums } from '@repo/shared/enums'
 import { TErrorCode } from '@repo/shared/types'
+import { TRPC_ERROR_CODE_KEY, TRPCError } from '@trpc/server'
+import logger from './logger'
+import { ZodError, ZodIssue } from 'zod'
 
 
 type AppErrorParams = {
-    message: string
+    message?: string
     code: string
     errorCode: TErrorCode
     statusCode?: number
-    details?: any
+    details?: {
+        zodErrors?: ZodIssue[]
+    }
     toast?: boolean
 }
 
@@ -18,6 +23,8 @@ export class AppError extends Error {
     public statusCode: number
     public details?: any
     public toast?: boolean
+    public name: string
+    public message: string
 
     constructor({
         message,
@@ -29,7 +36,7 @@ export class AppError extends Error {
     }: AppErrorParams) {
         super(message)
         this.name = 'AppError'
-        this.message = message
+        this.message = message ?? 'An unknown error occurred'
         this.code = code
         this.errorCode = errorCode
         this.statusCode = statusCode
@@ -38,101 +45,99 @@ export class AppError extends Error {
     }
 }
 
-export class ValidationError extends AppError {
-    constructor({ message, details, toast }: { message: string; details?: any; toast?: boolean }) {
+export class BadRequestError extends AppError {
+    constructor(data?: Partial<AppErrorParams>) {
         super({
-            message,
-            code: 'VALIDATION_ERROR',
-            errorCode: 'VALIDATION_ERROR',
+            message: data?.message ?? 'Bad Request',
+            code: SahredEnums.STATUS_CODES.BAD_REQUEST,
+            errorCode: SahredEnums.STATUS_CODES.BAD_REQUEST,
             statusCode: 400,
-            details,
-            toast
+            details: data?.details,
+            toast: data?.toast
         })
-        this.name = 'ValidationError'
+        this.name = 'BadRequestError'
     }
 }
 
-export class AuthenticationError extends AppError {
-    constructor({ message = 'Authentication failed', toast }: { message?: string; toast?: boolean } = {}) {
+export class UnauthorizedError extends AppError {
+    constructor(data?: Partial<AppErrorParams>) {
         super({
-            message,
-            code: 'AUTHENTICATION_ERROR',
-            errorCode: 'AUTHENTICATION_ERROR',
+            message: data?.message ?? 'You are not authorized to access this resource',
+            code: SahredEnums.STATUS_CODES.UNAUTHORIZED,
+            errorCode: SahredEnums.STATUS_CODES.UNAUTHORIZED,
             statusCode: 401,
-            toast
+            toast: data?.toast,
+            details: data?.details
         })
-        this.name = 'AuthenticationError'
+        this.name = 'UnauthorizedError'
     }
 }
 
-export class AuthorizationError extends AppError {
-    constructor({ message = 'Not authorized', toast }: { message?: string; toast?: boolean } = {}) {
+export class ForbiddenError extends AppError {
+    constructor(data?: Partial<AppErrorParams>) {
         super({
-            message,
-            code: 'AUTHORIZATION_ERROR',
-            errorCode: 'AUTHORIZATION_ERROR',
+            message: data?.message ?? 'Forbidden',
+            code: SahredEnums.STATUS_CODES.FORBIDDEN,
+            errorCode: SahredEnums.STATUS_CODES.FORBIDDEN,
             statusCode: 403,
-            toast
+            toast: data?.toast,
+            details: data?.details
         })
-        this.name = 'AuthorizationError'
+        this.name = 'ForbiddenError'
     }
 }
 
 export class NotFoundError extends AppError {
-    constructor({ message = 'Resource not found', toast }: { message?: string; toast?: boolean } = {}) {
+    constructor(data?: Partial<AppErrorParams>) {
         super({
-            message,
-            code: 'NOT_FOUND_ERROR',
-            errorCode: 'NOT_FOUND_ERROR',
+            message: data?.message ?? 'Not Found',
+            code: SahredEnums.STATUS_CODES.NOT_FOUND,
+            errorCode: SahredEnums.STATUS_CODES.NOT_FOUND,
             statusCode: 404,
-            toast
+            toast: data?.toast,
+            details: data?.details
         })
         this.name = 'NotFoundError'
     }
 }
 
 export class ConflictError extends AppError {
-    constructor({ message, details, toast }: { message: string; details?: any; toast?: boolean }) {
+    constructor(data?: Partial<AppErrorParams>) {
         super({
-            message,
-            code: 'CONFLICT_ERROR',
-            errorCode: 'CONFLICT_ERROR',
+            message: data?.message ?? 'Conflict',
+            code: SahredEnums.STATUS_CODES.CONFLICT,
+            errorCode: SahredEnums.STATUS_CODES.CONFLICT,
             statusCode: 409,
-            details,
-            toast
+            toast: data?.toast,
+            details: data?.details
         })
         this.name = 'ConflictError'
     }
 }
 
 export class InternalServerError extends AppError {
-    constructor({ message = 'Internal server error', toast }: { message?: string; toast?: boolean } = {}) {
+    constructor(data?: Partial<AppErrorParams>) {
         super({
-            message,
-            code: 'INTERNAL_SERVER_ERROR',
-            errorCode: 'INTERNAL_SERVER_ERROR',
+            message: data?.message ?? 'Internal Server Error',
+            code: SahredEnums.STATUS_CODES.INTERNAL_SERVER_ERROR,
+            errorCode: SahredEnums.STATUS_CODES.INTERNAL_SERVER_ERROR,
             statusCode: 500,
-            toast
+            toast: data?.toast,
+            details: data?.details
         })
         this.name = 'InternalServerError'
     }
 }
 
 export class CustomError extends AppError {
-    constructor({ message, errorCode='BAD_REQUEST', statusCode = SahredEnums.STATUS_CODES.BAD_REQUEST, details, toast }: { 
-        message: string; 
-        errorCode?: TErrorCode; 
-        statusCode?: number; 
-        details?: any; 
-        toast?: boolean 
-    }) {
+    constructor(data?: Partial<AppErrorParams>) {
         super({
-            message,
-            code: errorCode,
-            errorCode,
-            statusCode,
-            details,
-            toast
+            message: data?.message ?? 'An unknown error occurred'   ,
+            code: data?.code ?? SahredEnums.STATUS_CODES.INTERNAL_SERVER_ERROR,
+            errorCode: data?.errorCode ?? SahredEnums.STATUS_CODES.INTERNAL_SERVER_ERROR,
+            statusCode: data?.statusCode ?? 500,
+            details: data?.details,
+            toast: data?.toast
         })
         this.name = 'CustomError'
     }
@@ -143,7 +148,9 @@ export type TErrorResponse = {
     errors: Array<{
         message: string
         code: string
-        details?: any
+        details?: {
+            zodErrors?: ZodIssue[]
+        }
         errorCode: TErrorCode
         toast?: boolean
     }>
@@ -158,13 +165,15 @@ export type TApiResponse<T = any> = TErrorResponse | TSuccessResponse<T>
 
 export const createErrorResponse = (errors: AppError[]): TErrorResponse => ({
     success: false,
-    errors: errors.map(error => ({
-        message: error.message,
-        code: error.code,
-        details: error.details,
-        errorCode: error.errorCode,
-        toast: error.toast
-    }))
+    errors: errors.map(error => createError(error))
+})
+
+export const createError = (error: AppError): TErrorResponse['errors'][number] => ({
+    message: error.message ?? 'An unknown error occurred',
+    code: error.code,
+    details: error.details,
+    errorCode: error.errorCode,
+    toast: error.toast
 })
 
 export const createSuccessResponse = <T>(data: T): TSuccessResponse<T> => ({
@@ -173,17 +182,90 @@ export const createSuccessResponse = <T>(data: T): TSuccessResponse<T> => ({
 })
 
 export const handleAppError = (c: Context, error: unknown) => {
+
+
     if (error instanceof AppError) {
         return c.json(createErrorResponse([error]), error.statusCode as 400 | 401 | 403 | 404 | 409 | 500)
     }
 
+
+    if (error instanceof ZodError) {
+        return c.json(createErrorResponse([
+            new BadRequestError({
+                message: error.message + ' unique error code:', details: {
+                    zodErrors: error.errors
+                },
+                toast: true
+            })
+        ]), 400)
+    }
+
+
+    //handle unknown errors. return an uniqe code for the error then look for the error in the logs
+
+    let errorCode = +Math.floor(Math.random() * 1000000)
+    logger.error('unknown error errorCode:' + errorCode, error)
+
+
+
+
     if (error instanceof Error) {
         return c.json(createErrorResponse([
-            new InternalServerError({ message: error.message })
+            new InternalServerError({ message: error.message + ' unique error code:' + errorCode })
         ]), 500)
     }
 
+
     return c.json(createErrorResponse([
-        new InternalServerError({ message: 'An unknown error occurred' })
+        new InternalServerError({ message: 'An unknown error occurred' + ' unique error code:' + errorCode })
     ]), 500)
-} 
+}
+
+
+
+export const createTRPCError = ({ code, data }: {
+    code: TRPC_ERROR_CODE_KEY,
+    data?: Partial<AppError>
+}) => {
+
+    let error: AppError
+
+    if (code === 'UNAUTHORIZED') {
+        error = new UnauthorizedError(data)
+    }
+    else if (code === 'FORBIDDEN') {
+        error = new ForbiddenError(data)
+    }
+    else if (code === 'NOT_FOUND') {
+        error = new NotFoundError(data)
+    }
+    else if (code === 'INTERNAL_SERVER_ERROR') {
+        error = new InternalServerError(data)
+    }
+
+    else if (code === 'BAD_REQUEST') {
+        error = new BadRequestError(data)
+    }
+    else if (code === 'CONFLICT') {
+        error = new ConflictError(data)
+    }
+
+    else {
+        error = new InternalServerError({ message: data?.message, toast: data?.toast })
+    }
+
+
+
+
+
+    //trpc error is alreadyn an insatnce of error so the cause should'nt be an instance of error
+    let errorAsObject = Object.assign({}, error)
+
+    return new TRPCError({
+        message: error.message ?? 'An unknown error occurred',
+        code,
+        cause: {
+            customData: errorAsObject
+        }
+    })
+}

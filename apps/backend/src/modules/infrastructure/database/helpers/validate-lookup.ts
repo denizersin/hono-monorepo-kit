@@ -71,6 +71,10 @@ export class LookUpEnumsValidation {
         for (const record of Object.values(LookUpRecords)) {
             const { enumString, enumId, dbTable } = record
             if (table && record.dbName !== table) continue
+            console.log(table,'table')
+            console.log(record.dbName,'record.dbName')
+            console.log(Object.values(enumString).map(name => ({ name, id: enumId[name as keyof typeof enumId] })))
+
             //@ts-ignore
             await db.insert(dbTable).values(
                 Object.values(enumString).map(name => ({ name, id: enumId[name as keyof typeof enumId] }))

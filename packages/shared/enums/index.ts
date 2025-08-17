@@ -47,21 +47,49 @@ const EnumTheme: Record<TTheme, TTheme> = {
 } as const;
 
 
-const STATUS_CODES = {
-    NOT_FOUND_ERROR: 404,
-    CONFLICT_ERROR: 409,
-    VALIDATION_ERROR: 400,
-    AUTHENTICATION_ERROR: 401,
-    AUTHORIZATION_ERROR: 403,
-    INTERNAL_SERVER_ERROR: 500,
-    UNAUTHORIZED: 401,
-    FORBIDDEN: 403,
-    NOT_FOUND: 404,
-    CONFLICT: 409,
-    BAD_REQUEST: 400,
-    CUSTOM_ERROR1: 400,
-
+const STATUS_CODE_IDS = {
+    BAD_REQUEST: 400, // The server cannot or will not process the request due to something that is perceived to be a client error.
+    UNAUTHORIZED: 401, // The client request has not been completed because it lacks valid authentication credentials for the requested resource.
+    PAYMENT_REQUIRED: 402, // The client request requires payment to access the requested resource.
+    FORBIDDEN: 403, // The server was unauthorized to access a required data source, such as a REST API.
+    NOT_FOUND: 404, // The server cannot find the requested resource.
+    METHOD_NOT_SUPPORTED: 405, // The server knows the request method, but the target resource doesn't support this method.
+    TIMEOUT: 408, // The server would like to shut down this unused connection.
+    CONFLICT: 409, // The server request resource conflict with the current state of the target resource.
+    PRECONDITION_FAILED: 412, // Access to the target resource has been denied.
+    PAYLOAD_TOO_LARGE: 413, // Request entity is larger than limits defined by server.
+    UNSUPPORTED_MEDIA_TYPE: 415, // The server refuses to accept the request because the payload format is in an unsupported format.
+    UNPROCESSABLE_CONTENT: 422, // The server understands the request method, and the request entity is correct, but the server was unable to process it.
+    TOO_MANY_REQUESTS: 429, // The rate limit has been exceeded or too many requests are being sent to the server.
+    CLIENT_CLOSED_REQUEST: 499, // Access to the resource has been denied.
+    INTERNAL_SERVER_ERROR: 500, // An unspecified error occurred.
+    NOT_IMPLEMENTED: 501, // The server does not support the functionality required to fulfill the request.
+    BAD_GATEWAY: 502, // The server received an invalid response from the upstream server.
+    SERVICE_UNAVAILABLE: 503, // The server is not ready to handle the request.
+    GATEWAY_TIMEOUT: 504, // The server did not get a response in time from the upstream server that it needed in order to complete the request.
 } as const;
+
+const STATUS_CODES = {
+    BAD_REQUEST: 'BAD_REQUEST',
+    UNAUTHORIZED: 'UNAUTHORIZED',
+    PAYMENT_REQUIRED: 'PAYMENT_REQUIRED',
+    FORBIDDEN: 'FORBIDDEN',
+    NOT_FOUND: 'NOT_FOUND',
+    METHOD_NOT_SUPPORTED: 'METHOD_NOT_SUPPORTED',
+    TIMEOUT: 'TIMEOUT',
+    CONFLICT: 'CONFLICT',
+    PRECONDITION_FAILED: 'PRECONDITION_FAILED',
+    PAYLOAD_TOO_LARGE: 'PAYLOAD_TOO_LARGE',
+    UNSUPPORTED_MEDIA_TYPE: 'UNSUPPORTED_MEDIA_TYPE',
+    UNPROCESSABLE_CONTENT: 'UNPROCESSABLE_CONTENT',
+    TOO_MANY_REQUESTS: 'TOO_MANY_REQUESTS',
+    CLIENT_CLOSED_REQUEST: 'CLIENT_CLOSED_REQUEST',
+    INTERNAL_SERVER_ERROR: 'INTERNAL_SERVER_ERROR',
+    NOT_IMPLEMENTED: 'NOT_IMPLEMENTED',
+    BAD_GATEWAY: 'BAD_GATEWAY',
+    SERVICE_UNAVAILABLE: 'SERVICE_UNAVAILABLE',
+    GATEWAY_TIMEOUT: 'GATEWAY_TIMEOUT',
+} as const; 
 
 const CompanyId = {
     default: 1
@@ -106,6 +134,7 @@ export const SahredEnums = {
     MailConfirmationStatus: EnumMailConfirmationStatus,
     MailConfirmationStatusId: EnumMailConfirmationStatusId,
     STATUS_CODES: STATUS_CODES,
+    STATUS_CODE_IDS: STATUS_CODE_IDS,
     CompanyId: CompanyId,
     ChatType: ChatType,
     ChatTypeId: ChatTypeId,

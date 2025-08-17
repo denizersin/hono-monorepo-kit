@@ -1,6 +1,8 @@
 "use client"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { type TAuthValidator, authValidator } from "@repo/shared/validators"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { useTRPC } from "@web/components/providers/trpc/trpc-provider"
 import { Button } from "@web/components/ui/button"
 import {
   Card,
@@ -11,7 +13,7 @@ import {
 } from "@web/components/ui/card"
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@web/components/ui/form"
 import { Input } from "@web/components/ui/input"
-import { useLoginMutation, useSession } from "@web/hooks/queries/auth"
+import { useSession } from "@web/hooks/common"
 import { cn } from "@web/lib/utils"
 import { useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
@@ -25,7 +27,20 @@ export default function Page() {
     resolver: zodResolver(authValidator.loginEmailAndPasswordFormSchema)
   })
 
-  const { mutate: login, isPending } = useLoginMutation()
+
+  const trpc = useTRPC()
+
+
+  const queryClient = useQueryClient()
+
+  const { mutate: login, isPending } = useMutation(trpc.auth.login.mutationOptions({
+    onSuccess: () => {
+      queryClient.invalidateQueries(trpc.auth.getSession.queryFilter())
+    }
+  }))
+
+
+
 
   const onSubmit = ((data: TAuthValidator.TLoginEmailAndPasswordFormSchema) => {
     login(data)

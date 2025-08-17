@@ -1,6 +1,3 @@
-import { validator } from "hono/validator";
-import { ZodSchema } from "zod";
-import { handleAppError } from "./errors";
 
 // Types for the result object with discriminated union
 type Success<T> = {
@@ -36,17 +33,8 @@ export const tryCatchSync = <T, E = Error>(fn: () => T): Result<T, E> => {
     }
 }
 
-type TValidationTargetByMethod = "json" | "form" | "query" | "param" | "header" | "cookie"
-export const validateWithZod = (method:TValidationTargetByMethod, schema: ZodSchema) => {
-    return validator(method, (value, c)=>{
-        const result = schema.safeParse(value)
-        if(result.success){
-            return result.data
-        }else{
-            handleAppError(c, result.error)
-        }
-    }) 
-}
+
+
 
 
 export const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))

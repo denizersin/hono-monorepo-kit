@@ -1,16 +1,16 @@
 export type { TErrorResponse } from "@server/lib/errors";
-import { ENUM_ALL_EVENTS } from "@server/modules/application/event/interface";
-import { AppType } from "../index";
-import { routes } from '../index'
-import { hc, InferRequestType, InferResponseType } from 'hono/client'
+export type { AppRouter, RouterInputs, RouterOutputs } from '@server/trpc/routers';
+export type { TTrpcErrorServer } from '@server/trpc/init';
+export { test };
+export type { AppType };
+import { hc } from 'hono/client';
+import { AppType, routes } from "../index";
 
-const test={
+const test = {
   name: 'test',
   age: 10,
-  
+
 }
-export type { AppType }
-export { test }
 
 
 export const ROUTES = routes
@@ -24,5 +24,3 @@ export const hcWithType = (...args: Parameters<typeof hc>): Client => hc<typeof 
 
 
 
-//request response types
-type TGetSessionResponse = InferResponseType<typeof client.constants.countries.$get>['data']

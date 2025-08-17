@@ -1,6 +1,6 @@
 import { TSession } from "@repo/shared/types"
-import { useSession } from "@web/hooks/queries/auth"
-import { usePathname, useRouter } from "next/navigation"
+import { useQuery } from "@tanstack/react-query"
+import { useTRPC } from "./trpc/trpc-provider"
 
 
 
@@ -12,11 +12,11 @@ type TAuthContext = {
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
-    const pathname = usePathname()
+    const trpc = useTRPC()
+    const { data, isLoading, isError,error } = useQuery(trpc.auth.getSession.queryOptions())
 
-    const { isAuthenticated, isLoading, isError } = useSession()
+    console.log(data, 'data')
 
-    const router = useRouter()
 
     // useEffect(() => {
     //     if (isLoading||isAuthRoute) return;
