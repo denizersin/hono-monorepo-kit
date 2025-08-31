@@ -17,6 +17,10 @@ import webHookApp from './modules/interfaces/rest-routers/web-hook'
 import { createWebSocketRoute } from './modules/interfaces/rest-routers/websocket/websocket'
 import { createTRPCContext } from './trpc/init'
 import { appRouter } from './trpc/routers'
+process.env.TZ = 'UTC';
+
+
+
 
 
 const port = ENV.PORT || 3002

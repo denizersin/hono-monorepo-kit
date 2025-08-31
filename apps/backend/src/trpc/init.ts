@@ -1,3 +1,4 @@
+import { SahredEnums } from "@repo/shared/enums";
 import { TRole } from "@repo/shared/types";
 import { createTRPCError, TErrorResponse, UnauthorizedError } from "@server/lib/errors";
 import { AppBindings } from "@server/lib/hono/types";
@@ -25,6 +26,7 @@ const t = initTRPC.context<TRPCContext>().create({
     transformer: superjson,
     errorFormatter(opts) {
         const { shape, error } = opts;
+        console.log('error', error)
         return {
             ...shape,
             data: {
@@ -74,6 +76,57 @@ export const protectedProcedure = t.procedure.use(async (opts) => {
         }
     })
 })
+
+
+export const adminProcedure = protectedProcedure.use(async (opts) => {
+    if (opts.ctx.session.role !== SahredEnums.Role.ADMIN) {
+        throw new TRPCError({
+            code: 'UNAUTHORIZED',
+            message: 'Unauthorized'
+        })
+    }
+    return opts.next({
+        ctx: {
+            ...opts.ctx,
+            session: opts.ctx.session
+        }
+    })
+})
+
+
+export const ownerProcedure = protectedProcedure.use(async (opts) => {
+    if (opts.ctx.session.role !== SahredEnums.Role.OWNER) {
+        throw new TRPCError({
+            code: 'UNAUTHORIZED',
+            message: 'Unauthorized'
+        })
+    }
+    return opts.next({
+        ctx: {
+            ...opts.ctx,
+            session: opts.ctx.session
+        }
+    })
+})
+
+
+
+
+
+export const roleMiddleware = (requiredRoles: TRole[] | TRole) =>
+    t.middleware(({ ctx, next }) => {
+        if (!ctx.session) {
+            throw new Error('Not authenticated');
+        }
+        if (Array.isArray(requiredRoles) && !requiredRoles.includes(ctx.session.role)) {
+            throw new Error('Unauthorized');
+        }
+        if (typeof requiredRoles === 'string' && ctx.session.role !== requiredRoles) {
+            throw new Error('Unauthorized');
+        }
+        return next();
+    });
+
 
 
 

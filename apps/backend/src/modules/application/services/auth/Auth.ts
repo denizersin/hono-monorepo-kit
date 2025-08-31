@@ -48,7 +48,7 @@ export class AuthService {
             fullName: user.fullName
         }
         const token = this.generateToken(jwtSession)
-        
+
 
         return {
             session: session as TSession,
@@ -235,6 +235,28 @@ export class AuthService {
     }
 
     async resendVerificationCode(registerForm: TAuthValidator.TRegisterFormSchema) {
+        console.log(registerForm, 'registerForm')
+        const canResend = await this.canResendVerificationCode(registerForm)
+        if (!canResend) {
+            throw new CustomError({ message: 'You can only resend the code after 1 minute' })
+        }
+        await this.sendVerificationCode(registerForm)
+        return true
+    }
+
+    async canResendVerificationCode(registerForm: TAuthValidator.TRegisterFormSchema) {
+        const verifyCode = await this.verifyCodeRepository.getVerifyCodeByPhoneOrMail(registerForm.phoneNumber)
+        console.log(verifyCode, 'verifyCode')
+        if (verifyCode && verifyCode.expiresAt < new Date()) {
+            console.log(new Date(), 'new Date()')
+            console.log(verifyCode.expiresAt, 'verifyCode.expiresAt')
+            return false
+        }
+        return true
+    }
+
+
+    async sendVerificationCode(registerForm: TAuthValidator.TRegisterFormSchema) {
         const fullPhone = await this.getFullPhoneWithoutPlus(registerForm.phoneCodeId, registerForm.phoneNumber)
         await this.verifyCodeRepository.deleteVerifyCodeByPhoneOrMail(fullPhone)
         const verificationCode = this.generatePhoneVerificationCode()

@@ -3,10 +3,12 @@ import { inferRouterOutputs } from "@trpc/server";
 import { createTRPCRouter } from "../init";
 import { authRouter } from "./auth";
 import { constantsRouter } from "./constants";
+import { characterRouter } from "./character";
 
 export const appRouter = createTRPCRouter({
     auth: authRouter,   
     constants: constantsRouter,
+    character: characterRouter,
 })
 
 

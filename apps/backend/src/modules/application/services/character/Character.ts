@@ -63,11 +63,11 @@ export class CharacterService {
         await this.characterRepository.deleteCharacterPersona(id);
     }
 
-    async createCharacterWithRelations(data: TCharacterValidator.TCreateCharacter) {
+    async createCharacterWithRelations(data: TCharacterValidator.TCreateCharacterWithRelations) {
         return this.characterRepository.createCharacterWithRelations(data);
     }
 
-    async updateCharacterWithRelations(data: TCharacterValidator.TUpdateCharacter) {
+    async updateCharacterWithRelations(data: TCharacterValidator.TUpdateCharacterWithRelations  ) {
         await this.characterRepository.updateCharacterWithRelations(data);
     }
 

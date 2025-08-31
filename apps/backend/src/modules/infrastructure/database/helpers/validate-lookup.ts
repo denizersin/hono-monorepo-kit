@@ -70,7 +70,11 @@ export class LookUpEnumsValidation {
     static async initializeAllLookUp(table?: TDbTableName) {
         for (const record of Object.values(LookUpRecords)) {
             const { enumString, enumId, dbTable } = record
+
+            //if table is not provided, then insert all records
             if (table && record.dbName !== table) continue
+
+            
             console.log(table,'table')
             console.log(record.dbName,'record.dbName')
             console.log(Object.values(enumString).map(name => ({ name, id: enumId[name as keyof typeof enumId] })))

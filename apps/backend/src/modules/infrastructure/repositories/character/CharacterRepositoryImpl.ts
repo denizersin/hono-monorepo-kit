@@ -13,7 +13,7 @@ import { eq } from "drizzle-orm";
 import db from "../../database";
 
 export class CharacterRepositoryImpl {
-    async getCharacterById(id: number): Promise<TSchemaCharacter.TCharacterWithRelations | undefined> {
+    async getCharacterById(id: number): Promise<TSchemaCharacter.TCharacterRepositoryTypes.TCharacterWithRelations | undefined> {
         const character = await db.query.tblCharacter.findFirst({
             where: eq(tblCharacter.id, id),
             with: {
@@ -38,7 +38,7 @@ export class CharacterRepositoryImpl {
         return character
     }
 
-    async getAllCharacters(): Promise<TSchemaCharacter.TCharacterWithRelations[]> {
+    async getAllCharacters(): Promise<TSchemaCharacter.TCharacterRepositoryTypes.TCharacterWithRelations[]> {
         const characters = await db.query.tblCharacter.findMany({
             with: {
                 personas: {
@@ -128,7 +128,7 @@ export class CharacterRepositoryImpl {
      * according to `TSchemaCharacter.TCreateCharacter` definition.
      * Returns the id of the newly-created character so that callers can work with it later on.
      */
-    async createCharacterWithRelations({ characterData, personaIds, instructions, images }: TSchemaCharacter.TCreateCharacter): Promise<number> {
+    async createCharacterWithRelations({ characterData, personaIds, instructions, images }: TSchemaCharacter.TCharacterRepositoryTypes.TCreateCharacterWithRelations): Promise<number> {
         // 1. create main character record
         const [newCharacter] = await db
             .insert(tblCharacter)
@@ -176,7 +176,7 @@ export class CharacterRepositoryImpl {
     /**
      * Update an existing character together with its persona connections according to `TUpdateCharacter`.
      */
-    async updateCharacterWithRelations({ id, data }: TSchemaCharacter.TUpdateCharacter): Promise<void> {
+    async updateCharacterWithRelations({ id, data }: TSchemaCharacter.TCharacterRepositoryTypes.TUpdateCharacterWithRelations): Promise<void> {
         const { characterData, personaIds } = data;
 
         // 1. update character base data
@@ -199,7 +199,7 @@ export class CharacterRepositoryImpl {
     /**
      * Create a new persona with its translations.
      */
-    async createPersonaWithTranslation({ personaData, translations }: TSchemaCharacter.TCreatePersonaWithTranslation): Promise<number> {
+    async createPersonaWithTranslation({ personaData, translations }: TSchemaCharacter.TCharacterRepositoryTypes.TCreatePersonaWithTranslation): Promise<number> {
         const [newPersona] = await db.insert(tblPersona).values(personaData).returning();
 
         if (!newPersona) {
@@ -219,7 +219,7 @@ export class CharacterRepositoryImpl {
     /**
      * Update persona data together with its translations.
      */
-    async updatePersonaWithTranslation({ id, data }: TSchemaCharacter.TUpdatePersonaWithTranslation): Promise<void> {
+    async updatePersonaWithTranslation({ id, data }: TSchemaCharacter.TCharacterRepositoryTypes.TUpdatePersonaWithTranslation): Promise<void> {
         const { personaData, translations } = data;
 
         // 1. update persona base row
@@ -239,7 +239,7 @@ export class CharacterRepositoryImpl {
     /**
      * Create a new character instruction with translations.
      */
-    async createCharacterInstructionWithTranslations({ characterInstructionData, translations }: TSchemaCharacter.TCreateCharacterInstruction): Promise<number> {
+    async createCharacterInstructionWithTranslations({ characterInstructionData, translations }: TSchemaCharacter.TCharacterRepositoryTypes.TCreateCharacterInstruction): Promise<number> {
         const [newInstruction] = await db
             .insert(tblCharacterInstruction)
             .values(characterInstructionData)
@@ -262,7 +262,7 @@ export class CharacterRepositoryImpl {
     /**
      * Update a character instruction together with its translations.
      */
-    async updateCharacterInstructionWithTranslations({ id, data }: TSchemaCharacter.TUpdateCharacterInstruction): Promise<void> {
+    async updateCharacterInstructionWithTranslations({ id, data }: TSchemaCharacter.TCharacterRepositoryTypes.TUpdateCharacterInstruction): Promise<void> {
         const { characterInstructionData, translations } = data;
 
         if (characterInstructionData && Object.keys(characterInstructionData).length > 0) {
@@ -280,7 +280,7 @@ export class CharacterRepositoryImpl {
     /**
      * Update a character image according to `TUpdateCharacterImage` definition.
      */
-    async updateCharacterImageWithData({ id, data }: TSchemaCharacter.TUpdateCharacterImage): Promise<void> {
+    async updateCharacterImageWithData({ id, data }: TSchemaCharacter.TCharacterRepositoryTypes.TUpdateCharacterImage): Promise<void> {
         await db.update(tblCharacterImage).set(data.characterImageData).where(eq(tblCharacterImage.id, id));
     }
 }

@@ -182,7 +182,9 @@ export const createSuccessResponse = <T>(data: T): TSuccessResponse<T> => ({
 })
 
 export const handleAppError = (c: Context, error: unknown) => {
+    
 
+    console.log('error', error)
 
     if (error instanceof AppError) {
         return c.json(createErrorResponse([error]), error.statusCode as 400 | 401 | 403 | 404 | 409 | 500)

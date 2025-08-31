@@ -43,6 +43,12 @@ export const authRouter = createTRPCRouter({
         setCookie(ctx.c, EnumCookieKeys.SESSION, result.token)
         return result
     }),
+
+    resendVerificationCode: publicProcedure.input(authValidator.registerFormSchema).mutation(async ({ ctx, input }) => {
+        const result = await authService.resendVerificationCode(input)
+        return result
+    }),
+
     getSessionWithToken: publicProcedure.input(z.object({
         token: z.string()
     })).query(async ({ ctx, input }) => {
