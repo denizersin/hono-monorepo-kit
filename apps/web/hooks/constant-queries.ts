@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query"
-import { useTRPC } from "@web/components/providers/trpc/trpc-provider"
+import { useTRPC } from "@/components/providers/trpc/trpc-provider"
 
 export const useGetCountries = () => {
     const trpc = useTRPC()
@@ -9,7 +9,7 @@ export const useGetCountries = () => {
 export const useSelectDataForCountries = () => {
     const query = useGetCountries()
     const data = query.data?.map((country) => ({
-        label: country.name,
+        label: country.phoneCode + " - " + country.name,
         value: country.id.toString()
     })) || []
     return { selectData: data, isLoading: query.isLoading, isError: query.isError }

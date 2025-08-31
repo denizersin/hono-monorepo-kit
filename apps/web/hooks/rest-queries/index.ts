@@ -1,5 +1,5 @@
 import { queryOptions, type UseQueryOptions } from '@tanstack/react-query'
-import { clientWithType } from '@web/lib/api-client'
+import { clientWithType } from '@/lib/api-client'
 export const QUERY_KEYS = {
     USER_ME:clientWithType.user.me.$url().pathname,
     GET_SESSION:clientWithType.auth["get-session"].$url().pathname,

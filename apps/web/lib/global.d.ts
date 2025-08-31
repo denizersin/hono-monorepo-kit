@@ -1,5 +1,5 @@
 import '@tanstack/react-query'
-import { TQueryKey } from '@web/hooks/rest-queries'
+import { TQueryKey } from '@/hooks/rest-queries'
 import { TErrorResponse } from '@repo/backend/exports'
 import { TTrpcErrorServer } from '@repo/backend/exports'
 

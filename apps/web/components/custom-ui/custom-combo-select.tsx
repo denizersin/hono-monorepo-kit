@@ -1,10 +1,9 @@
 "use client"
 
-import * as React from "react"
 import { Check, ChevronsUpDown } from "lucide-react"
+import * as React from "react"
 
-import { cn } from "@web/lib/utils"
-import { Button } from "@web/components/ui/button"
+import { Button } from "@/components/ui/button"
 import {
   Command,
   CommandEmpty,
@@ -12,13 +11,13 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from "@web/components/ui/command"
+} from "@/components/ui/command"
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@web/components/ui/popover"
-import { FormControl } from "@web/components/ui/form"
+} from "@/components/ui/popover"
+import { cn } from "@/lib/utils"
 
 export interface ComboSelectOption {
   value: string;
@@ -34,7 +33,6 @@ interface CustomComboSelectProps {
   buttonClass?: string;
   data: ComboSelectOption[];
   disabled?: boolean;
-  isFormSelect?: boolean;
   labelValueRender?: (option: ComboSelectOption) => string;
 }
 
@@ -46,7 +44,6 @@ export function CustomComboSelect({
   buttonClass,
   data,
   disabled = false,
-  isFormSelect = true,
   labelValueRender,
 }: CustomComboSelectProps) {
   const [open, setOpen] = React.useState(false)
@@ -66,37 +63,26 @@ export function CustomComboSelect({
     return labelValueRender ? labelValueRender(label) : label.label
   }, [value, data, labelValueRender])
 
+  // console.log(valueLabel, 'valueLabel')
+
+  console.log(data, 'data')
+
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      {isFormSelect ? (
-        <FormControl>
-          <PopoverTrigger asChild>
-            <Button
-              variant="outline"
-              role="combobox"
-              aria-expanded={open}
-              className={cn("w-[200px] justify-between", buttonClass)}
-              disabled={disabled}
-            >
-              {valueLabel}
-              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-            </Button>
-          </PopoverTrigger>
-        </FormControl>
-      ) : (
-        <PopoverTrigger asChild>
-          <Button
-            variant="outline"
-            role="combobox"
-            aria-expanded={open}
-            className={cn("w-[200px] justify-between", buttonClass)}
-            disabled={disabled}
-          >
-            {valueLabel}
-            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-          </Button>
-        </PopoverTrigger>
-      )}
+      
+      <PopoverTrigger asChild>
+        <Button
+          variant="outline"
+          role="combobox"
+          aria-expanded={open}
+          className={cn("w-[200px] justify-between", buttonClass)}
+          disabled={disabled}
+        >
+          {valueLabel}
+          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+        </Button>
+      </PopoverTrigger>
+      
       <PopoverContent className="w-[200px] p-0">
         <Command
           filter={(value, search, keywords) => {
@@ -115,10 +101,11 @@ export function CustomComboSelect({
                     onValueChange?.(currentValue === value ? "" : currentValue)
                     setOpen(false)
                   }}
+                  className=""
                 >
                   <Check
                     className={cn(
-                      "mr-2 h-4 w-4",
+                      "h-4 w-4",
                       value === option.value ? "opacity-100" : "opacity-0"
                     )}
                   />

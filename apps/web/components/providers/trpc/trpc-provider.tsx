@@ -1,5 +1,5 @@
 import { AppRouter } from "@repo/backend/exports"
-import { isServer, QueryClient, QueryClientProvider } from "@tanstack/react-query"
+import { isServer, QueryClient, QueryClientProvider, QueryObserver } from "@tanstack/react-query"
 import { createTRPCContext } from "@trpc/tanstack-react-query";
 
 import { createTRPCClient, httpBatchLink, loggerLink } from "@trpc/client";
@@ -7,7 +7,7 @@ import { makeQueryClient } from "./query-client";
 import { useState } from "react";
 import superjson from "superjson";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { NEXT_ENV } from "@web/next-env";
+import { NEXT_ENV } from "@/next-env";
 
 /**
  * Why doesn't my tRPC request header include the cookie header?
@@ -22,7 +22,7 @@ import { NEXT_ENV } from "@web/next-env";
 
 export const { TRPCProvider, useTRPC } = createTRPCContext<AppRouter>();
 
-let browserQueryClient: QueryClient;
+let browserQueryClient: QueryClient;;
 
 function getQueryClient() {
     if (isServer) {
@@ -72,3 +72,6 @@ export function TRPCReactProvider(
         </QueryClientProvider>
     );
 }
+
+
+

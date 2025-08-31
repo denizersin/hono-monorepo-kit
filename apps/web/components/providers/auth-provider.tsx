@@ -1,30 +1,20 @@
-import { TSession } from "@repo/shared/types"
-import { useQuery } from "@tanstack/react-query"
-import { useTRPC } from "./trpc/trpc-provider"
+import { useSession } from "@/hooks/common"
+import { useSingleLoadingModal } from "../global/modal/global-lodaing-modal"
+import { useEffect } from "react"
+import { GlobalModalManager } from "../global/modal/global-confirm-moda"
 
-
-
-type TAuthContext = {
-    session: TSession | null,
-
-}
 
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+    const { query } = useSession()
+    useSingleLoadingModal(query.promise)
 
-    const trpc = useTRPC()
-    const { data, isLoading, isError,error } = useQuery(trpc.auth.getSession.queryOptions())
+    useEffect(() => {
+        // GlobalModalManager.show({
+        //     type: 'info',
 
-    console.log(data, 'data')
+        // })
+    }, [])
 
-
-    // useEffect(() => {
-    //     if (isLoading||isAuthRoute) return;
-    //     if (!isAuthenticated) {
-    //         router.push('/auth/login')
-    //     }
-    // }, [isAuthenticated, isLoading, isError])
-
-
-    return <>{children}</>
+    return children
 }

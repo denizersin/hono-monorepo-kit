@@ -1,4 +1,4 @@
-import { Providers } from "@web/components/providers"
+import { Providers } from "@/components/providers"
 
 export default async function ServerRootLayout({
     children,

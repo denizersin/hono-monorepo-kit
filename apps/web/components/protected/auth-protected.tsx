@@ -1,7 +1,7 @@
 "use client";
 
 import { TRole } from "@repo/shared/types";
-import { useSession } from "@web/hooks/common";
+import { useSession } from "@/hooks/common";
 import { redirect } from "next/navigation";
 import { useMemo } from "react";
 import { toast } from "react-toastify";

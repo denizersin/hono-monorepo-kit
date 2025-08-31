@@ -1,17 +1,17 @@
 "use client"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { TAuthValidator, authValidator } from "@repo/shared/validators"
-import { Button } from "@web/components/ui/button"
+import { Button } from "@/components/ui/button"
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@web/components/ui/card"
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@web/components/ui/form"
-import { Input } from "@web/components/ui/input"
-import { cn } from "@web/lib/utils"
+} from "@/components/ui/card"
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+import { cn } from "@/lib/utils"
 import { useForm } from "react-hook-form"
 export function LoginForm({
   className,

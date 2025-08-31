@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query"
-import { useTRPC } from "@web/components/providers/trpc/trpc-provider"
+import { useTRPC } from "@/components/providers/trpc/trpc-provider"
 
 export const useSession = () => {
 
@@ -19,6 +19,7 @@ export const useSession = () => {
         isLoading,
         isError,
         isAuthenticated,
-        session: query.data
+        session: query.data,
+        query
     }
 }

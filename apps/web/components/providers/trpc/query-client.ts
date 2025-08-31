@@ -5,9 +5,11 @@ import {
 import superjson from "superjson";
 
 import { MutationCache, QueryCache } from "@tanstack/react-query";
-import { isErrorResponse, isTRPCError } from "@web/lib/utils";
+import { isErrorResponse, isTRPCError } from "@/lib/utils";
 import { toast } from "react-toastify";
-import { MUTATION_KEYS, QUERY_KEYS } from "@web/hooks/rest-queries";
+import { MUTATION_KEYS, QUERY_KEYS } from "@/hooks/rest-queries";
+
+
 
 export function makeQueryClient() {
     return new QueryClient({
@@ -15,6 +17,7 @@ export function makeQueryClient() {
             queries: {
                 staleTime: 60 * 1000,
                 retry: false,
+                experimental_prefetchInRender: true,
             },
             dehydrate: {
                 serializeData: superjson.serialize,
@@ -25,7 +28,10 @@ export function makeQueryClient() {
             hydrate: {
                 deserializeData: superjson.deserialize,
             },
+
+        
         },
+        
         queryCache: new QueryCache({
             onError: (error, query) => {
                 if (isErrorResponse(error)) {
@@ -37,8 +43,8 @@ export function makeQueryClient() {
                     });
                 }
                 if (isTRPCError(error)) {
-                    if (error.data?.errorData?.toast) {
-                        toast(error.data.errorData.message, {
+                    if (error.data?.causeData?.toast) {
+                        toast(error.data.causeData.message, {
                             type: 'error'
                         });
                     }
@@ -56,11 +62,9 @@ export function makeQueryClient() {
         mutationCache: new MutationCache({
             onError(error, variables, context, mutation) {
 
-                console.log(JSON.stringify(error, null, 5))
-                console.log('qwe')
 
                 if (isErrorResponse(error)) {
-                    
+                    console.log('isErrorResponse')
                     error.errors.forEach(err => {
                         if (!err.toast) return;
                         toast(err.message, {
@@ -69,8 +73,9 @@ export function makeQueryClient() {
                     });
                 }
 
-                console.log('error3333', error)
                 if (isTRPCError(error)) {
+                    console.log('isTRPCError')
+                    console.log(JSON.stringify(error, null, 5),'error')
                     if (error.data?.zodError?.fieldErrors) {
                         Object.entries(error.data?.zodError?.fieldErrors ?? {}).forEach(([key, value]) => {
                             toast(key + ':' + (value?.[0] ?? 'Unknown error'), {
@@ -79,12 +84,18 @@ export function makeQueryClient() {
                             });
                         });
                     }
-                    if (error.data?.errorData?.toast) {
-                        toast(error.data.errorData.message, {
+                    console.log(JSON.stringify(error.data, null, 5),'error.data')
+                    if (error.data?.causeData?.toast) {
+                        toast(error.data.causeData.message, {
                             type: 'error'
                         });
                     }
+
+                    console.log(JSON.stringify(error.data?.causeData, null, 5),'error.data.causeData')
+                    
                 }
+
+                console.log('not')
 
 
 

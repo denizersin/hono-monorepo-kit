@@ -1,6 +1,6 @@
 import { queryOptions, useQuery } from "@tanstack/react-query"
 
-import { clientWithType, } from "@web/lib/api-client"
+import { clientWithType, } from "@/lib/api-client"
 
 
 export const userQueryOptions = queryOptions({

@@ -1,7 +1,7 @@
 
 import { ROUTES, } from "@repo/backend/exports"
 import { hc } from "hono/client";
-import { NEXT_ENV } from "@web/next-env";
+import { NEXT_ENV } from "@/next-env";
 
 
 const client = hc<typeof ROUTES>("");
