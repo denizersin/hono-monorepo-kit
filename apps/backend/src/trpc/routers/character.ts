@@ -1,16 +1,16 @@
 import { SahredEnums } from "@repo/shared/enums";
 import { adminProcedure, createTRPCRouter, protectedProcedure, roleMiddleware } from "../init";
 import { characterValidator } from "@repo/shared/validators";
-import { characterService } from "@server/bootstrap";
+import { characterRepository, characterService } from "@server/bootstrap";
 
 export const characterRouter = createTRPCRouter({
 
-    createPersonaWithTranslation: adminProcedure
+    createPersonaWithTranslation: protectedProcedure.use(roleMiddleware([SahredEnums.Role.ADMIN, SahredEnums.Role.OWNER]))
         .input(characterValidator.createPersonaWithTranslationSchema).mutation(async ({ ctx, input }) => {
             return await characterService.createPersonaWithTranslation(input)
         }),
 
-    updatePersonaWithTranslation: adminProcedure
+    updatePersonaWithTranslation: protectedProcedure.use(roleMiddleware([SahredEnums.Role.ADMIN, SahredEnums.Role.OWNER]))
         .input(characterValidator.updatePersonaFormSchema).mutation(async ({ ctx, input }) => {
             return await characterService.updatePersonaWithTranslation(input)
         }),
@@ -25,5 +25,12 @@ export const characterRouter = createTRPCRouter({
         .input(characterValidator.updateCharacterWithRelationsSchema).mutation(async ({ ctx, input }) => {
             return await characterService.updateCharacterWithRelations(input)
         }),
+
+
+    getAllPersonasWithTranslations: protectedProcedure.use(roleMiddleware([SahredEnums.Role.ADMIN, SahredEnums.Role.OWNER])).
+        input(characterValidator.personaPaginationQuerySchema).query(async ({ ctx, input }) => {
+            return await characterRepository.getAllPersonasWithTranslations(input)
+        }),
+
 
 })

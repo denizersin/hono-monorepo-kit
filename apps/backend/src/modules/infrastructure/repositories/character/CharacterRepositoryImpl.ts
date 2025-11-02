@@ -9,8 +9,10 @@ import {
     TSchemaCharacter,
 } from "@repo/shared/schema";
 import TCharacterEntity from "@server/modules/domain/entities/character/Character";
-import { eq } from "drizzle-orm";
+import { and, asc, count, desc, eq, isNull, like, SQL } from "drizzle-orm";
 import db from "../../database";
+import { TBaseValidators, TCharacterValidator } from "@repo/shared/validators";
+import { PgColumn } from "drizzle-orm/pg-core";
 
 export class CharacterRepositoryImpl {
     async getCharacterById(id: number): Promise<TSchemaCharacter.TCharacterRepositoryTypes.TCharacterWithRelations | undefined> {
@@ -123,6 +125,84 @@ export class CharacterRepositoryImpl {
             .where(eq(tblCharacterPersona.id, id));
     }
 
+
+    //@query
+
+
+    async getAllPersonasWithTranslations(input: TCharacterValidator.TPersonaPaginationQuery):
+        Promise<TBaseValidators.TPagination<TSchemaCharacter.TCharacterRepositoryTypes.TPersonaWithTranslations>> {
+        const { pagination, sort, global_search, filter } = input;
+
+
+
+        const andConditions: SQL<unknown>[] = [];
+
+        if (filter.name) {
+            andConditions.push(like(tblPersona.name, `%${filter.name}%`))
+        }
+
+        if (global_search) {
+            andConditions.push(like(tblPersona.name, `%${global_search}%`))
+        }
+
+        const whereCondition: SQL<unknown> | undefined = and(
+            isNull(tblPersona.deletedAt),
+            isNull(tblPersonaTranslation.deletedAt),
+
+            and(...andConditions)
+        );
+
+
+
+
+        const calculatedOrderBys: SQL<unknown>[] = [];
+        const sortMapper = {
+            'asc': asc,
+            'desc': desc
+        }
+        const columnMapper: Record<TCharacterValidator.TPersonaPaginationQuerySortKeys, PgColumn> = {
+            'name': tblPersona.name,
+            'createdAt': tblPersona.createdAt,
+            
+        }
+        console.log(sort, 'sort')
+        sort.forEach(s => {
+            calculatedOrderBys.push(sortMapper[s.sortBy](columnMapper[s.sortField]))
+        })
+
+
+        const personas = await db.query.tblPersona.findMany({
+            with: {
+                translations: true
+            },
+            limit: pagination.limit,
+            where: whereCondition,
+            offset: (pagination.page - 1) * pagination.limit,
+            orderBy: calculatedOrderBys,
+
+        });
+
+        const total = await db.select({
+            count: count()
+        })
+            .from(tblPersona)
+            .leftJoin(tblPersonaTranslation, eq(tblPersona.id, tblPersonaTranslation.personaId))
+            .where(whereCondition);
+
+
+        const totalCount = total?.[0]?.count || 0
+        const totalPages = Math.ceil(totalCount / pagination.limit)
+        return {
+            data: personas,
+            pagination: {
+                page: pagination.page,
+                limit: pagination.limit,
+                total: totalCount,
+                totalPages: totalPages
+            }
+        };
+    }
+
     /**
      * Create a new character together with all optional nested relations (personas, instructions, images)
      * according to `TSchemaCharacter.TCreateCharacter` definition.
@@ -230,8 +310,12 @@ export class CharacterRepositoryImpl {
         // 2. update / upsert translations if provided
         if (translations && translations.length > 0) {
             for (const tr of translations) {
-                if (!tr.id) continue; // we need id to update existing translation
-                await db.update(tblPersonaTranslation).set(tr).where(eq(tblPersonaTranslation.id, tr.id));
+                await db.update(tblPersonaTranslation).set(tr).where(
+                    and(
+                        eq(tblPersonaTranslation.personaId, id),
+                        eq(tblPersonaTranslation.languageId, tr.languageId)
+                    )
+                );
             }
         }
     }

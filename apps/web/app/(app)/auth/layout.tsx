@@ -24,7 +24,7 @@ const Layout = ({ children }: Props) => {
             router.push('/admin')
         }
         else if (session?.role === SahredEnums.Role.OWNER) {
-            router.push('/owner')
+            router.push('/dashboard')
         }
         else if (session?.role === SahredEnums.Role.USER) {
             router.push('/home')

@@ -95,6 +95,9 @@ app.use(
     router: appRouter,
     createContext: async (opts, c) => {
       return await createTRPCContext(c)
+    },
+    onError:(opts)=>{
+      console.log(JSON.stringify(opts.error, null, 5),'opts')
     }
   })
 )

@@ -6,13 +6,13 @@ import db from "@server/modules/infrastructure/database";
 import { languageDetector } from "hono/language";
 import { EnumCookieKeys, EnumHeaderKeys } from "../enums";
 
+import { TTheme } from "@repo/shared/types";
+import { initApiContext } from "@server/lib/context";
 import { getSafeSessionFromContext } from "@server/modules/shared/middlewares/auth";
 import { AsyncLocalStorage } from 'async_hooks';
 import { Hono } from "hono";
-import { initApiContext } from "@server/lib/context";
-import { handleAppError } from "../errors";
 import { getCookie } from "hono/cookie";
-import { TTheme } from "@repo/shared/types";
+import { handleAppError } from "../errors";
 
 export const apiContext = new AsyncLocalStorage<TApiContextRaw>()
 

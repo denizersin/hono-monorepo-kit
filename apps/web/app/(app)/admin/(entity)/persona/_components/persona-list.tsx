@@ -13,12 +13,18 @@ import {
 import { useQuery } from "@tanstack/react-query"
 import { useTRPC } from "@/components/providers/trpc/trpc-provider"
 import { CustomPagination } from "@/components/dashboard/custom-pagination"
+import { Button } from "@/components/ui/button"
+import PersonaCrudModal from "./persona-crud-modal"
+import { TSchemaCharacter } from "@repo/shared/schema"
 
 export const PersonaList = () => {
 
     const trpc = useTRPC()
 
+    const [isOpen, setIsOpen] = useState(false)
+    const [mode, setMode] = useState<"create" | "edit">("create")
 
+    const [initial, setInitial] = useState<TSchemaCharacter.TCharacterRepositoryTypes.TPersonaWithTranslations | undefined>(undefined)
 
     const [query, setQuery] = useState<TCharacterValidator.TPersonaPaginationQuery>({
         pagination: {
@@ -41,6 +47,16 @@ export const PersonaList = () => {
 
     return <div>
         <h1>Persona List</h1>
+
+        <Button onClick={() => {
+            setIsOpen(true)
+            setInitial(undefined)
+        }}>Create Persona</Button>
+        <PersonaCrudModal
+            isOpen={isOpen}
+            setIsOpen={setIsOpen}
+            initial={initial}
+        />
         <Table>
             <TableHeader>
                 <TableRow>
@@ -51,6 +67,13 @@ export const PersonaList = () => {
                 {data?.map((item) => (
                     <TableRow key={item.id}>
                         <TableCell>{item.name}</TableCell>
+                        <TableCell>
+                            <Button onClick={() => {
+                                setIsOpen(true)
+                                setMode("edit")
+                                setInitial(item)
+                            }}>Edit</Button>
+                        </TableCell>
                     </TableRow>
                 ))}
             </TableBody>

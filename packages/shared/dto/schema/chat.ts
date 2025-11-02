@@ -8,7 +8,7 @@ import { tblUser } from './user';
 
 export const tblPrivateChat = pgTable('private-chat', {
 
-    id: integer().primaryKey().generatedByDefaultAsIdentity(),
+    id: integer().primaryKey().generatedByDefaultAsIdentity(), 
     userId: integer().notNull().references(() => tblUser.id),
     recipientFullPhoneNumber: varchar({ length: 255 }).notNull(),
 

@@ -29,7 +29,7 @@ export const authValidator = {
     registerFormSchema,
     verifyCodeFormSchema
 }
-
+ 
 
 
 

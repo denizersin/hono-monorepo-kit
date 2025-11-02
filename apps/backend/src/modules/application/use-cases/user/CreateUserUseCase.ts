@@ -16,5 +16,6 @@ export class CreateUserUseCase {
             role: SahredEnums.Role.USER
         })
     }
+    
 
 }

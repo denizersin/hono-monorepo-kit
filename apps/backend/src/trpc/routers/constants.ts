@@ -7,5 +7,8 @@ export const constantsRouter = createTRPCRouter({
     }),
     getLanguages: publicProcedure.query(async () => {
         return await languageRepository.getLanguages()
+    }),
+    getCompanyLanguages: publicProcedure.query(async () => {
+        return await languageRepository.getCompanyLanguages()
     })
 })

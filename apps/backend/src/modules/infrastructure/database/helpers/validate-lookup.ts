@@ -74,7 +74,7 @@ export class LookUpEnumsValidation {
             //if table is not provided, then insert all records
             if (table && record.dbName !== table) continue
 
-            
+
             console.log(table,'table')
             console.log(record.dbName,'record.dbName')
             console.log(Object.values(enumString).map(name => ({ name, id: enumId[name as keyof typeof enumId] })))
@@ -88,6 +88,7 @@ export class LookUpEnumsValidation {
 
     static async validateAllLookUp() {
 
+
         for (const record of Object.values(LookUpRecords)) {
             const { enumString, enumId, dbName, dbTable } = record
             //@ts-ignore
@@ -99,7 +100,7 @@ export class LookUpEnumsValidation {
                 const promises = Object.values(enumString).map(async (name) => {
                     const record = records.find((record: { name: string, id: number }) => record.name === name)
                     if (!record) {
-                        //@ts-ignore
+                        //@ts-ignore 
                         await db.insert(dbTable).values({ name, id: enumId[name as keyof typeof enumId] })
                         console.log(enumString, 'was not found in db. so adding it')
                         logger.db('detected missing records in tblMailConfirmationStatus adding if not exists', { name, id: enumId[name as keyof typeof enumId] })

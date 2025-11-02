@@ -1,12 +1,6 @@
-import { boolean, doublePrecision, integer, pgEnum, pgTable, serial, timestamp, varchar } from 'drizzle-orm/pg-core';
-import { SahredEnums } from '../../enums/index';
+import { TMailConfirmationStatus, TRole } from '#/types/index';
+import { boolean, doublePrecision, integer, pgTable, serial, timestamp, varchar } from 'drizzle-orm/pg-core';
 import { getDefaultTableFields } from './schemaHelpers';
-
-
-
-// PostgreSQL enums
-export const roleEnum = pgEnum('role_enum', SahredEnums.getStringEnumValuesForZod(SahredEnums.Role));
-export const mailConfirmationStatusEnum = pgEnum('mail_confirmation_status_enum', SahredEnums.getStringEnumValuesForZod(SahredEnums.MailConfirmationStatus));
 
 
 
@@ -27,7 +21,7 @@ export const tblUser = pgTable('user', {
     fullPhone: varchar('full_phone', { length: 255 }).notNull(),
 
 
-    role: roleEnum('role_enum').notNull(),
+    role: varchar('role', { length: 255 }).notNull().$type<TRole>(),
     test: varchar('test', { length: 255 }).notNull(),
     mailConfirmationStatusId: integer('mail_confirmation_status_id').notNull(),
     phoneVerificationCodeSendAt: timestamp('phone_verification_code_send_at'),
@@ -46,7 +40,7 @@ export const tblUser = pgTable('user', {
 
 export const tblMailConfirmationStatus = pgTable('mail_confirmation_statuses', {
     id: serial('id').primaryKey(),
-    name: mailConfirmationStatusEnum('name_enum').notNull(),
+    name: varchar('name', { length: 255 }).notNull().$type<TMailConfirmationStatus>(),
 });
 
 

@@ -19,9 +19,9 @@
     "db:drizzle-studio": "npx drizzle-kit studio",
     "initialize-db": "tsx ./src/modules/infrastructure/database/scripts/initialize-db.ts",
     "initialize-new-look-up": "tsx ./src/modules/infrastructure/database/scripts/initialize-new-look-up.ts",
-    "update-db": "pnpm run db:generate && pnpm run db:migrate",
-    "recreate-db": "tsx ./src/modules/infrastructure/database/scripts/re-create-db.ts",
-    "reset-db": "pnpm run recreate-db && pnpm run update-db && pnpm run initialize-db && rm -rf ./src/modules/infrastructure/database/migrations",
+    "update-db": "pnpm run db:generate && sleep 1 && pnpm run db:migrate",
+    "reset-db-step1": "tsx ./src/modules/infrastructure/database/scripts/re-create-db.ts",
+    "reset-db-step2": " pnpm run update-db && pnpm run initialize-db && rm -rf ./src/modules/infrastructure/database/migrations",
     "drizzle-studio": "npx drizzle-kit studio"
   },
   "dependencies": {
@@ -33,7 +33,7 @@
     "@trpc/server": "^11.4.4",
     "@types/jsonwebtoken": "^9.0.9",
     "dotenv": "^16.4.7",
-    "drizzle-orm": "^0.39.3",
+    "drizzle-orm": "^0.44.5",
     "drizzle-zod": "^0.7.0",
     "hono": "^4.1.2",
     "hono-rate-limiter": "0.1.0",
@@ -47,10 +47,10 @@
     "@tsconfig/node20": "^20.1.4",
     "@types/node": "^22.0.0",
     "@types/pg": "^8.15.5",
-    "drizzle-kit": "^0.30.6",
+    "drizzle-kit": "^0.31.4",
     "eslint": "^9.0.0",
     "tsc-alias": "^1.8.11",
     "tsx": "^4.7.1",
-    "typescript": "^5.3.3"
+    "typescript": "^5.9.2"
   }
 }

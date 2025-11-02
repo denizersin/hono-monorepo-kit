@@ -31,6 +31,7 @@ const pool = new Pool({
 
 
 
+
 export type TDB = NodePgDatabase<typeof schema>;
 
 export type TDbTableName = keyof typeof schema;
@@ -51,6 +52,7 @@ export const startTransactionPromisfy = (): Promise<TDBTransaction> => {
 let db: TDB;
 
 db = drizzle({ client: pool, schema });
+
 
 db.insert(tblLanguage).values({
   name: 'English',

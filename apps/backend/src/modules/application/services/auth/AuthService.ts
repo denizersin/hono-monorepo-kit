@@ -2,18 +2,18 @@ import { SahredEnums } from "@repo/shared/enums";
 import { TJWTSession, TRole, TSession } from "@repo/shared/types";
 import { TAuthValidator } from "@repo/shared/validators";
 import { APP_CONSTANTS } from "@server/lib/constants";
-import { UnauthorizedError, ConflictError, CustomError } from "@server/lib/errors";
+import { getApiContext } from "@server/lib/context";
+import { BadRequestError, ConflictError, CustomError, UnauthorizedError } from "@server/lib/errors";
 import { tryCatch } from "@server/lib/utils";
 import { generateAlphanumericCode } from "@server/lib/uuid-code";
 import { IUserRepository } from "@server/modules/domain/repositories/IUserRepository";
 import { IVerifyCodeRepository } from "@server/modules/domain/repositories/IVerifyCodeRepository";
 import { CountryRepository } from "@server/modules/infrastructure/repositories/data/CountryRepository";
-import { JwtService } from "../jwtService";
-import { WhatsappService } from "../whatsapp";
 import { EventBus } from "../../event";
-import { getApiContext } from "@server/lib/context";
 import { ENUM_ALL_EVENTS } from "../../event/interface";
 import { ENUM_USER_EVENTS } from "../../event/interface/user";
+import { JwtService } from "../jwtService";
+import { WhatsappService } from "../whatsapp";
 
 export class AuthService {
 
@@ -32,12 +32,12 @@ export class AuthService {
         }
 
         console.log(user, 'user2')
-        const userWithoutPassword = await this.userRepository.getSessionUser(user)
+        const sessionUser = await this.userRepository.getSessionUser(user)
 
         const session: TSession = {
             companyId: user.companyId,
             role: user.role as TRole,
-            user: userWithoutPassword
+            user: sessionUser
         }
 
         const jwtSession: TJWTSession = {
@@ -108,12 +108,12 @@ export class AuthService {
             throw new CustomError({ message: 'User not found' })
         }
 
-        const { password, ...userWithoutPassword } = user
+        const sessionUser = await this.userRepository.getSessionUser(user)
 
         const session: TSession = {
             companyId: user.companyId,
             role: user.role as TRole,
-            user: userWithoutPassword
+            user: sessionUser
         }
 
         const jwtSession: TJWTSession = {
@@ -238,16 +238,19 @@ export class AuthService {
         console.log(registerForm, 'registerForm')
         const canResend = await this.canResendVerificationCode(registerForm)
         if (!canResend) {
-            throw new CustomError({ message: 'You can only resend the code after 1 minute' })
+            throw new BadRequestError({ message: 'you can only resend the code after 1 minute' ,toast: true})
         }
         await this.sendVerificationCode(registerForm)
         return true
     }
 
     async canResendVerificationCode(registerForm: TAuthValidator.TRegisterFormSchema) {
-        const verifyCode = await this.verifyCodeRepository.getVerifyCodeByPhoneOrMail(registerForm.phoneNumber)
+        const fullPhone = await this.getFullPhoneWithoutPlus(registerForm.phoneCodeId, registerForm.phoneNumber)
+
+        const verifyCode = await this.verifyCodeRepository.getVerifyCodeByPhoneOrMail(fullPhone)
         console.log(verifyCode, 'verifyCode')
-        if (verifyCode && verifyCode.expiresAt < new Date()) {
+        console.log(new Date(), 'new Date()')
+        if (verifyCode && verifyCode.expiresAt > new Date()) {
             console.log(new Date(), 'new Date()')
             console.log(verifyCode.expiresAt, 'verifyCode.expiresAt')
             return false

@@ -1,6 +1,6 @@
 import { SahredEnums } from "@repo/shared/enums";
 import { TRole } from "@repo/shared/types";
-import { createTRPCError, TErrorResponse, UnauthorizedError } from "@server/lib/errors";
+import { TErrorResponse, TRPC_ERROR_CODES_BY_KEY } from "@server/lib/errors";
 import { AppBindings } from "@server/lib/hono/types";
 import { initTRPC, TRPCError } from "@trpc/server";
 import { Context } from "hono";
@@ -26,7 +26,18 @@ const t = initTRPC.context<TRPCContext>().create({
     transformer: superjson,
     errorFormatter(opts) {
         const { shape, error } = opts;
-        console.log('error', error)
+
+
+        const causeData = (error.cause || (error.cause as any)?.customData) as TErrorResponse['errors'][number] | undefined
+
+
+        //!important: if we throw an error that instance of appError(not trpc or createTrpcError), we need to set the http status and code otherwise it will always be 500
+        if (causeData && !causeData.isFromTrpcErrorInstance) {
+            shape.data.httpStatus = causeData.statusCode
+            shape.code = TRPC_ERROR_CODES_BY_KEY[causeData.errorCode]
+        }
+
+
         return {
             ...shape,
             data: {
@@ -36,9 +47,18 @@ const t = initTRPC.context<TRPCContext>().create({
                         ? error.cause.flatten()
                         : null,
 
-                errorData: (error.cause as any)?.customData as TErrorResponse['errors'][number],
+                causeData: {
+                    ...causeData,
+
+                    //!important: we need to override the name otherwise it will not transfomr correct data
+                    name:''
+                }
+
+
             },
+
         };
+
     },
 })
 

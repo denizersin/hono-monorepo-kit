@@ -1,10 +1,12 @@
-import { boolean, doublePrecision, integer, jsonb, pgTable, text, timestamp, varchar, foreignKey } from 'drizzle-orm/pg-core';
-import { tblLanguage } from './data';
 import { relations } from 'drizzle-orm';
-import { mockDb, ReturnTypeOfQuery } from './type';
+import { boolean, doublePrecision, foreignKey, integer, pgTable, uniqueIndex, varchar } from 'drizzle-orm/pg-core';
+import { tblLanguage } from './data';
 import { getDefaultTableFieldsWithDeletedAt } from './schemaHelpers';
+import { mockDb, ReturnTypeOfQuery } from './type';
 
 
+
+ 
 export const tblCharacter = pgTable('character', {
     id: integer().primaryKey().generatedByDefaultAsIdentity(),
 
@@ -32,6 +34,9 @@ export const tblCharacterInstruction = pgTable('character-instruction', {
     isAdminInstruction: boolean().notNull().default(false),
     //relations
     characterId: integer().notNull().references(() => tblCharacter.id, { onDelete: 'cascade' }),
+
+    //timestamps
+    ...getDefaultTableFieldsWithDeletedAt()
 })
 
 export const tblCharacterInstructionRelation = relations(tblCharacterInstruction, ({ one, many }) => ({
@@ -48,6 +53,8 @@ export const tblCharacterInstructionTranslation = pgTable(
         id: integer().primaryKey().generatedByDefaultAsIdentity(),
         characterInstructionId: integer().notNull(),
         languageId: integer().notNull(),
+        //timestamps
+        ...getDefaultTableFieldsWithDeletedAt()
     },
     (table) => ({
         // FK to character-instruction  (short name keeps us < 64 chars)
@@ -64,6 +71,7 @@ export const tblCharacterInstructionTranslation = pgTable(
             name: 'fk_char_instr_trans_lang',
         }),
     }),
+
 );
 
 export const tblCharacterInstructionTranslationRelation = relations(tblCharacterInstructionTranslation, ({ one }) => ({
@@ -104,6 +112,9 @@ export const tblCharacterPersona = pgTable('character-persona', {
     id: integer().primaryKey().generatedByDefaultAsIdentity(),
     characterId: integer().notNull().references(() => tblCharacter.id, { onDelete: 'cascade' }),
     personaId: integer().notNull().references(() => tblPersona.id, { onDelete: 'cascade' }),
+
+    //timestamps
+    ...getDefaultTableFieldsWithDeletedAt()
 })
 
 export const tblCharacterPersonaRelation = relations(tblCharacterPersona, ({ one }) => ({
@@ -142,7 +153,12 @@ export const tblPersonaTranslation = pgTable('persona-translation', {
     personaId: integer().notNull().references(() => tblPersona.id, { onDelete: 'cascade' }),
     languageId: integer().notNull().references(() => tblLanguage.id, { onDelete: 'cascade' }),
     name: varchar({ length: 255 }).notNull(),
-})
+
+    //timestamps
+    ...getDefaultTableFieldsWithDeletedAt()
+},(table) => ({
+    unique_persona_language: uniqueIndex('unique_persona_language').on(table.personaId, table.languageId)
+}))
 
 
 export const tblPersonaRelation = relations(tblPersona, ({ many }) => ({
@@ -206,78 +222,89 @@ export namespace TSchemaCharacter {
     // ** step1: define all tables select and insert types **
 
 
-    //detailed types for repository function's props and return types
-    // ** step2: types for create and update **
-    export type TCreatePersonaWithTranslation = {
-        personaData: TPersonaInsert
-        translations: Omit<TPersonaTranslationInsert, 'personaId'>[]
-    }
+ 
 
-    export type TUpdatePersonaWithTranslation = {
-        id: number
-        data: {
-            personaData: Partial<TPersonaInsert>
-            translations: Partial<TPersonaTranslationInsert>[]
+
+    export namespace TCharacterRepositoryTypes {
+
+        
+        //detailed types for repository function's props and return types
+        // ** step2: types for create and update **
+        export type TCreatePersonaWithTranslation = {
+            personaData: TPersonaInsert
+            translations: Omit<TPersonaTranslationInsert, 'personaId'>[]
         }
-    }
 
-
-    export type TCreateCharacterInstruction = {
-        characterInstructionData: TCharacterInstructionInsert
-        translations: Omit<TCharacterInstructionTranslationInsert, 'characterInstructionId'>[]
-    }
-
-    export type TUpdateCharacterInstruction = {
-        id: number
-        data: {
-            characterInstructionData: Partial<TCharacterInstructionInsert>
-            translations?: Partial<TCharacterInstructionTranslationInsert>[]
+        export type TUpdatePersonaWithTranslation = {
+            id: number
+            data: {
+                personaData: TPersonaInsert
+                translations: TPersonaTranslationInsert[]
+            }
         }
-    }
 
 
-
-    export type TUpdateCharacterImage = {
-        id: number
-        data: {
-            characterImageData: Partial<TCharacterImageInsert>
-        }
-    }
-
-    export type TCreateCharacterImage = TCharacterImageInsert
-
-    export type TCreateCharacter = {
-        characterData: TCharacterInsert
-        personaIds?: number[] //many to many
-        instructions?: Array<{
-            characterInstructionData: Omit<TCharacterInstructionInsert, 'characterId'>
+        export type TCreateCharacterInstruction = {
+            characterInstructionData: TCharacterInstructionInsert
             translations: Omit<TCharacterInstructionTranslationInsert, 'characterInstructionId'>[]
-        }> //one to many
-        images?: Array<{ characterImageData: Omit<TCharacterImageInsert, 'characterId'> }> //one to many
-    }
-
-    export type TUpdateCharacter = {
-        id: number
-        data: {
-            characterData?: Partial<TCharacterInsert>
-            personaIds?: number[] //many to many
         }
+
+        export type TUpdateCharacterInstruction = {
+            id: number
+            data: {
+                characterInstructionData: Partial<TCharacterInstructionInsert>
+                translations?: Partial<TCharacterInstructionTranslationInsert>[]
+            }
+        }
+
+
+
+        export type TUpdateCharacterImage = {
+            id: number
+            data: {
+                characterImageData: Partial<TCharacterImageInsert>
+            }
+        }
+
+        export type TCreateCharacterImage = TCharacterImageInsert
+
+        export type TCreateCharacterWithRelations = {
+            characterData: TCharacterInsert
+            personaIds?: number[] //many to many
+            instructions?: Array<{
+                characterInstructionData: Omit<TCharacterInstructionInsert, 'characterId'>
+                translations: Omit<TCharacterInstructionTranslationInsert, 'characterInstructionId'>[]
+            }> //one to many
+            images?: Array<{ characterImageData: Omit<TCharacterImageInsert, 'characterId'> }> //one to many
+        }
+
+        export type TUpdateCharacterWithRelations = {
+            id: number
+            data: {
+                characterData?: Partial<TCharacterInsert>
+                personaIds?: number[] //many to many
+            }
+        }
+        // ** step2: types for create and update **
+
+
+
+
+
+
+        // ** step3: select types that have relations (for repository functions) **
+        export type TCharacterWithRelations = ReturnTypeOfQuery<typeof getCharacterWithRelations>
+
+        export type TPersonaWithTranslations = ReturnTypeOfQuery<typeof getPersonasWithTranslations>
+        // ** step3: select types that have relations (for repository functions) **
+
+
     }
-    // ** step2: types for create and update **
-
-
-
-
-
-
-    // ** step3: select types that have relations (for repository functions) **
-    export type TCharacterWithRelations = ReturnTypeOfQuery<typeof getCharacterWithRelations>
-    // ** step3: select types that have relations (for repository functions) **
-
-
 
 
 }
+
+
 
 function getCharacterWithRelations() {
     return mockDb.query.tblCharacter.findFirst({
@@ -302,4 +329,12 @@ function getCharacterWithRelations() {
     })
 }
 
+
+function getPersonasWithTranslations() {
+    return mockDb.query.tblPersona.findFirst({
+        with: {
+            translations: true
+        }
+    })
+}
 
