@@ -8,6 +8,9 @@ import {
 } from 'hono/cookie';
 import z from "zod";
 import { createTRPCRouter, publicProcedure } from "../init";
+import { getApiContext } from "@server/lib/context";
+import { EventBus } from "@server/modules/application/event";
+import { ENUM_USER_EVENTS } from "@server/modules/application/event/interface/user";
 
 
 export const authRouter = createTRPCRouter({
@@ -18,6 +21,20 @@ export const authRouter = createTRPCRouter({
                     code: 'UNAUTHORIZED',
                 })
             }
+
+            const apiContext = getApiContext();
+            console.log('11')
+            apiContext.eventCallbackQueue.push({
+                callback: () => EventBus.emit(ENUM_USER_EVENTS.USER_LOGGED_IN, {
+                    type: ENUM_USER_EVENTS.USER_LOGGED_IN,
+                    ctx: apiContext,
+                    logData: {
+                        description: 'qwe',
+                        type: ENUM_USER_EVENTS.USER_LOGGED_IN,
+                        occurredAt: new Date(),
+                    }
+                })
+            })
             return ctx.session
         }),
 

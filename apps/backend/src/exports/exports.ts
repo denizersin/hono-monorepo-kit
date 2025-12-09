@@ -5,6 +5,7 @@ export { test };
 export type { AppType };
 import { hc } from 'hono/client';
 import { AppType, routes } from "../index";
+export type { TBaseEventLogData } from "@server/modules/application/event/interface";
 
 const test = {
   name: 'test',
@@ -21,6 +22,5 @@ export const client = hc<typeof routes>('')
 export type Client = typeof client
 
 export const hcWithType = (...args: Parameters<typeof hc>): Client => hc<typeof routes>(...args)
-
 
 

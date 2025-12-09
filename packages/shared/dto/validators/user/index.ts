@@ -17,7 +17,8 @@ const userBaseInsertSchema = createInsertSchema(tblUser, {
 
 
 
-const adminCreateUserSchema = userBaseInsertSchema.omit({
+const adminCreateUserSchema = userBaseInsertSchema.extend({
+    test1: z.string().optional()
 })
 
 
@@ -25,6 +26,8 @@ const adminCreateUserSchema = userBaseInsertSchema.omit({
 
 const userCreateSchema = userBaseInsertSchema.omit({
     role: true,
+}).extend({
+    userField: z.string().optional()
 })
 
 

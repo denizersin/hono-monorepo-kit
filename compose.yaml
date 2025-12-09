@@ -1,0 +1,32 @@
+version: '3.8'
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 12345678
+      POSTGRES_DB: turborepo
+    ports:
+      - "127.0.0.1:5433:5432"  # Sadece localhost'tan erişim
+    volumes:
+      # Veritabanı dosyaları (named volume)
+      - db_data:/var/lib/postgresql/data
+      
+      # Init script (bind mount) - varsa
+      # - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      
+      # Backup klasörü (bind mount)
+      - ./backup:/backup
+    restart: unless-stopped
+
+  redis:
+    image: redis:7
+    ports:
+      - "127.0.0.1:6379:6379"  # Sadece localhost'tan erişim
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+
+volumes:
+  db_data:
+  redis_data:

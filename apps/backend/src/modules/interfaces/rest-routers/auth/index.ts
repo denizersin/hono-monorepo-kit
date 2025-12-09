@@ -37,7 +37,12 @@ const authApp = createHonoApp()
             ctx.eventCallbackQueue.push({
                 callback: () => EventBus.emit(ENUM_USER_EVENTS.USER_LOGGED_IN, {
                     type: ENUM_USER_EVENTS.USER_LOGGED_IN,
-                    ctx: ctx
+                    ctx: ctx,
+                    logData:{
+                        description:'qwe',
+                        type:ENUM_USER_EVENTS.USER_LOGGED_IN,
+                        occurredAt:new Date(),
+                    }
                 }),
                 isAfterRequest: true
             })
@@ -93,6 +98,7 @@ const authApp = createHonoApp()
             const sessionToken = c.req.valid('query').token
 
             const { data: session, error: err } = tryCatchSync(() => authService.verifyToken(sessionToken))
+            
             if (err) {
                 throw new UnauthorizedError({ message: 'Invalid token', })
             }

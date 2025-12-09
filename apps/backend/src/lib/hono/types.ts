@@ -30,7 +30,8 @@ export type TApiContextRaw = {
     eventCallbackQueue: {
         type?: TGlobalEvent
         isAfterRequest?: boolean
-        callback: Function
+        callback: (() => Promise<void>) | (() => void)
+        isSync?: boolean
     }[]
 }
 

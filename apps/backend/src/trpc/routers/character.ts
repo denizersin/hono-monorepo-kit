@@ -10,7 +10,8 @@ export const characterRouter = createTRPCRouter({
             return await characterService.createPersonaWithTranslation(input)
         }),
 
-    updatePersonaWithTranslation: protectedProcedure.use(roleMiddleware([SahredEnums.Role.ADMIN, SahredEnums.Role.OWNER]))
+    updatePersonaWithTranslation: protectedProcedure
+        .use(roleMiddleware([SahredEnums.Role.ADMIN, SahredEnums.Role.OWNER]))
         .input(characterValidator.updatePersonaFormSchema).mutation(async ({ ctx, input }) => {
             return await characterService.updatePersonaWithTranslation(input)
         }),

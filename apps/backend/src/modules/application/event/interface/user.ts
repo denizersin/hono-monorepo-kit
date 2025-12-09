@@ -35,5 +35,7 @@ export type TEventUserData = {
         }
     },
     [ENUM_USER_EVENTS.USER_REGISTERED]: TBaseEvent<'USER_REGISTERED'>
-    [ENUM_USER_EVENTS.USER_LOGGED_IN]: TBaseEvent<'USER_LOGGED_IN'>
+    [ENUM_USER_EVENTS.USER_LOGGED_IN]: TBaseEvent<'USER_LOGGED_IN'>&{
+        logData: TBaseEventLogData<'USER_LOGGED_IN'>
+    }
 }

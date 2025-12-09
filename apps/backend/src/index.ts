@@ -4,7 +4,7 @@ import { trpcServer } from '@hono/trpc-server'
 import { getApiContext } from '@server/lib/context'
 import { hc } from 'hono/client'
 import { cors } from 'hono/cors'
-import { logger } from 'hono/logger'
+import { logger as honoLogger } from 'hono/logger'
 import { ENV } from './env'
 import honoFactory from './lib/hono/hono-factory'
 import LookUpEnumsValidation from './modules/infrastructure/database/helpers/validate-lookup'
@@ -17,7 +17,11 @@ import webHookApp from './modules/interfaces/rest-routers/web-hook'
 import { createWebSocketRoute } from './modules/interfaces/rest-routers/websocket/websocket'
 import { createTRPCContext } from './trpc/init'
 import { appRouter } from './trpc/routers'
+import logger from '@repo/logger'
+import { startWorkers, JobType } from '@repo/jobs'
 process.env.TZ = 'UTC';
+
+startWorkers()
 
 
 
@@ -41,7 +45,7 @@ const { injectWebSocket, upgradeWebSocket } = createNodeWebSocket({ app })
 
 
 
-app.use(logger())
+app.use(honoLogger())
 // app.use(limiter)
 
 
@@ -68,18 +72,11 @@ app.use(async (c, next) => {
   const ctx = getApiContext();
   const eventCallbackQueue = ctx.eventCallbackQueue
   const eventCallbackQueueAfterRequest = eventCallbackQueue.filter((callback) => callback.isAfterRequest)
-  const eventCallbackQueueBeforeRequest = eventCallbackQueue.filter((callback) => !callback.isAfterRequest)
-
-
-  //!TODO: this might cause a race condition or memory leak.
-  eventCallbackQueueBeforeRequest.forEach((callback) => {
-    callback.callback()
-  })
+  console.log(eventCallbackQueueAfterRequest, 'eventCallbackQueueAfterRequest')
+  await Promise.all(eventCallbackQueue.filter((callback) => callback.isSync).map((callback) => callback.callback()));
 
   setTimeout(() => {
-    eventCallbackQueueAfterRequest.forEach((callback) => {
-      callback.callback()
-    })
+    eventCallbackQueueAfterRequest.filter((callback) => !callback.isSync).map((callback) => callback.callback())
   }, 0)
 
 
@@ -96,8 +93,8 @@ app.use(
     createContext: async (opts, c) => {
       return await createTRPCContext(c)
     },
-    onError:(opts)=>{
-      console.log(JSON.stringify(opts.error, null, 5),'opts')
+    onError: (opts) => {
+      console.log(JSON.stringify(opts.error, null, 5), 'opts')
     }
   })
 )

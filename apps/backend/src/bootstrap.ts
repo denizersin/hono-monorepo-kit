@@ -25,3 +25,6 @@ export const authService = new AuthService(userRepository, wpClientService, coun
 export const userService = new UserService(userRepository)
 export const companyService = new CompanyService(companyRepository)
 export const characterService = new CharacterService(characterRepository)
+
+
+

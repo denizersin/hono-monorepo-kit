@@ -11,7 +11,7 @@ export const ENUM_CHARACTER_EVENTS = {
 } as const
 
 export type TCharacterEvent = keyof typeof ENUM_CHARACTER_EVENTS
-
+ 
 
 export const ENUM_CHARACTER_EVENT_IDS: Record<TCharacterEvent, number> = {
     CHARACTER_CREATED: 201,
@@ -45,12 +45,12 @@ export type TEventCharacterData = {
         contextData: {
 
             //supose this will be called by the service1 
-            service1: {
+            service1?: {
                 moreField1: string,
                 moreField2: string,
             },
             //supose this will be called by the service2
-            service2: {
+            service2?: {
                 moreField1: string,
                 moreField2: string,
             },

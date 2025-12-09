@@ -58,6 +58,7 @@ EventBus.onGlobal(async (eventName, payload) => {
     if (payload.type === ENUM_CHARACTER_EVENTS.CHARACTER_CREATED) {
 
 
+        
 
     }
 
@@ -72,9 +73,7 @@ EventBus.onGlobal(async (eventName, payload) => {
         await db.insert(tblLog).values({
             eventId: ENUM_ALL_EVENT_IDS[payload.type],
             eventName: payload.type,
-            eventData: {
-                ...payload.logData,
-            } as TBaseEventLogData<typeof payload.type>,
+            eventData: payload.logData,
             createdAt: new Date(),
         })
     }
