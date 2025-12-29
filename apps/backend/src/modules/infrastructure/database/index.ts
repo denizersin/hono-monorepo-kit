@@ -54,10 +54,7 @@ let db: TDB;
 db = drizzle({ client: pool, schema });
 
 
-db.insert(tblLanguage).values({
-  name: 'English',
-  code: 'en'
-})
+
 
 export default db
 

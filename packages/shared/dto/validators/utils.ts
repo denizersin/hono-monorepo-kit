@@ -17,11 +17,11 @@ const basePaginationSchema = z.object({
 export const basePaginationQuerySchema = z.object({
     pagination: basePaginationSchema,
     global_search: z.string().optional(),
-    filter: z.object({}),
-    sort: z.array(z.object({
-        sortBy: z.enum(['asc', 'desc']),
-        sortField: z.string(),
-    }))
+    // filter: z.object({}).optional(),
+    // sort: z.array(z.object({
+    //     sortBy: z.enum(['asc', 'desc']),
+    //     sortField: z.any(),
+    // })).optional(),
 
 })
 

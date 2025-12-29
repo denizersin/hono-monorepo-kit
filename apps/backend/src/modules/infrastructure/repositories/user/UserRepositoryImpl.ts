@@ -1,14 +1,14 @@
 import { IUserRepository } from "@server/modules/domain/repositories/IUserRepository";
 import TUserEntity from "@server/modules/domain/entities/user/User";
 import db from "../../database";
-import { and, eq } from "drizzle-orm";
-import {  tblUser } from "@repo/shared/schema";
+import { and, eq, sql } from "drizzle-orm";
+import { tblUser } from "@repo/shared/schema";
 import { TSession } from "@repo/shared/types";
 
 
 export class UserRepositoryImpl implements IUserRepository {
 
-    async getUserById(id: number): Promise<TUserEntity.TUser|undefined> {
+    async getUserById(id: number): Promise<TUserEntity.TUser | undefined> {
         const user = await db.query.tblUser.findFirst({
             where: eq(tblUser.id, id)
         })
@@ -17,13 +17,13 @@ export class UserRepositoryImpl implements IUserRepository {
 
     async getUserByIdStrict(id: number): Promise<TUserEntity.TUser> {
         const user = await this.getUserById(id)
-        if(!user) {
+        if (!user) {
             throw new Error("User Entity not found")
         }
         return user
     }
 
-    async getUserByEmail(email: string): Promise<TUserEntity.TUser|undefined> {
+    async getUserByEmail(email: string): Promise<TUserEntity.TUser | undefined> {
         const user = await db.query.tblUser.findFirst({
             where: eq(tblUser.email, email)
         })
@@ -31,25 +31,33 @@ export class UserRepositoryImpl implements IUserRepository {
     }
 
     async createUser(user: TUserEntity.TUserInsert): Promise<number> {
-        const [newUser] = await db.insert(tblUser).values(user).returning({id:tblUser.id})
-        if(!newUser) {
+        const [newUser] = await db.insert(tblUser).values(user).returning({ id: tblUser.id })
+        if (!newUser) {
             throw new Error("User not created")
         }
+
+        await db.execute(sql`
+            SELECT setval(
+              pg_get_serial_sequence('user', 'id'),
+              COALESCE((SELECT MAX(id) FROM "user"), ${newUser.id}),
+              true
+            )
+          `);
         return newUser.id
     }
 
-    async getUserByEmailAndPassword(email: string, password: string): Promise<TUserEntity.TUser|undefined> {
+    async getUserByEmailAndPassword(email: string, password: string): Promise<TUserEntity.TUser | undefined> {
         const user = await db.query.tblUser.findFirst({
             where: and(eq(tblUser.email, email), eq(tblUser.password, password))
         })
         return user;
     }
 
-    async getSessionUser(user:TUserEntity.TUser): Promise<TSession['user']> {
-        const {password, ...userWithoutPassword} = user
+    async getSessionUser(user: TUserEntity.TUser): Promise<TSession['user']> {
+        const { password, ...userWithoutPassword } = user
         return userWithoutPassword
     }
-    async updateUser({id, data}: {id: number, data: Partial<TUserEntity.TUser>}): Promise<void> {
+    async updateUser({ id, data }: { id: number, data: Partial<TUserEntity.TUser> }): Promise<void> {
         await db.update(tblUser).set(data).where(eq(tblUser.id, id))
     }
 }

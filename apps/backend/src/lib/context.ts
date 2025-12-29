@@ -1,4 +1,3 @@
-import { startTransactionPromisfy } from "@server/modules/infrastructure/database";
 import { apiContext } from "./hono/hono-factory";
 import { TApiContextRaw } from "./hono/types";
 
@@ -29,29 +28,6 @@ export function getApiContext(...requiredFields: ContextField[]): TApiContextRaw
 export function initApiContext(ctx: TApiContextRaw) {
     apiContext.enterWith({
         ...ctx,
-        startTrx: async () => {
-            const trx = await startTransactionPromisfy()
-            apiContext.enterWith({
-                ...ctx,
-                trx
-            })
-        },
-        updateContextData: (data) => {
-            if (typeof data === 'function') {
-                const result = data(ctx.contextData)
-                if (result) {
-                    apiContext.enterWith({
-                        ...ctx,
-                        contextData: result,
-                    })
-                }
-            } else {
-                apiContext.enterWith({
-                    ...ctx,
-                    contextData: data
-                })
-            }
-        }
     })
 }
 

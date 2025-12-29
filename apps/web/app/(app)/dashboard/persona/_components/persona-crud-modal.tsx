@@ -9,12 +9,11 @@ import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
+import { useGetCompanyLanguages } from "@/hooks/constant-queries"
 import { TSchemaCharacter } from "@repo/shared/schema"
 import { characterValidator } from "@repo/shared/validators"
-import { useMutation, useQuery } from "@tanstack/react-query"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { z } from "zod"
-import { useQueryClient } from "@tanstack/react-query"
-import { useGetCompanyLanguages, useGetLanguages } from "@/hooks/constant-queries"
 
 type PersonaCrudModalProps = {
     isOpen: boolean
@@ -41,7 +40,7 @@ export function PersonaCrudModal({ isOpen, setIsOpen, initial }: PersonaCrudModa
     }
 
 
-    const { data: languages } = useGetCompanyLanguages()
+    const { data: languages,isLoading } = useGetCompanyLanguages()
 
 
 
@@ -108,11 +107,13 @@ export function PersonaCrudModal({ isOpen, setIsOpen, initial }: PersonaCrudModa
                     } else return undefined
                 })
             })
+
+            console.log(form.getValues(), 'form.getValues()')
         } else {
             console.log('reset')
             form.reset()
         }
-    }, [isOpen, initial])
+    }, [isOpen, initial,isLoading])
 
 
 

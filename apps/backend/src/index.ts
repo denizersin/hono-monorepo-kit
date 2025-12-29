@@ -17,13 +17,11 @@ import webHookApp from './modules/interfaces/rest-routers/web-hook'
 import { createWebSocketRoute } from './modules/interfaces/rest-routers/websocket/websocket'
 import { createTRPCContext } from './trpc/init'
 import { appRouter } from './trpc/routers'
-import logger from '@repo/logger'
-import { startWorkers, JobType } from '@repo/jobs'
 process.env.TZ = 'UTC';
 
-startWorkers()
 
 
+ 
 
 
 
@@ -63,25 +61,6 @@ app.use(
 
 
 
-
-app.use(async (c, next) => {
-  await next()
-
-  //trigger the events that are required to trigger by the end of the request
-
-  const ctx = getApiContext();
-  const eventCallbackQueue = ctx.eventCallbackQueue
-  const eventCallbackQueueAfterRequest = eventCallbackQueue.filter((callback) => callback.isAfterRequest)
-  console.log(eventCallbackQueueAfterRequest, 'eventCallbackQueueAfterRequest')
-  await Promise.all(eventCallbackQueue.filter((callback) => callback.isSync).map((callback) => callback.callback()));
-
-  setTimeout(() => {
-    eventCallbackQueueAfterRequest.filter((callback) => !callback.isSync).map((callback) => callback.callback())
-  }, 0)
-
-
-
-})
 
 
 

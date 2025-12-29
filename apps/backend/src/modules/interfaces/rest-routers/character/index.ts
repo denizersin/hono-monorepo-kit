@@ -23,36 +23,10 @@ const characterApp = createHonoApp()
         async (c) => {
             const data = c.req.valid('json')
 
-            const output = await characterService.createPersonaWithTranslation(data)
-
-
-            const ctx = getApiContext();
-
-
-            //suppose we are on service 1
-            ctx.updateContextData((curr: TGlobalEvents['CHARACTER_CREATED']['contextData']) => {
-                curr.service1 = {
-                    moreField1: 'qwe',
-                    moreField2: 'asd'
-                }
-            })
-
-            //!TODO: we may define an zod schema for the context data and validate it before emitting the event (is it overengineering?)
-
-            EventBus.emit('CHARACTER_CREATED', {
-                type: ENUM_CHARACTER_EVENTS.CHARACTER_CREATED,
-                input: data,
-                output: {},
-                thisIsCharacterCreated: true,
-                ctx: ctx as TGlobalEvents['CHARACTER_CREATED']['props']['ctx'],
-
-            })
-
-
 
             return c.json(createSuccessResponse({
                 message: 'Persona created successfully',
-                data: {}
+                data: await characterService.createPersonaWithTranslation(data)
             }))
         })
 

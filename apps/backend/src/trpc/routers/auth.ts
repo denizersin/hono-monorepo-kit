@@ -24,17 +24,7 @@ export const authRouter = createTRPCRouter({
 
             const apiContext = getApiContext();
             console.log('11')
-            apiContext.eventCallbackQueue.push({
-                callback: () => EventBus.emit(ENUM_USER_EVENTS.USER_LOGGED_IN, {
-                    type: ENUM_USER_EVENTS.USER_LOGGED_IN,
-                    ctx: apiContext,
-                    logData: {
-                        description: 'qwe',
-                        type: ENUM_USER_EVENTS.USER_LOGGED_IN,
-                        occurredAt: new Date(),
-                    }
-                })
-            })
+
             return ctx.session
         }),
 

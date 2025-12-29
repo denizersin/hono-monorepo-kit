@@ -1,4 +1,4 @@
-import { tblCompany, tblCompanyLanguage, TSchemaCompany } from "@repo/shared/schema"
+import {  tblCompany, tblCompanyLanguage, TSchemaCompany } from "@repo/shared/schema"
 import db from "../../database"
 import { eq } from "drizzle-orm"
 
@@ -12,7 +12,6 @@ export class CompanyRepositoryImpl {
     // this is just to know which language is used in the company
 
     async updateCompanyLanguages(companyLanguages: TSchemaCompany.TCompanyRepositoryTypes.updateCompanyLanguages) {
-
         await db.delete(tblCompanyLanguage).where(eq(tblCompanyLanguage.companyId, companyLanguages.companyId))
         console.log(companyLanguages.languages, 'companyLanguages')
         const promises = companyLanguages.languages.map(async (languageId) => {

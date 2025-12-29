@@ -19,19 +19,10 @@ export interface AppBindings extends Env {
 export type TEventMoreContextData = unknown
 
 export type TApiContextRaw = {
-    session: TSession | null
-    companyId: number | null
-    startTrx: () => Promise<void>
-    trx: TDBTransaction | null
-    ip: string | null
-    contextData: TEventMoreContextData
-    updateContextData: (data: TEventMoreContextData | ((current: TEventMoreContextData) => TEventMoreContextData)) => void
+    readonly session: TSession | null
+    readonly companyId: number | null
+    readonly ip: string | null
+    readonly language: TLanguage
 
-    eventCallbackQueue: {
-        type?: TGlobalEvent
-        isAfterRequest?: boolean
-        callback: (() => Promise<void>) | (() => void)
-        isSync?: boolean
-    }[]
 }
 

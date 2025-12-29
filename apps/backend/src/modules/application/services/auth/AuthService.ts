@@ -2,7 +2,6 @@ import { SahredEnums } from "@repo/shared/enums";
 import { TJWTSession, TRole, TSession } from "@repo/shared/types";
 import { TAuthValidator } from "@repo/shared/validators";
 import { APP_CONSTANTS } from "@server/lib/constants";
-import { getApiContext } from "@server/lib/context";
 import { BadRequestError, ConflictError, CustomError, UnauthorizedError } from "@server/lib/errors";
 import { tryCatch } from "@server/lib/utils";
 import { generateAlphanumericCode } from "@server/lib/uuid-code";
@@ -87,7 +86,6 @@ export class AuthService {
 
 
         EventBus.emit(ENUM_USER_EVENTS.USER_REGISTERED, {
-            ctx: getApiContext(),
             type: ENUM_USER_EVENTS.USER_REGISTERED,
             logData: {
                 type: ENUM_ALL_EVENTS.USER_REGISTERED,

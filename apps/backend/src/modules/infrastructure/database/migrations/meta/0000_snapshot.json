@@ -1,5 +1,5 @@
 {
-  "id": "af2e6049-4ecf-4339-a088-687d0e3ebc63",
+  "id": "970207ea-72b1-4fba-a892-2b6448a4906d",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -229,20 +229,9 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "integer",
+          "type": "serial",
           "primaryKey": true,
-          "notNull": true,
-          "identity": {
-            "type": "byDefault",
-            "name": "user_id_seq",
-            "schema": "public",
-            "increment": "1",
-            "startWith": "1",
-            "minValue": "1",
-            "maxValue": "2147483647",
-            "cache": "1",
-            "cycle": false
-          }
+          "notNull": true
         },
         "company_id": {
           "name": "company_id",

@@ -13,7 +13,7 @@
     }
   },
   "scripts": {
-    "dev": "rm -rf dist && tsc --watch",
+    "dev2": "rm -rf dist && tsc --watch",
     "build": "rm -rf dist && tsc",
     "type-check": "tsc --noEmit"
   },

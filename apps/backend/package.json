@@ -7,7 +7,8 @@
   },
   "type": "module",
   "scripts": {
-    "dev": "tsc --watch & tsx watch src",
+    "dev": "bun run --hot src/index.ts",
+    "dev2": "tsc --watch & tsx watch src",
     "build": "rm -rf dist && tsc && tsc-alias",
     "start": "node dist/src/index.js",
     "lint": "eslint . --max-warnings 0",
@@ -19,9 +20,9 @@
     "db:drizzle-studio": "npx drizzle-kit studio",
     "initialize-db": "tsx ./src/modules/infrastructure/database/scripts/initialize-db.ts",
     "initialize-new-look-up": "tsx ./src/modules/infrastructure/database/scripts/initialize-new-look-up.ts",
-    "update-db": "pnpm run db:generate && sleep 1 && pnpm run db:migrate",
+    "update-db": "bun run db:generate && sleep 1 && bun run db:migrate",
     "reset-db-step1": "tsx ./src/modules/infrastructure/database/scripts/re-create-db.ts",
-    "reset-db-step2": "rm -rf ./src/modules/infrastructure/database/migrations && pnpm run update-db && pnpm run initialize-db ",
+    "reset-db-step2": "rm -rf ./src/modules/infrastructure/database/migrations && bun run update-db && bun run initialize-db ",
     "drizzle-studio": "npx drizzle-kit studio"
   },
   "dependencies": {
@@ -29,12 +30,14 @@
     "@hono/node-ws": "^1.1.0",
     "@hono/trpc-server": "^0.4.0",
     "@hono/zod-validator": "^0.4.3",
+    "@repo/jobs": "workspace:*",
+    "@repo/logger": "workspace:*",
     "@repo/shared": "workspace:*",
     "@trpc/server": "^11.4.4",
     "@types/jsonwebtoken": "^9.0.9",
     "bull": "^4.16.5",
     "dotenv": "^16.4.7",
-    "drizzle-orm": "^0.44.5",
+    "drizzle-orm": "^0.44.0",
     "drizzle-zod": "^0.7.0",
     "hono": "^4.1.2",
     "hono-rate-limiter": "0.1.0",
@@ -42,9 +45,7 @@
     "pg": "^8.16.3",
     "superjson": "^2.2.2",
     "winston": "^3.17.0",
-    "zod": "^3.24.2",
-    "@repo/logger": "workspace:*",
-    "@repo/jobs": "workspace:*"
+    "zod": "^3.24.2"
   },
   "devDependencies": {
     "@tsconfig/node20": "^20.1.4",

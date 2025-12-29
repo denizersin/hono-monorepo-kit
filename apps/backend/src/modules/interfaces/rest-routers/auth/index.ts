@@ -34,18 +34,18 @@ const authApp = createHonoApp()
 
             const ctx = getApiContext();
             console.log('11')
-            ctx.eventCallbackQueue.push({
-                callback: () => EventBus.emit(ENUM_USER_EVENTS.USER_LOGGED_IN, {
-                    type: ENUM_USER_EVENTS.USER_LOGGED_IN,
-                    ctx: ctx,
-                    logData:{
-                        description:'qwe',
-                        type:ENUM_USER_EVENTS.USER_LOGGED_IN,
-                        occurredAt:new Date(),
-                    }
-                }),
-                isAfterRequest: true
-            })
+            // ctx.eventCallbackQueue.push({
+            //     callback: () => EventBus.emit(ENUM_USER_EVENTS.USER_LOGGED_IN, {
+            //         type: ENUM_USER_EVENTS.USER_LOGGED_IN,
+            //         ctx: ctx,
+            //         logData:{
+            //             description:'qwe',
+            //             type:ENUM_USER_EVENTS.USER_LOGGED_IN,
+            //             occurredAt:new Date(),
+            //         }
+            //     }),
+            //     isAfterRequest: true
+            // })
             console.log('22')
             const session = c.var.session
 

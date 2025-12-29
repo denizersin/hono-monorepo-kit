@@ -1,6 +1,6 @@
 import { client } from "@server/exports/exports"
 import { InferRequestType, InferResponseType } from "hono"
-import { TBaseEvent, TEventCtx, TEventSettings } from "."
+import { TBaseEvent, TEventSettings } from "."
 
 export const ENUM_CHARACTER_EVENTS = {
     CHARACTER_CREATED: 'CHARACTER_CREATED',
@@ -36,31 +36,19 @@ export type TEventCharacterData = {
             type: typeof ENUM_CHARACTER_EVENTS.CHARACTER_CREATED,
             input: InferRequestType<typeof client.character.persona.create.$post>['json'],
             output: InferResponseType<typeof client.character.persona.create.$post>['data']['data'],
-            ctx: TEventCtx<'session'> & {
-                contextData: TEventCharacterData['CHARACTER_CREATED']['contextData']
+            data:{
+
             }
-            thisIsCharacterCreated: true,
 
         },
-        contextData: {
-
-            //supose this will be called by the service1 
-            service1?: {
-                moreField1: string,
-                moreField2: string,
-            },
-            //supose this will be called by the service2
-            service2?: {
-                moreField1: string,
-                moreField2: string,
-            },
-        }
     },
     [ENUM_CHARACTER_EVENTS.CHARACTER_DELETED]: TBaseEvent<'CHARACTER_DELETED'>,
     [ENUM_CHARACTER_EVENTS.CHARACTER_UPDATED]: TBaseEvent<'CHARACTER_UPDATED'> & {
         props: {
             type: typeof ENUM_CHARACTER_EVENTS.CHARACTER_UPDATED
-            ctx: TEventCtx
+            data: {
+
+            }
             logData: {
                 type: typeof ENUM_CHARACTER_EVENTS.CHARACTER_UPDATED,
                 creatorId: number,

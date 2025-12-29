@@ -1,11 +1,11 @@
 import { TMailConfirmationStatus, TRole } from '#/types/index';
-import { boolean, doublePrecision, integer, pgTable, serial, timestamp, varchar } from 'drizzle-orm/pg-core';
+import { bigserial, boolean, doublePrecision, integer, pgEnum, pgTable, serial, timestamp, varchar } from 'drizzle-orm/pg-core';
 import { getDefaultTableFields } from './schemaHelpers';
-
+import { SahredEnums } from '../../enums';
 
 
 export const tblUser = pgTable('user', {
-    id: integer('id').primaryKey().generatedByDefaultAsIdentity(),
+    id: serial('id').primaryKey(),
     companyId: integer('company_id').notNull(),
     password: varchar('password', { length: 255 }).notNull(),
     email: varchar('email', { length: 255 }).notNull(),
@@ -43,7 +43,13 @@ export const tblMailConfirmationStatus = pgTable('mail_confirmation_statuses', {
     name: varchar('name', { length: 255 }).notNull().$type<TMailConfirmationStatus>(),
 });
 
+// export const moodEnum = pgEnum('mood', SahredEnums.getEnumValues(SahredEnums.MailConfirmationStatus) as [string, ...string[]]);
 
+// export const testTaleWithEnum = pgTable('test_tale_with_enum', {
+//     id: serial('id').primaryKey(),
+//     name: varchar('name', { length: 255 }).notNull().$type<TRole>(),
+//     mailConfirmationStatus: moodEnum()
+// });
 
 
 

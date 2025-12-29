@@ -9,7 +9,7 @@ import {
     TSchemaCharacter,
 } from "@repo/shared/schema";
 import TCharacterEntity from "@server/modules/domain/entities/character/Character";
-import { and, asc, count, desc, eq, isNull, like, SQL } from "drizzle-orm";
+import { and, asc, count, countDistinct, desc, eq, isNull, like, SQL } from "drizzle-orm";
 import db from "../../database";
 import { TBaseValidators, TCharacterValidator } from "@repo/shared/validators";
 import { PgColumn } from "drizzle-orm/pg-core";
@@ -182,15 +182,17 @@ export class CharacterRepositoryImpl {
 
         });
 
-        const total = await db.select({
-            count: count()
-        })
+        const total = await db
+            .select({ count: countDistinct(tblPersona.id) })
             .from(tblPersona)
             .leftJoin(tblPersonaTranslation, eq(tblPersona.id, tblPersonaTranslation.personaId))
             .where(whereCondition);
 
 
         const totalCount = total?.[0]?.count || 0
+
+        console.log(totalCount, 'totalCount')
+
         const totalPages = Math.ceil(totalCount / pagination.limit)
         return {
             data: personas,

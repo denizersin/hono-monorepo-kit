@@ -14,6 +14,7 @@ import {
 import { TSchemaCharacter } from "@repo/shared/schema"
 import { useQuery } from "@tanstack/react-query"
 import PersonaCrudModal from "./persona-crud-modal"
+import { CustomPagination } from "@/components/dashboard/custom-pagination"
 
 export const PersonaList = () => {
 
@@ -27,14 +28,13 @@ export const PersonaList = () => {
     const [query, setQuery] = useState<TCharacterValidator.TPersonaPaginationQuery>({
         pagination: {
             page: 1,
-            limit: 10,
+            limit: 5,
         },
         sort: [{
             sortBy: 'asc',
             sortField: 'createdAt'
         }],
         filter: {
-            name: '',
         },
     })
 
@@ -45,6 +45,7 @@ export const PersonaList = () => {
     } = useQuery(trpc.character.getAllPersonasWithTranslations.queryOptions(query))
 
     const data = paginationData?.data
+    const pagination = paginationData?.pagination
 
     return <div>
         <h1>Persona List</h1>
@@ -80,11 +81,11 @@ export const PersonaList = () => {
             </TableBody>
         </Table>
 
-        {/* <CustomPagination
-            paginationData={data}
+        {pagination && <CustomPagination
+            paginationData={pagination}
             pagination={query}
-            setPagination={setQuery}
-        /> */}
+            setPagination={(p) => setQuery({ ...query, pagination: p.pagination })}
+        />}
     </div>
 
 

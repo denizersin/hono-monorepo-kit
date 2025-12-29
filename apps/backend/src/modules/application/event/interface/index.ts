@@ -6,7 +6,6 @@ import { ENUM_USER_EVENT_IDS, ENUM_USER_EVENTS, TEventUserData } from "./user"
 import { TApiContextRaw } from "@server/lib/hono/types"
 
 
-export type TEventCtx<T extends keyof TApiContextRaw = never> = Omit<TApiContext<T>, 'updateContextData' | 'trx' | 'startTrx'>
 
 
 export const ENUM_ALL_EVENTS = {
@@ -47,7 +46,6 @@ export type TBaseEventLogData<T extends keyof typeof ENUM_ALL_EVENTS> = {
 export type TBaseEvent<T extends keyof typeof ENUM_ALL_EVENTS> = {
     props: {
         type: T,
-        ctx: TEventCtx
         logData?: TBaseEventLogData<T>
     }
 }

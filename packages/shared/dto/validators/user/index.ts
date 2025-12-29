@@ -5,14 +5,14 @@ import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
 import { z } from 'zod';
 
 
-const userBaseSelectSchema = createSelectSchema(tblUser,{
+const userBaseSelectSchema = createSelectSchema(tblUser, {
     role: z.enum(SahredEnums.getEnumValuesForZod(SahredEnums.Role))
 })
 
 const userBaseInsertSchema = createInsertSchema(tblUser, {
     role: z.enum(SahredEnums.getEnumValuesForZod(SahredEnums.Role)),
     password: z.string().min(8)
-})  
+})
 
 
 
@@ -33,7 +33,7 @@ const userCreateSchema = userBaseInsertSchema.omit({
 
 const loginEmailAndPasswordSchema = userBaseSelectSchema.pick({
     email: true,
-password: true,
+    password: true,
 })
 
 

@@ -1,22 +1,21 @@
-import React from 'react'
 import {
     Pagination,
     PaginationContent,
-    PaginationEllipsis,
     PaginationItem,
     PaginationLink,
     PaginationNext,
-    PaginationPrevious,
+    PaginationPrevious
 } from "@/components/ui/pagination"
 // import { rowsPerPageToSelectOptions } from '@/lib/constants'
 // import { TBase } from '@repo/shared/validators'
 import { cn } from '@/lib/utils'
 import { TBaseValidators } from '@repo/shared/dto/validators/utils'
 import { CustomComboSelect } from '../custom-ui/custom-combo-select'
+
 type Props = {
     paginationData: TBaseValidators.TPagination<any>['pagination']
     pagination: TBaseValidators.TBasePaginationQuery
-    setPagination: (pagination: TBaseValidators.TBasePaginationQuery) => void
+    setPagination: (p: TBaseValidators.TBasePaginationQuery) => void
     className?: string
 }
 

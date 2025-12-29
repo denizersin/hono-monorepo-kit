@@ -3,6 +3,8 @@ import { getApiContext } from "@server/lib/context";
 import TCharacterEntity from "@server/modules/domain/entities/character/Character";
 import { ICharacterRepository } from "@server/modules/domain/repositories/ICharacterRepository";
 import { CharacterRepositoryImpl } from "@server/modules/infrastructure/repositories/character/CharacterRepositoryImpl";
+import { ENUM_CHARACTER_EVENTS } from "../../event/interface/character";
+import { EventBus } from "../../event";
 
 export class CharacterService {
     constructor(private readonly characterRepository: CharacterRepositoryImpl) { }
@@ -67,14 +69,22 @@ export class CharacterService {
         return this.characterRepository.createCharacterWithRelations(data);
     }
 
-    async updateCharacterWithRelations(data: TCharacterValidator.TUpdateCharacterWithRelations  ) {
+    async updateCharacterWithRelations(data: TCharacterValidator.TUpdateCharacterWithRelations) {
         await this.characterRepository.updateCharacterWithRelations(data);
     }
 
 
     async createPersonaWithTranslation(persona: TCharacterValidator.TCreatePersonaWithTranslation) {
-        const ctx = getApiContext('session', 'companyId');
-        await this.characterRepository.createPersonaWithTranslation(persona)
+        const output = await this.characterRepository.createPersonaWithTranslation(persona)
+
+        EventBus.emit(ENUM_CHARACTER_EVENTS.CHARACTER_CREATED, {
+            type: ENUM_CHARACTER_EVENTS.CHARACTER_CREATED,
+            input: persona,
+            output,
+            data: output
+        })
+
+        return output;
 
     }
 

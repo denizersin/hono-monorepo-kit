@@ -67,7 +67,7 @@ export class BadRequestError extends AppError {
             message: data?.message ?? 'Bad Request',
             code: SahredEnums.STATUS_CODES.BAD_REQUEST,
             errorCode: SahredEnums.STATUS_CODES.BAD_REQUEST,
-            statusCode: 400,
+            statusCode: SahredEnums.STATUS_CODE_IDS.BAD_REQUEST,
             details: data?.details,
             toast: data?.toast,
             isFromTrpcErrorInstance: data?.isFromTrpcErrorInstance ?? false
@@ -82,7 +82,7 @@ export class UnauthorizedError extends AppError {
             message: data?.message ?? 'You are not authorized to access this resource',
             code: SahredEnums.STATUS_CODES.UNAUTHORIZED,
             errorCode: SahredEnums.STATUS_CODES.UNAUTHORIZED,
-            statusCode: 401,
+            statusCode: SahredEnums.STATUS_CODE_IDS.UNAUTHORIZED,
             toast: data?.toast,
             details: data?.details,
             isFromTrpcErrorInstance: data?.isFromTrpcErrorInstance ?? false
@@ -97,7 +97,7 @@ export class ForbiddenError extends AppError {
             message: data?.message ?? 'Forbidden',
             code: SahredEnums.STATUS_CODES.FORBIDDEN,
             errorCode: SahredEnums.STATUS_CODES.FORBIDDEN,
-            statusCode: 403,
+            statusCode: SahredEnums.STATUS_CODE_IDS.FORBIDDEN,
             toast: data?.toast,
             details: data?.details,
             isFromTrpcErrorInstance: data?.isFromTrpcErrorInstance ?? false
@@ -112,7 +112,7 @@ export class NotFoundError extends AppError {
             message: data?.message ?? 'Not Found',
             code: SahredEnums.STATUS_CODES.NOT_FOUND,
             errorCode: SahredEnums.STATUS_CODES.NOT_FOUND,
-            statusCode: 404,
+            statusCode: SahredEnums.STATUS_CODE_IDS.NOT_FOUND,
             toast: data?.toast,
             details: data?.details,
             isFromTrpcErrorInstance: data?.isFromTrpcErrorInstance ?? false
@@ -127,7 +127,7 @@ export class ConflictError extends AppError {
             message: data?.message ?? 'Conflict',
             code: SahredEnums.STATUS_CODES.CONFLICT,
             errorCode: SahredEnums.STATUS_CODES.CONFLICT,
-            statusCode: 409,
+            statusCode: SahredEnums.STATUS_CODE_IDS.CONFLICT,
             toast: data?.toast,
             details: data?.details,
             isFromTrpcErrorInstance: data?.isFromTrpcErrorInstance ?? false
@@ -142,7 +142,7 @@ export class InternalServerError extends AppError {
             message: data?.message ?? 'Internal Server Error',
             code: SahredEnums.STATUS_CODES.INTERNAL_SERVER_ERROR,
             errorCode: SahredEnums.STATUS_CODES.INTERNAL_SERVER_ERROR,
-            statusCode: 500,
+            statusCode: SahredEnums.STATUS_CODE_IDS.INTERNAL_SERVER_ERROR,
             toast: data?.toast,
             details: data?.details,
             isFromTrpcErrorInstance: data?.isFromTrpcErrorInstance ?? false
@@ -157,7 +157,7 @@ export class CustomError extends AppError {
             message: data?.message ?? 'An unknown error occurred'   ,
             code: data?.code ?? SahredEnums.STATUS_CODES.INTERNAL_SERVER_ERROR,
             errorCode: data?.errorCode ?? SahredEnums.STATUS_CODES.INTERNAL_SERVER_ERROR,
-            statusCode: data?.statusCode ?? 500,
+            statusCode: data?.statusCode ?? SahredEnums.STATUS_CODE_IDS.INTERNAL_SERVER_ERROR,
             details: data?.details,
             toast: data?.toast,
             isFromTrpcErrorInstance: data?.isFromTrpcErrorInstance ?? false
@@ -190,7 +190,7 @@ export const createError = (error: AppError): TErrorResponse['errors'][number] =
     errorCode: error.errorCode,
     toast: error.toast,
     isFromTrpcErrorInstance: error.isFromTrpcErrorInstance ?? false,
-    statusCode: error.statusCode ?? 500
+    statusCode: error.statusCode ?? SahredEnums.STATUS_CODE_IDS.INTERNAL_SERVER_ERROR
 })
 
 export const createSuccessResponse = <T>(data: T): TSuccessResponse<T> => ({
@@ -231,13 +231,13 @@ export const handleAppError = (c: Context, error: unknown) => {
     if (error instanceof Error) {
         return c.json(createErrorResponse([
             new InternalServerError({ message: error.message + ' unique error code:' + errorCode })
-        ]), 500)
+        ]), SahredEnums.STATUS_CODE_IDS.INTERNAL_SERVER_ERROR)
     }
 
 
     return c.json(createErrorResponse([
         new InternalServerError({ message: 'An unknown error occurred' + ' unique error code:' + errorCode })
-    ]), 500)
+    ]), SahredEnums.STATUS_CODE_IDS.INTERNAL_SERVER_ERROR)
 }
 
 

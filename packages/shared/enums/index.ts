@@ -2,9 +2,17 @@ import type { TChatType, TEnum, TLanguage, TMailConfirmationStatus, TModel, TRol
 
 
 const EnumRole: Record<TRole, TRole> = {
+    SUPER_ADMIN: 'SUPER_ADMIN',
     ADMIN: 'ADMIN',
     USER: 'USER',
-    OWNER: 'OWNER'
+    OWNER: 'OWNER',
+} as const;
+
+const EnumRoleId: Record<TRole, number> = {
+    SUPER_ADMIN: 1,
+    ADMIN: 2,
+    USER: 3,
+    OWNER: 4,
 } as const;
 
 

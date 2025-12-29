@@ -4,7 +4,7 @@ import { SahredEnums } from "../enums/index";
 
 export type TEnum = Record<string, string> & { readonly [key: string]: string }
 
-export type TRole = "ADMIN" | "USER" | "OWNER"
+export type TRole = "SUPER_ADMIN" | "ADMIN" | "USER" | "OWNER"
 
 export type TRoles = {
     [key in TRole]: key
@@ -30,6 +30,11 @@ interface TBaseSession {
     user: Omit<TSchemaUser.TTblUserSelect, 'password'>
 }
 
+export interface TSuperAdminSession extends TBaseSession {
+    role: typeof SahredEnums.Role.SUPER_ADMIN
+    companyId: number
+}
+
 export interface TAdminSession extends TBaseSession {
     role: typeof SahredEnums.Role.ADMIN
     companyId: number
@@ -44,7 +49,7 @@ export interface TOwnerSession extends TBaseSession {
     companyId: number
 }
 
-export type TSession = TAdminSession | TUserSession | TOwnerSession
+export type TSession = TSuperAdminSession | TAdminSession | TUserSession | TOwnerSession
 
 export type TJWTSession = {
     role: TRole

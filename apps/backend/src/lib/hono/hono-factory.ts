@@ -24,6 +24,21 @@ export default createFactory<AppBindings>({
       console.log('errr23')
       return handleAppError(c, err)
     })
+
+
+    app.use(
+      //no need to set variable because it is already set itself globally !!
+      languageDetector({
+        supportedLanguages: SahredEnums.getEnumValues(SahredEnums.Language), // Must include fallback
+        fallbackLanguage: SahredEnums.Language.en, // Required
+        order: ['header', 'cookie'],
+        cookieOptions: {
+          sameSite: 'None'
+        }
+      })
+    )
+
+
     app.use(async (c, next) => {
 
       const session = await getSafeSessionFromContext(c)
@@ -39,13 +54,9 @@ export default createFactory<AppBindings>({
 
       initApiContext({
         session,
+        language: c.get('language'),
         companyId: companyIdInt,
-        trx: null,
-        contextData: {},
-        updateContextData: (data: unknown) => { },
-        startTrx: async () => { },
-        ip: c.req.header('x-forwarded-for') || null,
-        eventCallbackQueue: []
+        ip: c.req.header('x-forwarded-for') || c.req.header('x-real-ip') || null,
       })
 
 
@@ -56,17 +67,6 @@ export default createFactory<AppBindings>({
     });
 
 
-    app.use(
-      //no need to set variable because it is already set itself globally !!
-      languageDetector({
-        supportedLanguages: SahredEnums.getEnumValues(SahredEnums.Language), // Must include fallback
-        fallbackLanguage: SahredEnums.Language.en, // Required
-        order: ['header', 'cookie'],
-        cookieOptions: {
-          sameSite: 'None'
-        }
-      })
-    )
 
   },
 

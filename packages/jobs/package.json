@@ -16,7 +16,7 @@
     "dev": "rm -rf dist && tsc --watch",
     "build": "rm -rf dist && tsc",
     "type-check": "tsc --noEmit",
-    "start": "node dist/index.js"
+    "start-workers": "bun run worker.ts"
   },
   "keywords": [
     "bull",
