@@ -1,9 +1,11 @@
 import { IUserRepository } from "@server/modules/domain/repositories/IUserRepository";
 import TUserEntity from "@server/modules/domain/entities/user/User";
 import db from "../../database";
-import { and, eq, sql } from "drizzle-orm";
+import { and, asc, count, desc, eq, isNull, like, or, sql, SQL } from "drizzle-orm";
 import { tblUser } from "@repo/shared/schema";
 import { TSession } from "@repo/shared/types";
+import { TBaseValidators, TUserValidator } from "@repo/shared/validators";
+import { PgColumn } from "drizzle-orm/pg-core";
 
 
 export class UserRepositoryImpl implements IUserRepository {
@@ -59,6 +61,93 @@ export class UserRepositoryImpl implements IUserRepository {
     }
     async updateUser({ id, data }: { id: number, data: Partial<TUserEntity.TUser> }): Promise<void> {
         await db.update(tblUser).set(data).where(eq(tblUser.id, id))
+    }
+
+    async deleteUser(id: number): Promise<void> {
+        // Soft delete: set deletedAt timestamp
+        await db.update(tblUser).set({ deletedAt: new Date() }).where(eq(tblUser.id, id))
+    }
+
+    async getAllUsersWithPagination(
+        input: TUserValidator.TUserPaginationQuery,
+        companyId: number
+    ): Promise<TBaseValidators.TPagination<Omit<TUserEntity.TUser, 'password'>>> {
+        const { pagination, sort, global_search, filter } = input;
+
+        const andConditions: SQL<unknown>[] = [];
+
+        // Company filter - users can only see users from their company
+        andConditions.push(eq(tblUser.companyId, companyId));
+
+        if (filter.name) {
+            andConditions.push(like(tblUser.name, `%${filter.name}%`));
+        }
+
+        if (filter.email) {
+            andConditions.push(like(tblUser.email, `%${filter.email}%`));
+        }
+
+        if (filter.role) {
+            andConditions.push(eq(tblUser.role, filter.role));
+        }
+
+        if (global_search) {
+            andConditions.push(
+                or(
+                    like(tblUser.name, `%${global_search}%`),
+                    like(tblUser.email, `%${global_search}%`),
+                    like(tblUser.fullName, `%${global_search}%`)
+                )!
+            );
+        }
+
+        const whereCondition: SQL<unknown> | undefined = and(
+            isNull(tblUser.deletedAt),
+            ...andConditions
+        );
+
+        const calculatedOrderBys: SQL<unknown>[] = [];
+        const sortMapper = {
+            'asc': asc,
+            'desc': desc
+        };
+        const columnMapper: Record<TUserValidator.TUserPaginationQuerySortKeys, PgColumn> = {
+            'name': tblUser.name,
+            'email': tblUser.email,
+            'createdAt': tblUser.createdAt,
+        };
+
+        sort.forEach(s => {
+            calculatedOrderBys.push(sortMapper[s.sortBy](columnMapper[s.sortField]));
+        });
+
+        const users = await db.query.tblUser.findMany({
+            limit: pagination.limit,
+            where: whereCondition,
+            offset: (pagination.page - 1) * pagination.limit,
+            orderBy: calculatedOrderBys,
+            columns: {
+                password: false,
+            }
+        });
+
+        const total = await db
+            .select({ count: count() })
+            .from(tblUser)
+            .where(whereCondition);
+
+        const totalCount = total?.[0]?.count || 0;
+        const totalPages = Math.ceil(totalCount / pagination.limit);
+
+        return {
+            data: users,
+            pagination: {
+                page: pagination.page,
+                limit: pagination.limit,
+                total: totalCount,
+                totalPages: totalPages
+            }
+        };
     }
 }
 

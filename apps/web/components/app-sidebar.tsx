@@ -51,6 +51,11 @@ const data = {
       icon: IconListDetails,
     },
     {
+      title: "Persona",
+      url: "/dashboard/persona",
+      icon: IconFileDescription,
+    },
+    {
       title: "Analytics",
       url: "#",
       icon: IconChartBar,
@@ -61,8 +66,8 @@ const data = {
       icon: IconFolder,
     },
     {
-      title: "Team",
-      url: "#",
+      title: "Users",
+      url: "/dashboard/user",
       icon: IconUsers,
     },
   ],

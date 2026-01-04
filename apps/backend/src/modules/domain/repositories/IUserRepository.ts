@@ -1,4 +1,5 @@
 import { TSession } from "@repo/shared/types";
+import { TBaseValidators, TUserValidator } from "@repo/shared/validators";
 import TUserEntity from "../entities/user/User";
 
 export interface IUserRepository {
@@ -15,5 +16,10 @@ export interface IUserRepository {
         id: number,
         data: Partial<TUserEntity.TUser>
     }): Promise<void>
+    deleteUser(id: number): Promise<void>
+    getAllUsersWithPagination(
+        input: TUserValidator.TUserPaginationQuery,
+        companyId: number
+    ): Promise<TBaseValidators.TPagination<Omit<TUserEntity.TUser, 'password'>>>
 }
 

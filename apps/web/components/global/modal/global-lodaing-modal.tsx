@@ -28,17 +28,23 @@ const LoadingModal = ({ ref }: { ref: React.RefObject<LoadingModalRef | null> })
                 setIsVisible(true);
             },
             queuePromise: async (promises: Promise<any>[]) => {
+
+                const newPromises = promises.filter(p => !activePromises.includes(p));
+
+                if (newPromises.length === 0) {
+                    return;
+                }
+
                 setActivePromises(prevPromises => {
                     const newPromises = promises.filter(p => !prevPromises.includes(p));
                     return [...prevPromises, ...newPromises];
                 });
                 setIsVisible(true);
-                PROMISE_VERSION++;
                 let version = PROMISE_VERSION;
                 await tryCatch(Promise.all(promises))
-                if (version !== PROMISE_VERSION) {
-                    return;
-                }
+                // if (version !== PROMISE_VERSION) {
+                //     return;
+                // }
                 setActivePromises(prevPromises =>
                     prevPromises.filter(p => !promises.includes(p))
                 );
@@ -119,4 +125,12 @@ export const useSingleLoadingModal = (promise: Promise<unknown>) => {
         LoadingManager.queuePromise([promise])
     }, [promise])
 
+}
+
+
+export const useMultipleLoadingModal = (promises: Promise<unknown>[]) => {
+    useEffect(() => {
+        LoadingManager.queuePromise(promises)
+        // LoadingManager.queuePromise(promises)
+    }, [promises])
 }

@@ -16,7 +16,6 @@ export class UserService {
         const session = ctx.session;
 
         EventBus.emit(ENUM_USER_EVENTS.USER_CREATED, {
-            ctx,
             type: ENUM_USER_EVENTS.USER_CREATED,
             logData: {
                 type: ENUM_USER_EVENTS.USER_CREATED,

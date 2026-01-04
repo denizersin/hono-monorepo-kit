@@ -3,6 +3,7 @@ import { tblUser } from '../../schema';
 import type { TSchemaUser } from '../../schema';
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
 import { z } from 'zod';
+import { basePaginationQuerySchema, defaultOmitFieldsSchema } from '../utils';
 
 
 const userBaseSelectSchema = createSelectSchema(tblUser, {
@@ -42,7 +43,47 @@ const userPreferencesSchema = z.object({
     theme: z.enum(SahredEnums.getEnumValuesForZod(SahredEnums.Theme))
 })
 
+// Owner creates user schema (limited roles: USER only)
+const ownerCreateUserSchema = userBaseInsertSchema.omit({
+    role: true,
+    companyId: true,
+}).extend({
+    role: z.literal(SahredEnums.Role.USER).default(SahredEnums.Role.USER),
+})
 
+// Owner update user schema
+const ownerUpdateUserSchema = userBaseInsertSchema.omit({
+    role: true,
+    companyId: true,
+    password: true,
+}).partial()
+
+// Pagination query schema for users
+type TUserSortKeys = keyof Pick<TSchemaUser.TTblUserSelect, 'name' | 'email' | 'createdAt'>
+const userPaginationSortFields = ['name', 'email', 'createdAt'] as TUserSortKeys[]
+
+const userPaginationQuerySchema = basePaginationQuerySchema.extend({
+    sort: z.array(z.object({
+        sortBy: z.enum(['asc', 'desc']),
+        sortField: z.enum(userPaginationSortFields as [TUserSortKeys, ...TUserSortKeys[]]),
+    })),
+    filter: z.object({
+        name: z.string().optional(),
+        email: z.string().optional(),
+        role: z.enum(SahredEnums.getEnumValuesForZod(SahredEnums.Role)).optional(),
+    })
+})
+
+// Update user by id schema
+const updateUserByIdSchema = z.object({
+    id: z.number(),
+    data: ownerUpdateUserSchema,
+})
+
+// Delete user by id schema
+const deleteUserByIdSchema = z.object({
+    id: z.number(),
+})
 
 
 export const userValidator = {
@@ -51,7 +92,12 @@ export const userValidator = {
     adminCreateUserSchema,
     loginEmailAndPasswordSchema,
     userCreateSchema,
-    userPreferencesSchema
+    userPreferencesSchema,
+    ownerCreateUserSchema,
+    ownerUpdateUserSchema,
+    userPaginationQuerySchema,
+    updateUserByIdSchema,
+    deleteUserByIdSchema,
 }
 
 
@@ -70,6 +116,12 @@ export namespace TUserValidator {
     export type TAdminCreateUserSchema = z.infer<typeof adminCreateUserSchema>;
     export type TUserCreateSchema = z.infer<typeof userCreateSchema>;
     export type TLoginEmailAndPasswordSchema = z.infer<typeof loginEmailAndPasswordSchema>;
+    export type TOwnerCreateUserSchema = z.infer<typeof ownerCreateUserSchema>;
+    export type TOwnerUpdateUserSchema = z.infer<typeof ownerUpdateUserSchema>;
+    export type TUserPaginationQuery = z.infer<typeof userPaginationQuerySchema>;
+    export type TUserPaginationQuerySortKeys = TUserSortKeys;
+    export type TUpdateUserByIdSchema = z.infer<typeof updateUserByIdSchema>;
+    export type TDeleteUserByIdSchema = z.infer<typeof deleteUserByIdSchema>;
 }
 
 

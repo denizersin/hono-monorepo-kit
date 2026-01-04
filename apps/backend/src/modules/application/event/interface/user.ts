@@ -1,5 +1,5 @@
 
-import { TBaseEvent, TBaseEventLogData, TEventCtx } from "."
+import { TBaseEvent, TBaseEventLogData } from "."
 
 
 export const ENUM_USER_EVENTS = {
@@ -28,7 +28,6 @@ export type TEventUserData = {
         props: {
             type: typeof ENUM_USER_EVENTS.USER_CREATED,
             userField: 'asd'
-            ctx: TEventCtx
             logData: TBaseEventLogData<'USER_CREATED'>&{
                 userField: 'asd'
             }

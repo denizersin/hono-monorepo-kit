@@ -1,5 +1,5 @@
 import { countryRepository, languageRepository } from "@server/bootstrap"
-import { createTRPCRouter, publicProcedure } from "../init"
+import { createTRPCRouter, protectedProcedure, publicProcedure } from "../init"
 
 export const constantsRouter = createTRPCRouter({
     getCountries: publicProcedure.query(async () => {
@@ -8,7 +8,7 @@ export const constantsRouter = createTRPCRouter({
     getLanguages: publicProcedure.query(async () => {
         return await languageRepository.getLanguages()
     }),
-    getCompanyLanguages: publicProcedure.query(async () => {
-        return await languageRepository.getCompanyLanguages()
+    getCompanyLanguages: protectedProcedure.query(async ({ ctx }) => {
+        return await languageRepository.getCompanyLanguages({ companyId: ctx.session.companyId })
     })
 })

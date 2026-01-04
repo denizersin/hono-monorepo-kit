@@ -28,6 +28,8 @@ export type TTheme = "light" | "dark"
 interface TBaseSession {
     role: TRole
     user: Omit<TSchemaUser.TTblUserSelect, 'password'>
+    companyId: number
+
 }
 
 export interface TSuperAdminSession extends TBaseSession {

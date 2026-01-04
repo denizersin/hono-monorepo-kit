@@ -6,6 +6,9 @@ import { initTRPC, TRPCError } from "@trpc/server";
 import { Context } from "hono";
 import superjson from "superjson";
 import { ZodError } from "zod";
+
+
+
 type TRPCContext = AppBindings['Variables'] & {
     c: Context<AppBindings>
 }
@@ -92,7 +95,8 @@ export const protectedProcedure = t.procedure.use(async (opts) => {
     return opts.next({
         ctx: {
             ...opts.ctx,
-            session: opts.ctx.session
+            session: opts.ctx.session,
+            companyId: opts.ctx.companyId
         }
     })
 })
@@ -124,7 +128,8 @@ export const ownerProcedure = protectedProcedure.use(async (opts) => {
     return opts.next({
         ctx: {
             ...opts.ctx,
-            session: opts.ctx.session
+            session: opts.ctx.session,
+            companyId: opts.ctx.companyId!
         }
     })
 })
