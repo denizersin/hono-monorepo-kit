@@ -19,6 +19,9 @@ export const authRouter = createTRPCRouter({
             if (!ctx.session) {
                 throw createTRPCError({
                     code: 'UNAUTHORIZED',
+                    data: {
+
+                    }
                 })
             }
 
@@ -62,4 +65,19 @@ export const authRouter = createTRPCRouter({
         const result = await authService.verifyToken(input.token)
         return result
     }),
+
+    testMutation: publicProcedure
+        .input(z.object({
+            message: z.string()
+        }))
+        .mutation(async ({ ctx, input }) => {
+            return {
+                message: input.message
+            }
+        }),
+    healthCheck: publicProcedure.query(async ({ ctx }) => {
+        return {
+            message: 'OK'
+        }
+    })
 })

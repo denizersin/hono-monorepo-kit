@@ -1,5 +1,4 @@
 import { startTransactionPromisfy, TDBTransaction } from "@server/modules/infrastructure/database";
-import schema from "@server/modules/infrastructure/database/schema";
 
 // Unit of Work pattern
 export class UnitOfWork {

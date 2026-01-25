@@ -37,16 +37,16 @@ type Props = Omit<ImageProps, "src"> & {
   srcDark: string;
 };
 
-const ThemeImage = (props: Props) => {
-  const { srcLight, srcDark, ...rest } = props;
+// const ThemeImage = (props: Props) => {
+//   const { srcLight, srcDark, ...rest } = props;
 
-  return (
-    <>
-      <Image {...rest} src={srcLight} className="imgLight" />
-      <Image {...rest} src={srcDark} className="imgDark" />
-    </>
-  );
-};
+//   return (
+//     <>
+//       <Image {...rest} src={srcLight} className="imgLight" />
+//       <Image {...rest} src={srcDark} className="imgDark" />
+//     </>
+//   );
+// };
 
 
 
@@ -57,7 +57,17 @@ export default function Home() {
 
   const query2 = useQuery(trpc.auth.getSession.queryOptions())
 
-  console.log(query2.data, 'query2')
+  // console.log(query2.error, 'query2')
+
+  useEffect(() => {
+
+    // if (
+    //   query2.error && isErrorResponse(query2.error)
+    // ) {
+
+    // }
+
+  }, [query2.error])
 
 
 

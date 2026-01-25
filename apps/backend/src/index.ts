@@ -20,8 +20,11 @@ import { appRouter } from './trpc/routers'
 process.env.TZ = 'UTC';
 
 
- 
-  
+
+
+
+
+
 
 
 
@@ -114,10 +117,7 @@ async function startServer() {
 startServer()
 
 
-export type AppType = typeof routes
 
 
-const client = hc<typeof routes>('')
 
-export type Client = typeof client
 

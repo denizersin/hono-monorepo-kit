@@ -1,7 +1,8 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "baseUrl": ".",
+    //error aliyorduk yoruma aldik!
+    // "baseUrl": ".",
     "outDir": "./dist",
     "paths": {
       "#/*": [

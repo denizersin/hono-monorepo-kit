@@ -19,7 +19,7 @@ type AppErrorParams2 = {
 }
 
 
-type AppErrorParams={
+type AppErrorParams = {
     message: string
     code: string
     errorCode: TErrorCode
@@ -154,7 +154,7 @@ export class InternalServerError extends AppError {
 export class CustomError extends AppError {
     constructor(data?: Partial<AppErrorParams>) {
         super({
-            message: data?.message ?? 'An unknown error occurred'   ,
+            message: data?.message ?? 'An unknown error occurred',
             code: data?.code ?? SahredEnums.STATUS_CODES.INTERNAL_SERVER_ERROR,
             errorCode: data?.errorCode ?? SahredEnums.STATUS_CODES.INTERNAL_SERVER_ERROR,
             statusCode: data?.statusCode ?? SahredEnums.STATUS_CODE_IDS.INTERNAL_SERVER_ERROR,
@@ -199,7 +199,7 @@ export const createSuccessResponse = <T>(data: T): TSuccessResponse<T> => ({
 })
 
 export const handleAppError = (c: Context, error: unknown) => {
-    
+
 
     console.log('error', error)
 
@@ -254,6 +254,7 @@ export const createTRPCError = ({ code, data }: {
     }
 
     if (code === 'UNAUTHORIZED') {
+        console.log('data234')
         error = new UnauthorizedError(data)
     }
     else if (code === 'FORBIDDEN') {
@@ -304,14 +305,14 @@ export const TRPC_ERROR_CODES_BY_KEY = {
      * The JSON sent is not a valid Request object.
      */
     BAD_REQUEST: -32600, // 400
-  
+
     // Internal JSON-RPC error
     INTERNAL_SERVER_ERROR: -32603, // 500
     NOT_IMPLEMENTED: -32603, // 501
     BAD_GATEWAY: -32603, // 502
     SERVICE_UNAVAILABLE: -32603, // 503
     GATEWAY_TIMEOUT: -32603, // 504
-  
+
     // Implementation specific errors
     UNAUTHORIZED: -32001, // 401
     PAYMENT_REQUIRED: -32002, // 402
@@ -326,4 +327,4 @@ export const TRPC_ERROR_CODES_BY_KEY = {
     UNPROCESSABLE_CONTENT: -32022, // 422
     TOO_MANY_REQUESTS: -32029, // 429
     CLIENT_CLOSED_REQUEST: -32099, // 499
-  } as const;
+} as const;

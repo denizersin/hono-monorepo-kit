@@ -1,6 +1,6 @@
 import { SahredEnums } from "@repo/shared/enums";
 import { TRole } from "@repo/shared/types";
-import { TErrorResponse, TRPC_ERROR_CODES_BY_KEY } from "@server/lib/errors";
+import { createTRPCError, TErrorResponse, TRPC_ERROR_CODES_BY_KEY } from "@server/lib/errors";
 import { AppBindings } from "@server/lib/hono/types";
 import { initTRPC, TRPCError } from "@trpc/server";
 import { Context } from "hono";
@@ -31,7 +31,8 @@ const t = initTRPC.context<TRPCContext>().create({
         const { shape, error } = opts;
 
 
-        const causeData = (error.cause || (error.cause as any)?.customData) as TErrorResponse['errors'][number] | undefined
+        const causeData = ((error.cause as any)?.customData) as TErrorResponse['errors'][number] | undefined
+
 
 
         //!important: if we throw an error that instance of appError(not trpc or createTrpcError), we need to set the http status and code otherwise it will always be 500
@@ -41,8 +42,10 @@ const t = initTRPC.context<TRPCContext>().create({
         }
 
 
+
         return {
             ...shape,
+            // code: TRPC_ERROR_CODES_BY_KEY['BAD_REQUEST'],
             data: {
                 ...shape.data,
                 zodError:
@@ -54,7 +57,7 @@ const t = initTRPC.context<TRPCContext>().create({
                     ...causeData,
 
                     //!important: we need to override the name otherwise it will not transfomr correct data
-                    name:''
+                    name: ''
                 }
 
 
@@ -87,9 +90,8 @@ export const publicProcedure = t.procedure.use(async (opts) => {
 
 export const protectedProcedure = t.procedure.use(async (opts) => {
     if (!opts.ctx.session) {
-        throw new TRPCError({
+        throw createTRPCError({
             code: 'UNAUTHORIZED',
-            message: 'Unauthorized'
         })
     }
     return opts.next({
@@ -104,9 +106,8 @@ export const protectedProcedure = t.procedure.use(async (opts) => {
 
 export const adminProcedure = protectedProcedure.use(async (opts) => {
     if (opts.ctx.session.role !== SahredEnums.Role.ADMIN) {
-        throw new TRPCError({
+        throw createTRPCError({
             code: 'UNAUTHORIZED',
-            message: 'Unauthorized'
         })
     }
     return opts.next({
@@ -120,9 +121,8 @@ export const adminProcedure = protectedProcedure.use(async (opts) => {
 
 export const ownerProcedure = protectedProcedure.use(async (opts) => {
     if (opts.ctx.session.role !== SahredEnums.Role.OWNER) {
-        throw new TRPCError({
+        throw createTRPCError({
             code: 'UNAUTHORIZED',
-            message: 'Unauthorized'
         })
     }
     return opts.next({

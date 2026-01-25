@@ -4,6 +4,7 @@
     "outDir": "./dist",
     "rootDir": "./src",
     // "forceConsistentCasingInFileNames": true,
+    "ignoreDeprecations": "6.0",
     "baseUrl": ".",
     "module": "ESNext",
     "moduleResolution": "bundler",
@@ -24,8 +25,6 @@
       "@errors/*": [
         "src/errors/*"
       ],
-      
-
     }
   },
   "include": [
@@ -40,5 +39,4 @@
     "resolveFullPaths": true,
     "verbose": false
   },
-
 }

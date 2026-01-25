@@ -55,9 +55,9 @@ export const useLoginMutation = (options?: MutationOptions<TLoginResponse, TCust
             return responseData
         },
         ...options,
-        onSuccess: (data, variables, context) => {
+        onSuccess: (data, variables, onMutateResult, context) => {
             if (options?.onSuccess) {
-                options.onSuccess(data, variables, context)
+                options.onSuccess(data, variables, onMutateResult, context)
             }
             if (data.data.session.user.isPhoneVerified) {
                 queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.GET_SESSION] })
@@ -80,9 +80,9 @@ export const useRegisterMutation = (options?: MutationOptions<TRegisterResponse,
         },
         meta: { invalidates: [QUERY_KEYS.GET_SESSION] },
         ...options,
-        onSuccess: (data, variables, context) => {
+        onSuccess: (data, variables, onMutateResult, context) => {
             if (options?.onSuccess) {
-                options.onSuccess(data, variables, context)
+                options.onSuccess(data, variables, onMutateResult, context)
             }
             // queryClient.invalidateQueries({queryKey:[QUERY_KEYS.GET_SESSION]})
         },
@@ -117,15 +117,15 @@ export const useVerifyCodeMutation = (options?: MutationOptions<TVerifyCodeRespo
             return responseData
         },
         ...options,
-        onSuccess: (data, variables, context) => {
+        onSuccess: (data, variables, onMutateResult, context) => {
             if (options?.onSuccess) {
-                options.onSuccess(data, variables, context)
+                options.onSuccess(data, variables, onMutateResult, context)
             }
             queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.GET_SESSION] })
         },
-        onError: (error, variables, context) => {
+        onError: (error, variables, onMutateResult, context) => {
             if (options?.onError) {
-                options.onError(error, variables, context)
+                options.onError(error, variables, onMutateResult, context)
             }
         }
     })
