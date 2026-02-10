@@ -19,3 +19,9 @@ export function useThemeColor(
     return Colors[theme][colorName];
   }
 }
+
+
+export function useThemedColors() {
+  const theme = useColorScheme() ?? 'light';
+  return Colors[theme];
+}

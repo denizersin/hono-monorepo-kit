@@ -5,20 +5,30 @@ import { HelloWave } from '@/components/hello-wave';
 import ParallaxScrollView from '@/components/parallax-scroll-view';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
 import { trpc } from '@/utils/api';
 import { useMutation, useQuery } from '@tanstack/react-query';
-
+import { Link } from 'expo-router';
+// import FlashButton from '@/components/flas-button';
 export default function HomeScreen() {
 
 
   const { data, error } = useQuery(trpc.auth.getSession.queryOptions());
 
 
-  const { mutateAsync: testMutation, isPending, data: loginData } = useMutation(trpc.auth.login.mutationOptions());
+  const { mutateAsync: testMutation, isPending, data: loginData } = useMutation({
+    ...trpc.auth.login.mutationOptions(),
+    onSuccess(data, variables, onMutateResult, context) {
+      context.client.invalidateQueries({
+        queryKey: trpc.auth.getSession.queryKey()
+      })
+    },
+  });
 
 
 
+  const { data: healthCheckData } = useQuery(trpc.auth.healthCheck.queryOptions())
+
+  console.log(healthCheckData, 'healthCheckData')
 
 
 
@@ -35,6 +45,7 @@ export default function HomeScreen() {
         <ThemedText type="title">Welcome!</ThemedText>
         <HelloWave />
       </ThemedView>
+      {/* <FlashButton /> */}
       <ThemedView style={styles.stepContainer}>
         <ThemedText type="subtitle">Step 1: Try it</ThemedText>
         <ThemedText>
