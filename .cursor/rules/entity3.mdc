@@ -1,0 +1,898 @@
+
+
+@repo/shared paketinde schema duzenlenir. 
+
+1.adım önce drizzle db schema yazılır 
+packages/shared/dto/schema/[entityName.ts]  (burada gerekirse gruplandirma yapilabilir. örneğin packages/shared/dto/schema/[gropup]/[entityName]) gibi
+table oluşturldktan sonra aynı dosyada table type'ı export edilir bunları entity'de kullancağız 
+
+
+path:packages/shared/dto/schema/character.ts
+import { relations } from 'drizzle-orm';
+import { boolean, doublePrecision, foreignKey, integer, pgTable, uniqueIndex, varchar } from 'drizzle-orm/pg-core';
+import { tblLanguage } from './data';
+import { getDefaultTableFieldsWithDeletedAt } from './schemaHelpers';
+import { mockDb, ReturnTypeOfQuery } from './type';
+
+
+
+
+export const tblCharacter = pgTable('character', {
+    id: integer().primaryKey().generatedByDefaultAsIdentity(),
+
+    //data
+    name: varchar({ length: 255 }).notNull(),
+    imageUrl: varchar({ length: 255 }),
+    //relations
+    mainPersonaId: integer().notNull().references(() => tblPersona.id),
+
+
+    //timestamps
+    ...getDefaultTableFieldsWithDeletedAt()
+})
+
+// Relation definitions relying on tables declared above are placed after all table declarations to avoid any temporal-dead-zone issues.
+// (Declaration will be re-added further below)
+
+export const tblCharacterInstruction = pgTable('character-instruction', {
+    id: integer().primaryKey().generatedByDefaultAsIdentity(),
+
+    //data
+    rating: doublePrecision(),
+    order: integer(),
+    isActive: boolean().notNull().default(true),
+    isAdminInstruction: boolean().notNull().default(false),
+    //relations
+    characterId: integer().notNull().references(() => tblCharacter.id, { onDelete: 'cascade' }),
+
+    //timestamps
+    ...getDefaultTableFieldsWithDeletedAt()
+})
+
+export const tblCharacterInstructionRelation = relations(tblCharacterInstruction, ({ one, many }) => ({
+    character: one(tblCharacter, {
+        fields: [tblCharacterInstruction.characterId],
+        references: [tblCharacter.id],
+    }),
+    translations: many(tblCharacterInstructionTranslation),
+}))
+
+export const tblCharacterInstructionTranslation = pgTable(
+    'character-instruction-translation',
+    {
+        id: integer().primaryKey().generatedByDefaultAsIdentity(),
+        characterInstructionId: integer().notNull(),
+        languageId: integer().notNull(),
+        //timestamps
+        ...getDefaultTableFieldsWithDeletedAt()
+    },
+    (table) => ({
+        // FK to character-instruction  (short name keeps us < 64 chars)
+        fkCharInstrTransInstr: foreignKey({
+            columns: [table.characterInstructionId],
+            foreignColumns: [tblCharacterInstruction.id],
+            name: 'fk_char_instr_trans_instr',   // ≤ 64 chars
+        }).onDelete('cascade'),
+
+        // FK to language
+        fkCharInstrTransLang: foreignKey({
+            columns: [table.languageId],
+            foreignColumns: [tblLanguage.id],
+            name: 'fk_char_instr_trans_lang',
+        }),
+    }),
+
+);
+
+export const tblCharacterInstructionTranslationRelation = relations(tblCharacterInstructionTranslation, ({ one }) => ({
+    characterInstruction: one(tblCharacterInstruction, {
+        fields: [tblCharacterInstructionTranslation.characterInstructionId],
+        references: [tblCharacterInstruction.id],
+    }),
+    language: one(tblLanguage, {
+        fields: [tblCharacterInstructionTranslation.languageId],
+        references: [tblLanguage.id],
+    }),
+}))
+
+
+export const tblCharacterImage = pgTable('character-image', {
+    id: integer().primaryKey().generatedByDefaultAsIdentity(),
+
+
+    //data
+    imageUrl: varchar({ length: 255 }).notNull(),
+    width: integer(),
+    height: integer(),
+    //relations
+    characterId: integer().notNull().references(() => tblCharacter.id, { onDelete: 'cascade' }),
+
+    //timestamps
+    ...getDefaultTableFieldsWithDeletedAt()
+})
+
+export const tblCharacterImageRelation = relations(tblCharacterImage, ({ one }) => ({
+    character: one(tblCharacter, {
+        fields: [tblCharacterImage.characterId],
+        references: [tblCharacter.id],
+    }),
+}))
+
+export const tblCharacterPersona = pgTable('character-persona', {
+    id: integer().primaryKey().generatedByDefaultAsIdentity(),
+    characterId: integer().notNull().references(() => tblCharacter.id, { onDelete: 'cascade' }),
+    personaId: integer().notNull().references(() => tblPersona.id, { onDelete: 'cascade' }),
+
+    //timestamps
+    ...getDefaultTableFieldsWithDeletedAt()
+})
+
+export const tblCharacterPersonaRelation = relations(tblCharacterPersona, ({ one }) => ({
+    character: one(tblCharacter, {
+        fields: [tblCharacterPersona.characterId],
+        references: [tblCharacter.id],
+    }),
+    persona: one(tblPersona, {
+        fields: [tblCharacterPersona.personaId],
+        references: [tblPersona.id],
+    }),
+}))
+
+
+
+
+
+export const tblPersona = pgTable('persona', {
+    id: integer().primaryKey().generatedByDefaultAsIdentity(),
+
+    //data
+    name: varchar({ length: 255 }).notNull(),
+    imageUrl: varchar({ length: 255 }),
+    icon: varchar({ length: 255 }),
+
+    //timestamps
+    ...getDefaultTableFieldsWithDeletedAt()
+})
+
+
+
+export const tblPersonaTranslation = pgTable('persona-translation', {
+    id: integer().primaryKey().generatedByDefaultAsIdentity(),
+
+    //data
+    personaId: integer().notNull().references(() => tblPersona.id, { onDelete: 'cascade' }),
+    languageId: integer().notNull().references(() => tblLanguage.id, { onDelete: 'cascade' }),
+    name: varchar({ length: 255 }).notNull(),
+
+    //timestamps
+    ...getDefaultTableFieldsWithDeletedAt()
+}, (table) => ({
+    unique_persona_language: uniqueIndex('unique_persona_language').on(table.personaId, table.languageId)
+}))
+
+
+export const tblPersonaRelation = relations(tblPersona, ({ many }) => ({
+    translations: many(tblPersonaTranslation),
+}))
+
+export const tblPersonaTranslationRelation = relations(tblPersonaTranslation, ({ one }) => ({
+    persona: one(tblPersona, {
+        fields: [tblPersonaTranslation.personaId],
+        references: [tblPersona.id],
+    }),
+    language: one(tblLanguage, {
+        fields: [tblPersonaTranslation.languageId],
+        references: [tblLanguage.id],
+    }),
+}))
+
+// -----------------------------------------------------------------------------
+// Character relations (requires all tables above to be defined)
+// -----------------------------------------------------------------------------
+
+export const tblCharacterRelation = relations(tblCharacter, ({ one, many }) => ({
+    mainPersona: one(tblPersona, {
+        fields: [tblCharacter.mainPersonaId],
+        references: [tblPersona.id],
+    }),
+    personas: many(tblCharacterPersona),
+    instructions: many(tblCharacterInstruction),
+    images: many(tblCharacterImage),
+}));
+
+//relations
+//tblCharacter m -> m  tblCharacterPersona o -> o tblPersona o -> m tblPersonaTranslation
+//tblCharacter o-> m tblCharacterInstruction o-> m tblCharacterInstructionTranslation
+//tblCharacter o->m tblCharacterImage
+
+export namespace TSchemaCharacter {
+
+
+    // ** step1: define all tables select and insert types **
+    export type TCharacter = typeof tblCharacter.$inferSelect
+    export type TCharacterInsert = typeof tblCharacter.$inferInsert
+
+    export type TCharacterInstruction = typeof tblCharacterInstruction.$inferSelect
+    export type TCharacterInstructionInsert = typeof tblCharacterInstruction.$inferInsert
+
+    export type TCharacterInstructionTranslation = typeof tblCharacterInstructionTranslation.$inferSelect
+    export type TCharacterInstructionTranslationInsert = typeof tblCharacterInstructionTranslation.$inferInsert
+
+    export type TCharacterImage = typeof tblCharacterImage.$inferSelect
+    export type TCharacterImageInsert = typeof tblCharacterImage.$inferInsert
+
+    export type TPersona = typeof tblPersona.$inferSelect
+    export type TPersonaInsert = typeof tblPersona.$inferInsert
+
+    export type TPersonaTranslation = typeof tblPersonaTranslation.$inferSelect
+    export type TPersonaTranslationInsert = typeof tblPersonaTranslation.$inferInsert
+
+    export type TCharacterPersona = typeof tblCharacterPersona.$inferSelect
+    export type TCharacterPersonaInsert = typeof tblCharacterPersona.$inferInsert
+    // ** step1: define all tables select and insert types **
+
+
+
+
+    //repostiry'de kullanılacak type'lar ovveride gerekirse repository katmanidnda yapilir.
+    export namespace TCharacterRepositoryTypes {
+
+
+        //detailed types for repository function's props and return types
+        // ** step2: types for create and update **
+        export type TCreatePersonaWithTranslation = {
+            personaData: TPersonaInsert
+            translations: Omit<TPersonaTranslationInsert, 'personaId'>[]
+        }
+
+        export type TUpdatePersonaWithTranslation = {
+            id: number
+            data: {
+                personaData: TPersonaInsert
+                translations: TPersonaTranslationInsert[]
+            }
+        }
+
+
+        export type TCreateCharacterInstruction = {
+            characterInstructionData: TCharacterInstructionInsert
+            translations: Omit<TCharacterInstructionTranslationInsert, 'characterInstructionId'>[]
+        }
+
+        export type TUpdateCharacterInstruction = {
+            id: number
+            data: {
+                characterInstructionData: Partial<TCharacterInstructionInsert>
+                translations?: Partial<TCharacterInstructionTranslationInsert>[]
+            }
+        }
+
+
+
+        export type TUpdateCharacterImage = {
+            id: number
+            data: {
+                characterImageData: Partial<TCharacterImageInsert>
+            }
+        }
+
+        export type TCreateCharacterImage = TCharacterImageInsert
+
+        export type TCreateCharacterWithRelations = {
+            characterData: TCharacterInsert
+            personaIds?: number[] //many to many
+            instructions?: Array<{
+                characterInstructionData: Omit<TCharacterInstructionInsert, 'characterId'>
+                translations: Omit<TCharacterInstructionTranslationInsert, 'characterInstructionId'>[]
+            }> //one to many
+            images?: Array<{ characterImageData: Omit<TCharacterImageInsert, 'characterId'> }> //one to many
+        }
+
+        export type TUpdateCharacterWithRelations = {
+            id: number
+            data: {
+                characterData?: Partial<TCharacterInsert>
+                personaIds?: number[] //many to many
+            }
+        }
+        // ** step2: types for create and update **
+
+
+
+
+
+
+        // ** step3: select types that have relations (for repository functions) **
+        export type TCharacterWithRelations = ReturnTypeOfQuery<typeof getCharacterWithRelations>
+
+        export type TPersonaWithTranslations = ReturnTypeOfQuery<typeof getPersonasWithTranslations>
+        // ** step3: select types that have relations (for repository functions) **
+
+
+    }
+
+
+}
+
+
+
+function getCharacterWithRelations() {
+    return mockDb.query.tblCharacter.findFirst({
+        with: {
+            personas: {
+                with: {
+                    persona: {
+                        with: {
+                            translations: true
+                        }
+                    }
+                }
+            },
+            images: true,
+            instructions: {
+                with: {
+
+                }
+            },
+            // mainPersona: true
+        }
+    })
+}
+
+
+function getPersonasWithTranslations() {
+    return mockDb.query.tblPersona.findFirst({
+        with: {
+            translations: true
+        }
+    })
+}
+
+
+2.adim repository icin dto validator'leri olusturulur
+path: packages/shared/dto/validators/character/index.ts
+
+import { createInsertSchema } from "drizzle-zod";
+import { tblCharacter, tblCharacterImage, tblCharacterInstruction, tblCharacterInstructionTranslation, tblCharacterPersona, tblPersona, tblPersonaTranslation } from "../../schema";
+import { z } from "zod";
+import { defaultOmitFieldsSchema } from "../utils";
+import { basePaginationQuerySchema } from "../utils";
+import { TSchemaCharacter } from "../../schema";
+
+
+
+
+
+
+
+//base insert zod schemas
+const personaBaseInsertSchema = createInsertSchema(tblPersona).omit(defaultOmitFieldsSchema)
+
+const personaTranslationBaseInsertSchema = createInsertSchema(tblPersonaTranslation).omit(defaultOmitFieldsSchema);
+
+const characterBaseInsertSchema = createInsertSchema(tblCharacter).omit(defaultOmitFieldsSchema)
+const characterInstructionBaseInsertSchema = createInsertSchema(tblCharacterInstruction).omit(defaultOmitFieldsSchema)
+
+const characterInstructionTranslationBaseInsertSchema = createInsertSchema(tblCharacterInstructionTranslation).omit(defaultOmitFieldsSchema)
+
+const characterImageBaseInsertSchema = createInsertSchema(tblCharacterImage).omit(defaultOmitFieldsSchema)
+
+
+
+
+
+
+
+//crud schemas with relations
+const createPersonaWithTranslationSchema = z.object({
+    personaData: personaBaseInsertSchema,
+    translations: z.array(personaTranslationBaseInsertSchema.pick({
+        name: true,
+        languageId: true,
+    })),
+})
+
+const updatePersonaFormSchema = z.object({
+    id: z.number(),
+    data: z.object({
+        personaData: personaBaseInsertSchema,
+        // Allow updating existing translations by id
+        translations: z.array(personaTranslationBaseInsertSchema),
+    }),
+})
+
+
+
+const createCharacterInstructionWithTranslationSchema = z.object({
+    characterInstructionData: characterInstructionBaseInsertSchema,
+    translations: z.array(characterInstructionTranslationBaseInsertSchema.omit({
+        characterInstructionId: true,
+    })),
+})
+
+const updateCharacterInstructionWithTranslationSchema = z.object({
+    id: z.number(),
+    data: z.object({
+        characterInstructionData: characterInstructionBaseInsertSchema.partial(),
+        translations: z.array(characterInstructionTranslationBaseInsertSchema.partial()),
+    }),
+})
+
+const createCharacterImageSchema = z.object({
+    characterImageData: characterImageBaseInsertSchema,
+})
+
+const updateCharacterImageSchema = z.object({
+    id: z.number(),
+    data: z.object({
+        characterImageData: characterImageBaseInsertSchema.partial(),
+    }),
+})
+
+const createCharacterWithRelationsSchema = z.object({
+    characterData: characterBaseInsertSchema,
+    personaIds: z.array(z.number()),
+    instructions: z.array(createCharacterInstructionWithTranslationSchema),
+    images: z.array(createCharacterImageSchema),
+})
+
+const updateCharacterWithRelationsSchema = z.object({
+    id: z.number(),
+    data: z.object({
+        characterData: characterBaseInsertSchema.partial(),
+        personaIds: z.array(z.number()),
+    }),
+})
+
+
+
+
+//query schemas
+
+
+
+
+type TSortKeys = (keyof Pick<TSchemaCharacter.TPersona, 'name' | 'createdAt'>)
+const personaPaginationSortFields = ['name', 'createdAt'] as TSortKeys[]
+
+
+const personaPaginationQuerySchema = basePaginationQuerySchema.extend({
+    sort: z.array(z.object({
+        sortBy: z.enum(['asc', 'desc']),
+        sortField: z.enum(personaPaginationSortFields as [TSortKeys, ...TSortKeys[]]),
+    })),
+    filter: z.object({
+        name: z.string().optional(),
+    })
+})
+
+
+
+
+
+
+
+export const characterValidator = {
+    createPersonaWithTranslationSchema,
+    updatePersonaFormSchema,
+    createCharacterInstructionWithTranslationSchema,
+    updateCharacterInstructionWithTranslationSchema,
+    createCharacterImageSchema,
+    updateCharacterImageSchema,
+    createCharacterWithRelationsSchema,
+    updateCharacterWithRelationsSchema,
+
+
+
+
+    //query schemas
+    personaPaginationQuerySchema,
+}
+
+
+
+
+export namespace TCharacterValidator {
+    export type TCharacterInsert = z.infer<typeof characterBaseInsertSchema>
+    export type TCreatePersonaWithTranslation = z.infer<typeof createPersonaWithTranslationSchema>
+    export type TUpdatePersonaForm = z.infer<typeof updatePersonaFormSchema>
+    export type TCreateCharacterInstructionWithTranslation = z.infer<typeof createCharacterInstructionWithTranslationSchema>
+    export type TUpdateCharacterInstructionWithTranslation = z.infer<typeof updateCharacterInstructionWithTranslationSchema>
+    export type TCreateCharacterImage = z.infer<typeof createCharacterImageSchema>
+    export type TUpdateCharacterImage = z.infer<typeof updateCharacterImageSchema>
+    export type TCreateCharacterWithRelations = z.infer<typeof createCharacterWithRelationsSchema>
+    export type TUpdateCharacterWithRelations = z.infer<typeof updateCharacterWithRelationsSchema>
+
+    //query schemas
+    export type TPersonaPaginationQuery = z.infer<typeof personaPaginationQuerySchema>
+    export type TPersonaPaginationQuerySortKeys=TSortKeys
+
+    
+}
+
+
+
+
+
+
+
+
+
+
+3.adım ardından 'infrastructure' modulunde repository implementasyonuna geçilir
+path: apps/backend/src/modules/infrastructure/repositories/character/CharacterRepositoryImpl.ts
+import { db } from "@repo/db";
+import {
+    tblCharacter,
+    tblCharacterImage,
+    tblCharacterInstruction,
+    tblCharacterInstructionTranslation,
+    tblCharacterPersona,
+    tblPersona,
+    tblPersonaTranslation,
+    TSchemaCharacter,
+} from "@repo/shared/schema";
+import { TBaseValidators, TCharacterValidator } from "@repo/shared/validators";
+import { and, asc, countDistinct, desc, eq, isNull, like, SQL } from "drizzle-orm";
+import { PgColumn } from "drizzle-orm/pg-core";
+
+export class CharacterRepositoryImpl {
+    async getCharacterById(id: number): Promise<TSchemaCharacter.TCharacterRepositoryTypes.TCharacterWithRelations | undefined> {
+        const character = await db.query.tblCharacter.findFirst({
+            where: eq(tblCharacter.id, id),
+            with: {
+                personas: {
+                    with: {
+                        persona: {
+                            with: {
+                                translations: true
+                            }
+                        }
+                    },
+                },
+                instructions: {
+                    with: {
+                        translations: true,
+                    },
+                },
+                images: true,
+
+            },
+        });
+        return character
+    }
+
+    async getAllCharacters(): Promise<TSchemaCharacter.TCharacterRepositoryTypes.TCharacterWithRelations[]> {
+        const characters = await db.query.tblCharacter.findMany({
+            with: {
+                personas: {
+                    with: {
+                        persona: {
+                            with: {
+                                translations: true
+                            }
+                        }
+                    },
+                },
+                instructions: {
+                    with: {
+                        translations: true,
+                    },
+                },
+                images: true,
+
+            },
+        });
+        return characters
+    }
+
+    async createCharacter(character: TSchemaCharacter.TCharacterInsert): Promise<void> {
+        await db.insert(tblCharacter).values(character);
+        return;
+    }
+
+    async updateCharacter(id: number, character: Partial<TSchemaCharacter.TCharacterInsert>): Promise<void> {
+        await db.update(tblCharacter)
+            .set(character)
+            .where(eq(tblCharacter.id, id));
+    }
+
+    async deleteCharacter(id: number): Promise<void> {
+        await db.delete(tblCharacter)
+            .where(eq(tblCharacter.id, id));
+    }
+
+    async createCharacterInstruction(characterInstruction: TSchemaCharacter.TCharacterInstructionInsert): Promise<void> {
+        await db.insert(tblCharacterInstruction).values(characterInstruction);
+    }
+
+    async updateCharacterInstruction(id: number, characterInstruction: Partial<TSchemaCharacter.TCharacterInstructionInsert>): Promise<void> {
+        await db.update(tblCharacterInstruction)
+            .set(characterInstruction)
+            .where(eq(tblCharacterInstruction.id, id));
+    }
+
+    async deleteCharacterInstruction(id: number): Promise<void> {
+        await db.delete(tblCharacterInstruction)
+            .where(eq(tblCharacterInstruction.id, id));
+    }
+
+    async createCharacterImage(characterImage: TSchemaCharacter.TCharacterImageInsert): Promise<void> {
+        await db.insert(tblCharacterImage).values(characterImage);
+    }
+
+    async updateCharacterImage(id: number, characterImage: Partial<TSchemaCharacter.TCharacterImageInsert>): Promise<void> {
+        await db.update(tblCharacterImage)
+            .set(characterImage)
+            .where(eq(tblCharacterImage.id, id));
+    }
+
+    async deleteCharacterImage(id: number): Promise<void> {
+        await db.delete(tblCharacterImage)
+            .where(eq(tblCharacterImage.id, id));
+    }
+
+    async createCharacterPersona(characterPersona: TSchemaCharacter.TCharacterPersonaInsert): Promise<void> {
+        await db.insert(tblCharacterPersona).values(characterPersona);
+    }
+
+    async updateCharacterPersona(id: number, characterPersona: Partial<TSchemaCharacter.TCharacterPersonaInsert>): Promise<void> {
+        await db.update(tblCharacterPersona)
+            .set(characterPersona)
+            .where(eq(tblCharacterPersona.id, id));
+    }
+
+    async deleteCharacterPersona(id: number): Promise<void> {
+        await db.delete(tblCharacterPersona)
+            .where(eq(tblCharacterPersona.id, id));
+    }
+
+
+    //@query
+
+
+    async getAllPersonasWithTranslations(input: TCharacterValidator.TPersonaPaginationQuery):
+        Promise<TBaseValidators.TPagination<TSchemaCharacter.TCharacterRepositoryTypes.TPersonaWithTranslations>> {
+        const { pagination, sort, global_search, filter } = input;
+
+
+
+        const andConditions: SQL<unknown>[] = [];
+
+        if (filter.name) {
+            andConditions.push(like(tblPersona.name, `%${filter.name}%`))
+        }
+
+        if (global_search) {
+            andConditions.push(like(tblPersona.name, `%${global_search}%`))
+        }
+
+        const whereCondition: SQL<unknown> | undefined = and(
+            isNull(tblPersona.deletedAt),
+            isNull(tblPersonaTranslation.deletedAt),
+
+            and(...andConditions)
+        );
+
+
+
+
+        const calculatedOrderBys: SQL<unknown>[] = [];
+        const sortMapper = {
+            'asc': asc,
+            'desc': desc
+        }
+        const columnMapper: Record<TCharacterValidator.TPersonaPaginationQuerySortKeys, PgColumn> = {
+            'name': tblPersona.name,
+            'createdAt': tblPersona.createdAt,
+
+        }
+        console.log(sort, 'sort')
+        sort.forEach(s => {
+            calculatedOrderBys.push(sortMapper[s.sortBy](columnMapper[s.sortField]))
+        })
+
+
+        const personas = await db.query.tblPersona.findMany({
+            with: {
+                translations: true
+            },
+            limit: pagination.limit,
+            where: whereCondition,
+            offset: (pagination.page - 1) * pagination.limit,
+            orderBy: calculatedOrderBys,
+
+        });
+
+        const total = await db
+            .select({ count: countDistinct(tblPersona.id) })
+            .from(tblPersona)
+            .leftJoin(tblPersonaTranslation, eq(tblPersona.id, tblPersonaTranslation.personaId))
+            .where(whereCondition);
+
+
+        const totalCount = total?.[0]?.count || 0
+
+        console.log(totalCount, 'totalCount')
+
+        const totalPages = Math.ceil(totalCount / pagination.limit)
+        return {
+            data: personas,
+            pagination: {
+                page: pagination.page,
+                limit: pagination.limit,
+                total: totalCount,
+                totalPages: totalPages
+            }
+        };
+    }
+
+    /**
+     * Create a new character together with all optional nested relations (personas, instructions, images)
+     * according to `TSchemaCharacter.TCreateCharacter` definition.
+     * Returns the id of the newly-created character so that callers can work with it later on.
+     */
+    async createCharacterWithRelations({ characterData, personaIds, instructions, images }: TSchemaCharacter.TCharacterRepositoryTypes.TCreateCharacterWithRelations): Promise<number> {
+        // 1. create main character record
+        const [newCharacter] = await db
+            .insert(tblCharacter)
+            .values(characterData)
+            .returning();
+
+        if (!newCharacter) {
+            throw new Error("Character not created");
+        }
+
+        const characterId = newCharacter.id;
+
+
+        // 2. attach personas (many-to-many)
+        const personaIdsWithMainPersona = [characterData.mainPersonaId, ...(personaIds || [])];
+        const characterPersonas = personaIdsWithMainPersona.map((personaId) => ({ characterId, personaId: personaId! }));
+        await db.insert(tblCharacterPersona).values(characterPersonas);
+
+        // 3. create instructions (+ translations) (one-to-many)
+        if (instructions && instructions.length > 0) {
+            for (const instruction of instructions) {
+                const [newInstruction] = await db
+                    .insert(tblCharacterInstruction)
+                    .values({ characterId, ...instruction.characterInstructionData })
+                    .returning();
+
+                if (!newInstruction) continue;
+
+                if (instruction.translations && instruction.translations.length > 0) {
+                    const translations = instruction.translations.map((t) => ({ ...t, characterInstructionId: newInstruction.id }));
+                    await db.insert(tblCharacterInstructionTranslation).values(translations);
+                }
+            }
+        }
+
+        // 4. create images (one-to-many)
+        if (images && images.length > 0) {
+            const imgRecords = images.map((img) => ({ characterId, ...img.characterImageData }));
+            await db.insert(tblCharacterImage).values(imgRecords);
+        }
+
+        return characterId;
+    }
+
+    /**
+     * Update an existing character together with its persona connections according to `TUpdateCharacter`.
+     */
+    async updateCharacterWithRelations({ id, data }: TSchemaCharacter.TCharacterRepositoryTypes.TUpdateCharacterWithRelations): Promise<void> {
+        const { characterData, personaIds } = data;
+
+        // 1. update character base data
+        if (characterData && Object.keys(characterData).length > 0) {
+            await db.update(tblCharacter).set(characterData).where(eq(tblCharacter.id, id));
+        }
+
+        // 2. sync personas (many-to-many)
+        if (personaIds) {
+            // delete current links
+            await db.delete(tblCharacterPersona).where(eq(tblCharacterPersona.characterId, id));
+
+            if (personaIds.length > 0) {
+                const newLinks = personaIds.map((personaId) => ({ characterId: id, personaId }));
+                await db.insert(tblCharacterPersona).values(newLinks);
+            }
+        }
+    }
+
+    /**
+     * Create a new persona with its translations.
+     */
+    async createPersonaWithTranslation({ personaData, translations }: TSchemaCharacter.TCharacterRepositoryTypes.TCreatePersonaWithTranslation): Promise<number> {
+        const [newPersona] = await db.insert(tblPersona).values(personaData).returning();
+
+        if (!newPersona) {
+            throw new Error("Persona not created");
+        }
+
+        const personaId = newPersona.id;
+
+        if (translations && translations.length > 0) {
+            const translationRecords = translations.map((t) => ({ personaId, ...t }));
+            await db.insert(tblPersonaTranslation).values(translationRecords);
+        }
+
+        return personaId;
+    }
+
+    /**
+     * Update persona data together with its translations.
+     */
+    async updatePersonaWithTranslation({ id, data }: TSchemaCharacter.TCharacterRepositoryTypes.TUpdatePersonaWithTranslation): Promise<void> {
+        const { personaData, translations } = data;
+
+        // 1. update persona base row
+        if (personaData && Object.keys(personaData).length > 0) {
+            await db.update(tblPersona).set(personaData).where(eq(tblPersona.id, id));
+        }
+
+        // 2. update / upsert translations if provided
+        if (translations && translations.length > 0) {
+            for (const tr of translations) {
+                await db.update(tblPersonaTranslation).set(tr).where(
+                    and(
+                        eq(tblPersonaTranslation.personaId, id),
+                        eq(tblPersonaTranslation.languageId, tr.languageId)
+                    )
+                );
+            }
+        }
+    }
+
+    /**
+     * Create a new character instruction with translations.
+     */
+    async createCharacterInstructionWithTranslations({ characterInstructionData, translations }: TSchemaCharacter.TCharacterRepositoryTypes.TCreateCharacterInstruction): Promise<number> {
+        const [newInstruction] = await db
+            .insert(tblCharacterInstruction)
+            .values(characterInstructionData)
+            .returning();
+
+        if (!newInstruction) {
+            throw new Error("Character instruction not created");
+        }
+
+        const instructionId = newInstruction.id;
+
+        if (translations && translations.length > 0) {
+            const translationRecords = translations.map((t) => ({ ...t, characterInstructionId: instructionId }));
+            await db.insert(tblCharacterInstructionTranslation).values(translationRecords);
+        }
+
+        return instructionId;
+    }
+
+    /**
+     * Update a character instruction together with its translations.
+     */
+    async updateCharacterInstructionWithTranslations({ id, data }: TSchemaCharacter.TCharacterRepositoryTypes.TUpdateCharacterInstruction): Promise<void> {
+        const { characterInstructionData, translations } = data;
+
+        if (characterInstructionData && Object.keys(characterInstructionData).length > 0) {
+            await db.update(tblCharacterInstruction).set(characterInstructionData).where(eq(tblCharacterInstruction.id, id));
+        }
+
+        if (translations && translations.length > 0) {
+            for (const tr of translations) {
+                if (!tr.id) continue;
+                await db.update(tblCharacterInstructionTranslation).set(tr).where(eq(tblCharacterInstructionTranslation.id, tr.id));
+            }
+        }
+    }
+
+    /**
+     * Update a character image according to `TUpdateCharacterImage` definition.
+     */
+    async updateCharacterImageWithData({ id, data }: TSchemaCharacter.TCharacterRepositoryTypes.TUpdateCharacterImage): Promise<void> {
+        await db.update(tblCharacterImage).set(data.characterImageData).where(eq(tblCharacterImage.id, id));
+    }
+}
+
+
+
+boylece entity tanimi ve repository implementasyonu tamamlanmis olur.

@@ -14,6 +14,6 @@ export class LanguageRepository {
             },
             where: eq(tblCompanyLanguage.companyId, companyId)
         })
-        return languages.map(l => l.language)
+        return languages.map((l: any) => l.language)
     }
 }

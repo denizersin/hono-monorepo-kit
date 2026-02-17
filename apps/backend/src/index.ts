@@ -1,8 +1,6 @@
 import { serve } from '@hono/node-server'
 import { createNodeWebSocket } from '@hono/node-ws'
 import { trpcServer } from '@hono/trpc-server'
-import { getApiContext } from '@server/lib/context'
-import { hc } from 'hono/client'
 import { cors } from 'hono/cors'
 import { logger as honoLogger } from 'hono/logger'
 import { ENV } from './env'
@@ -28,6 +26,7 @@ process.env.TZ = 'UTC';
 
 
 
+
 const port = ENV.PORT || 3002
 console.log(`Server is running on port ${port}`)
 
@@ -40,6 +39,7 @@ LookUpEnumsValidation.validate()
 const app = honoFactory.createApp()
 
 const { injectWebSocket, upgradeWebSocket } = createNodeWebSocket({ app })
+
 
 
 

@@ -6,7 +6,7 @@ import { mockDb, ReturnTypeOfQuery } from './type';
 
 
 
- 
+
 export const tblCharacter = pgTable('character', {
     id: integer().primaryKey().generatedByDefaultAsIdentity(),
 
@@ -156,7 +156,7 @@ export const tblPersonaTranslation = pgTable('persona-translation', {
 
     //timestamps
     ...getDefaultTableFieldsWithDeletedAt()
-},(table) => ({
+}, (table) => ({
     unique_persona_language: uniqueIndex('unique_persona_language').on(table.personaId, table.languageId)
 }))
 
@@ -222,12 +222,12 @@ export namespace TSchemaCharacter {
     // ** step1: define all tables select and insert types **
 
 
- 
 
 
+    //repostiry'de kullanılacak type'lar ovveride gerekirse repository katmanidnda yapilir.
     export namespace TCharacterRepositoryTypes {
 
-        
+
         //detailed types for repository function's props and return types
         // ** step2: types for create and update **
         export type TCreatePersonaWithTranslation = {

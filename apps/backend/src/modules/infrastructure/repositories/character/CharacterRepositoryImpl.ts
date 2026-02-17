@@ -1,3 +1,4 @@
+import { db } from "@repo/db";
 import {
     tblCharacter,
     tblCharacterImage,
@@ -8,10 +9,8 @@ import {
     tblPersonaTranslation,
     TSchemaCharacter,
 } from "@repo/shared/schema";
-import TCharacterEntity from "@server/modules/domain/entities/character/Character";
-import { and, asc, count, countDistinct, desc, eq, isNull, like, SQL } from "drizzle-orm";
-import db from "../../database";
 import { TBaseValidators, TCharacterValidator } from "@repo/shared/validators";
+import { and, asc, countDistinct, desc, eq, isNull, like, SQL } from "drizzle-orm";
 import { PgColumn } from "drizzle-orm/pg-core";
 
 export class CharacterRepositoryImpl {
@@ -64,12 +63,12 @@ export class CharacterRepositoryImpl {
         return characters
     }
 
-    async createCharacter(character: TCharacterEntity.TCharacterInsert): Promise<void> {
+    async createCharacter(character: TSchemaCharacter.TCharacterInsert): Promise<void> {
         await db.insert(tblCharacter).values(character);
         return;
     }
 
-    async updateCharacter(id: number, character: Partial<TCharacterEntity.TCharacterInsert>): Promise<void> {
+    async updateCharacter(id: number, character: Partial<TSchemaCharacter.TCharacterInsert>): Promise<void> {
         await db.update(tblCharacter)
             .set(character)
             .where(eq(tblCharacter.id, id));
@@ -80,11 +79,11 @@ export class CharacterRepositoryImpl {
             .where(eq(tblCharacter.id, id));
     }
 
-    async createCharacterInstruction(characterInstruction: TCharacterEntity.TCharacterInstructionInsert): Promise<void> {
+    async createCharacterInstruction(characterInstruction: TSchemaCharacter.TCharacterInstructionInsert): Promise<void> {
         await db.insert(tblCharacterInstruction).values(characterInstruction);
     }
 
-    async updateCharacterInstruction(id: number, characterInstruction: Partial<TCharacterEntity.TCharacterInstructionInsert>): Promise<void> {
+    async updateCharacterInstruction(id: number, characterInstruction: Partial<TSchemaCharacter.TCharacterInstructionInsert>): Promise<void> {
         await db.update(tblCharacterInstruction)
             .set(characterInstruction)
             .where(eq(tblCharacterInstruction.id, id));
@@ -95,11 +94,11 @@ export class CharacterRepositoryImpl {
             .where(eq(tblCharacterInstruction.id, id));
     }
 
-    async createCharacterImage(characterImage: TCharacterEntity.TCharacterImageInsert): Promise<void> {
+    async createCharacterImage(characterImage: TSchemaCharacter.TCharacterImageInsert): Promise<void> {
         await db.insert(tblCharacterImage).values(characterImage);
     }
 
-    async updateCharacterImage(id: number, characterImage: Partial<TCharacterEntity.TCharacterImageInsert>): Promise<void> {
+    async updateCharacterImage(id: number, characterImage: Partial<TSchemaCharacter.TCharacterImageInsert>): Promise<void> {
         await db.update(tblCharacterImage)
             .set(characterImage)
             .where(eq(tblCharacterImage.id, id));
@@ -110,11 +109,11 @@ export class CharacterRepositoryImpl {
             .where(eq(tblCharacterImage.id, id));
     }
 
-    async createCharacterPersona(characterPersona: TCharacterEntity.TCharacterPersonaInsert): Promise<void> {
+    async createCharacterPersona(characterPersona: TSchemaCharacter.TCharacterPersonaInsert): Promise<void> {
         await db.insert(tblCharacterPersona).values(characterPersona);
     }
 
-    async updateCharacterPersona(id: number, characterPersona: Partial<TCharacterEntity.TCharacterPersonaInsert>): Promise<void> {
+    async updateCharacterPersona(id: number, characterPersona: Partial<TSchemaCharacter.TCharacterPersonaInsert>): Promise<void> {
         await db.update(tblCharacterPersona)
             .set(characterPersona)
             .where(eq(tblCharacterPersona.id, id));
@@ -163,7 +162,7 @@ export class CharacterRepositoryImpl {
         const columnMapper: Record<TCharacterValidator.TPersonaPaginationQuerySortKeys, PgColumn> = {
             'name': tblPersona.name,
             'createdAt': tblPersona.createdAt,
-            
+
         }
         console.log(sort, 'sort')
         sort.forEach(s => {

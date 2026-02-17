@@ -4,7 +4,6 @@
     "outDir": "./dist",
     "rootDir": "./src",
     // "forceConsistentCasingInFileNames": true,
-    "ignoreDeprecations": "6.0",
     "baseUrl": ".",
     "module": "ESNext",
     "moduleResolution": "bundler",

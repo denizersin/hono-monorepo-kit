@@ -1,0 +1,255 @@
+
+yeni bir entity oluşturmak.
+drizzle kullandığımız için öncelikle 
+
+
+
+@repo/shared paketinde schema duzenlenir. 
+
+1.adım önce drizzle db schema yazılır 
+packages/shared/dto/schema/[entityName.ts]  (burada gerekirse gruplandirma yapilabilir. örneğin packages/shared/dto/schema/[gropup]/[entityName]) gibi
+table oluşturldktan sonra aynı dosyada table type'ı export edilir bunları entity'de kullancağız 
+
+drizzle table tanimlanmasi:
+export const tblPersona = pgTable('persona', {
+    id: integer().primaryKey().generatedByDefaultAsIdentity(),
+
+    //data
+    name: varchar({ length: 255 }).notNull(),
+    imageUrl: varchar({ length: 255 }),
+    icon: varchar({ length: 255 }),
+
+    //timestamps
+    ...getDefaultTableFieldsWithDeletedAt()
+})
+
+eger translations iceriyorsa onlar da tanimlanir.
+
+export const tblPersonaTranslation = pgTable('persona-translation', {
+    id: integer().primaryKey().generatedByDefaultAsIdentity(),
+
+    //data
+    personaId: integer().notNull().references(() => tblPersona.id, { onDelete: 'cascade' }),
+    languageId: integer().notNull().references(() => tblLanguage.id, { onDelete: 'cascade' }),
+    name: varchar({ length: 255 }).notNull(),
+
+    //timestamps
+    ...getDefaultTableFieldsWithDeletedAt()
+}, (table) => ({
+    unique_persona_language: uniqueIndex('unique_persona_language').on(table.personaId, table.languageId)
+}))
+
+
+export const tblPersonaRelation = relations(tblPersona, ({ many }) => ({
+    translations: many(tblPersonaTranslation),
+}))
+
+export const tblPersonaTranslationRelation = relations(tblPersonaTranslation, ({ one }) => ({
+    persona: one(tblPersona, {
+        fields: [tblPersonaTranslation.personaId],
+        references: [tblPersona.id],
+    }),
+    language: one(tblLanguage, {
+        fields: [tblPersonaTranslation.languageId],
+        references: [tblLanguage.id],
+    }),
+}))
+
+
+
+export namespace TSchemaPersona {
+    export type TPersona = typeof tblPersona.$inferSelect
+    export type TPersonaInsert = typeof tblPersona.$inferInsert
+
+    export type TPersonaTranslation = typeof tblPersonaTranslation.$inferSelect
+    export type TPersonaTranslationInsert = typeof tblPersonaTranslation.$inferInsert
+
+
+
+        //detailed types for repository function's props and return types
+        // ** step2: types for create and update **
+        export type TCreatePersonaWithTranslation = {
+            personaData: TPersonaInsert
+            translations: Omit<TPersonaTranslationInsert, 'personaId'>[]
+        }
+
+        export type TUpdatePersonaWithTranslation = {
+            id: number
+            data: {
+                personaData: TPersonaInsert
+                translations: TPersonaTranslationInsert[]
+            }
+        }
+
+
+      export type TPersonaWithTranslations = ReturnTypeOfQuery<typeof getPersonasWithTranslations>
+        // ** step3: select types that have relations (for repository functions) **
+
+
+}
+
+
+// think about repository function's props and return types
+function getPersonasWithTranslations() {
+    return mockDb.query.tblPersona.findFirst({
+        with: {
+            translations: true
+        }
+    })
+}
+
+
+
+
+2.adım ardından entity dosyalari ekleninir burada db 
+dosya oluşturulur apps/backend/src/modules/domain/entities/[persona]/[Persona.ts]
+
+import { TSchemaPersona } from "@repo/shared/schema"
+
+
+export default  TSchemaPersona 
+
+
+burada repostory'de ozel bir type tanimlamak istedigimzde override edip ardindan repository katmaninda kullanabiliriz.
+
+
+3.adim ardından 'infrastructure' modulunde repositoryİnterface implementasyonuna geçilir
+
+apps/backend/src/modules/infrastructure/repositories/persona/PersonaRepositoryImpl.ts
+
+import {
+    tblPersona,
+    tblPersonaTranslation,
+} from "@repo/shared/schema";
+import TPersonaEntity from "@server/modules/domain/entities/persona/Persona";
+import { and, asc, count, countDistinct, desc, eq, isNull, like, SQL } from "drizzle-orm";
+import { db } from "@repo/db";
+import { TBaseValidators, TPersonaValidator } from "@repo/shared/validators";
+import { PgColumn } from "drizzle-orm/pg-core";
+
+
+export class PersonaRepositoryImpl {
+
+
+        async getAllPersonasWithTranslations(input: TPersonaValidator.TPersonaPaginationQuery):
+        Promise<TBaseValidators.TPagination<TSchemaPersona.TPersonaRepositoryTypes.TPersonaWithTranslations>> {
+        const { pagination, sort, global_search, filter } = input;
+
+
+
+        const andConditions: SQL<unknown>[] = [];
+
+        if (filter.name) {
+            andConditions.push(like(tblPersona.name, `%${filter.name}%`))
+        }
+
+        if (global_search) {
+            andConditions.push(like(tblPersona.name, `%${global_search}%`))
+        }
+
+        const whereCondition: SQL<unknown> | undefined = and(
+            isNull(tblPersona.deletedAt),
+            isNull(tblPersonaTranslation.deletedAt),
+
+            and(...andConditions)
+        );
+
+
+
+
+        const calculatedOrderBys: SQL<unknown>[] = [];
+        const sortMapper = {
+            'asc': asc,
+            'desc': desc
+        }
+        const columnMapper: Record<TPersonaValidator.TPersonaPaginationQuerySortKeys, PgColumn> = {
+            'name': tblPersona.name,
+            'createdAt': tblPersona.createdAt,
+            
+        }
+        console.log(sort, 'sort')
+        sort.forEach(s => {
+            calculatedOrderBys.push(sortMapper[s.sortBy](columnMapper[s.sortField]))
+        })
+
+
+        const personas = await db.query.tblPersona.findMany({
+            with: {
+                translations: true
+            },
+            limit: pagination.limit,
+            where: whereCondition,
+            offset: (pagination.page - 1) * pagination.limit,
+            orderBy: calculatedOrderBys,
+
+        });
+
+        const total = await db
+            .select({ count: countDistinct(tblPersona.id) })
+            .from(tblPersona)
+            .leftJoin(tblPersonaTranslation, eq(tblPersona.id, tblPersonaTranslation.personaId))
+            .where(whereCondition);
+
+
+        const totalCount = total?.[0]?.count || 0
+
+        console.log(totalCount, 'totalCount')
+
+        const totalPages = Math.ceil(totalCount / pagination.limit)
+        return {
+            data: personas,
+            pagination: {
+                page: pagination.page,
+                limit: pagination.limit,
+                total: totalCount,
+                totalPages: totalPages
+            }
+        };
+    }
+
+
+
+    /**
+     * Create a new persona with its translations.
+     */
+    async createPersonaWithTranslation({ personaData, translations }: TSchemaPersona.TPersonaRepositoryTypes.TCreatePersonaWithTranslation): Promise<number> {
+        const [newPersona] = await db.insert(tblPersona).values(personaData).returning();
+
+        if (!newPersona) {
+            throw new Error("Persona not created");
+        }
+
+        const personaId = newPersona.id;
+
+        if (translations && translations.length > 0) {
+            const translationRecords = translations.map((t) => ({ personaId, ...t }));
+            await db.insert(tblPersonaTranslation).values(translationRecords);
+        }
+
+        return personaId;
+    }
+
+    /**
+     * Update persona data together with its translations.
+     */
+    async updatePersonaWithTranslation({ id, data }: TSchemaCharacter.TCharacterRepositoryTypes.TUpdatePersonaWithTranslation): Promise<void> {
+        const { personaData, translations } = data;
+
+        // 1. update persona base row
+        if (personaData && Object.keys(personaData).length > 0) {
+            await db.update(tblPersona).set(personaData).where(eq(tblPersona.id, id));
+        }
+
+        // 2. update / upsert translations if provided
+        if (translations && translations.length > 0) {
+            for (const tr of translations) {
+                await db.update(tblPersonaTranslation).set(tr).where(
+                    and(
+                        eq(tblPersonaTranslation.personaId, id),
+                        eq(tblPersonaTranslation.languageId, tr.languageId)
+                    )
+                );
+            }
+        }
+    }
+}

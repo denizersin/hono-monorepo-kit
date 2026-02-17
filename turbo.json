@@ -23,10 +23,12 @@
     "db:migrate": {
       "cache": false
     },
-    "db:drizzle-studio": {
+    "db:push": {
+      "cache": false
+    },
+    "db:studio": {
       "cache": false,
       "persistent": true
     }
   }
 }
-
