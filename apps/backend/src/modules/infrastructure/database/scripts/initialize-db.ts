@@ -1,10 +1,9 @@
+import 'dotenv/config';
 import { SahredEnums } from "@repo/shared/enums"
 import { CompanyRepositoryImpl } from "../../repositories/company/CompanyRepositoryImpl"
 import { UserRepositoryImpl } from "../../repositories/user/UserRepositoryImpl"
 import { InitializeDbPrededfinedDatas } from "../helpers/init-data"
 import LookUpEnumsValidation from "../helpers/validate-lookup"
-
-
 
 
 async function initializeDb() {
@@ -26,12 +25,12 @@ async function initializeDb() {
     const superAdminUserId = await userRepository.createUser({
         email: "superadmin@gmail.com",
         password: "superadmin123",
-        role: SahredEnums.Role.SUPER_ADMIN,
+        roleId: SahredEnums.Role.SUPER_ADMIN,
         name: "Super Admin",
         surname: "Super Admin",
         fullName: "Super Admin Super Admin",
         companyId: SahredEnums.CompanyId.default,
-        mailConfirmationStatusId: SahredEnums.MailConfirmationStatusId.confirmed,
+        mailConfirmationStatusId: SahredEnums.MailConfirmationStatus.confirmed,
         test: "test",
         phoneCodeId: 1,
         phoneNumber: "1234567890",
@@ -46,12 +45,12 @@ async function initializeDb() {
     await userRepository.createUser({
         email: "admin@gmail.com",
         password: "admin123",
-        role: SahredEnums.Role.ADMIN,
+        roleId: SahredEnums.Role.ADMIN,
         name: "Admin",
         surname: "Admin",
         fullName: "Admin Admin",
         companyId: SahredEnums.CompanyId.default,
-        mailConfirmationStatusId: SahredEnums.MailConfirmationStatusId.confirmed,
+        mailConfirmationStatusId: SahredEnums.MailConfirmationStatus.confirmed,
         test: "test",
         phoneCodeId: 1,
         phoneNumber: "1234567890",
@@ -76,7 +75,7 @@ async function initializeDb() {
     console.log("initializeCompanyLanguage")
     companyRepository.updateCompanyLanguages({
         companyId,
-        languages: [SahredEnums.LanguageId.en, SahredEnums.LanguageId.tr],
+        languages: [SahredEnums.Language.en, SahredEnums.Language.tr],
     })
     console.log("initializeCompanyLanguage completed")
 
@@ -87,7 +86,7 @@ async function initializeDb() {
     await userRepository.createUser({
         email: "owner@gmail.com",
         password: "owner123",
-        role: SahredEnums.Role.OWNER,
+        roleId: SahredEnums.Role.OWNER,
         name: "Owner",
         surname: "Owner",
         fullName: "Owner Owner",
@@ -97,7 +96,7 @@ async function initializeDb() {
         invitationCode: "1234567890",
         fullPhone: "1234567890",
         isPhoneVerified: true,
-        mailConfirmationStatusId: SahredEnums.MailConfirmationStatusId.confirmed,
+        mailConfirmationStatusId: SahredEnums.MailConfirmationStatus.confirmed,
         test: "test",
     })
     console.log("initializeOwnerUser completed")

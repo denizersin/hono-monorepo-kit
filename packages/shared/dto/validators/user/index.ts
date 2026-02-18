@@ -6,12 +6,10 @@ import { z } from 'zod';
 import { basePaginationQuerySchema, defaultOmitFieldsSchema } from '../utils';
 
 
-const userBaseSelectSchema = createSelectSchema(tblUser, {
-    role: z.enum(SahredEnums.getEnumValuesForZod(SahredEnums.Role))
-})
+const userBaseSelectSchema = createSelectSchema(tblUser)
 
 const userBaseInsertSchema = createInsertSchema(tblUser, {
-    role: z.enum(SahredEnums.getEnumValuesForZod(SahredEnums.Role)),
+    roleId: z.number(),
     password: z.string().min(8)
 })
 
@@ -26,7 +24,7 @@ const adminCreateUserSchema = userBaseInsertSchema.extend({
 
 
 const userCreateSchema = userBaseInsertSchema.omit({
-    role: true,
+    roleId: true,
 }).extend({
     userField: z.string().optional()
 })
@@ -39,13 +37,13 @@ const loginEmailAndPasswordSchema = userBaseSelectSchema.pick({
 
 
 const userPreferencesSchema = z.object({
-    language: z.enum(SahredEnums.getEnumValuesForZod(SahredEnums.Language)),
-    theme: z.enum(SahredEnums.getEnumValuesForZod(SahredEnums.Theme))
+    language: z.enum(SahredEnums.getStringEnumValuesForZod(SahredEnums.Language)),
+    theme: z.enum(SahredEnums.getStringEnumValuesForZod(SahredEnums.Theme))
 })
 
 // Owner creates user schema (limited roles: USER only)
 const ownerCreateUserSchema = userBaseInsertSchema.omit({
-    role: true,
+    roleId: true,
     companyId: true,
 }).extend({
     role: z.literal(SahredEnums.Role.USER).default(SahredEnums.Role.USER),
@@ -53,7 +51,7 @@ const ownerCreateUserSchema = userBaseInsertSchema.omit({
 
 // Owner update user schema
 const ownerUpdateUserSchema = userBaseInsertSchema.omit({
-    role: true,
+    roleId: true,
     companyId: true,
     password: true,
 }).partial()
@@ -70,7 +68,7 @@ const userPaginationQuerySchema = basePaginationQuerySchema.extend({
     filter: z.object({
         name: z.string().optional(),
         email: z.string().optional(),
-        role: z.enum(SahredEnums.getEnumValuesForZod(SahredEnums.Role)).optional(),
+        roleId: z.number().optional(),
     })
 })
 

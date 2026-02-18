@@ -35,12 +35,14 @@ export class AuthService {
 
         const session: TSession = {
             companyId: user.companyId,
-            role: user.role as TRole,
+            role: SahredEnums.getKey(SahredEnums.Role, user.roleId),
+            roleId: user.roleId,
             user: sessionUser
         }
 
         const jwtSession: TJWTSession = {
-            role: user.role as TRole,
+            role: SahredEnums.getKey(SahredEnums.Role, user.roleId),
+            roleId: user.roleId,
             companyId: user.companyId,
             userId: user.id,
             email: user.email,
@@ -73,9 +75,9 @@ export class AuthService {
         const userId = await this.userRepository.createUser({
             ...userData,
             companyId: SahredEnums.CompanyId.default,
-            role: SahredEnums.Role.USER,
+            roleId: SahredEnums.Role.USER,
             fullName: `${userData.name} ${userData.surname}`,
-            mailConfirmationStatusId: SahredEnums.MailConfirmationStatusId.pending,
+            mailConfirmationStatusId: SahredEnums.MailConfirmationStatus.pending,
             test: '',
             fullPhone: fullPhone,
             invitationCode: generateAlphanumericCode(6),
@@ -110,12 +112,14 @@ export class AuthService {
 
         const session: TSession = {
             companyId: user.companyId,
-            role: user.role as TRole,
+            role: SahredEnums.getKey(SahredEnums.Role, user.roleId),
+            roleId: user.roleId,
             user: sessionUser
         }
 
         const jwtSession: TJWTSession = {
-            role: user.role as TRole,
+            role: SahredEnums.getKey(SahredEnums.Role, user.roleId),
+            roleId: user.roleId,
             companyId: user.companyId,
             userId: user.id,
             email: user.email,
@@ -236,7 +240,7 @@ export class AuthService {
         console.log(registerForm, 'registerForm')
         const canResend = await this.canResendVerificationCode(registerForm)
         if (!canResend) {
-            throw new BadRequestError({ message: 'you can only resend the code after 1 minute' ,toast: true})
+            throw new BadRequestError({ message: 'you can only resend the code after 1 minute', toast: true })
         }
         await this.sendVerificationCode(registerForm)
         return true

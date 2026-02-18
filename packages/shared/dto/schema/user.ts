@@ -21,7 +21,7 @@ export const tblUser = pgTable('user', {
     fullPhone: varchar('full_phone', { length: 255 }).notNull(),
 
 
-    role: varchar('role', { length: 255 }).notNull().$type<TRole>(),
+    roleId: integer('role_id').notNull(),
     test: varchar('test', { length: 255 }).notNull(),
     mailConfirmationStatusId: integer('mail_confirmation_status_id').notNull(),
     phoneVerificationCodeSendAt: timestamp('phone_verification_code_send_at'),
@@ -29,6 +29,11 @@ export const tblUser = pgTable('user', {
 
     ...getDefaultTableFields(),
     deletedAt: timestamp('deleted_at'),
+});
+
+export const tblRole = pgTable('roles', {
+    id: integer('id').primaryKey().notNull(),
+    name: varchar('name', { length: 255 }).notNull().$type<TRole>(),
 });
 
 //role only is an enum

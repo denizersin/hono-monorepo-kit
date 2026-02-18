@@ -1,10 +1,9 @@
 import { TCharacterValidator } from "@repo/shared/validators";
 import { getApiContext } from "@server/lib/context";
-import TCharacterEntity from "@server/modules/domain/entities/character/Character";
-import { ICharacterRepository } from "@server/modules/domain/repositories/ICharacterRepository";
 import { CharacterRepositoryImpl } from "@server/modules/infrastructure/repositories/character/CharacterRepositoryImpl";
 import { ENUM_CHARACTER_EVENTS } from "../../event/interface/character";
 import { EventBus } from "../../event";
+import { TSchemaCharacter } from "@repo/db";
 
 export class CharacterService {
     constructor(private readonly characterRepository: CharacterRepositoryImpl) { }
@@ -29,11 +28,11 @@ export class CharacterService {
         await this.characterRepository.deleteCharacter(id);
     }
 
-    async createCharacterInstruction(characterInstruction: TCharacterEntity.TCharacterInstructionInsert) {
+    async createCharacterInstruction(characterInstruction: TSchemaCharacter.TCharacterInstructionInsert) {
         await this.characterRepository.createCharacterInstruction(characterInstruction);
     }
 
-    async updateCharacterInstruction(id: number, characterInstruction: Partial<TCharacterEntity.TCharacterInstructionInsert>) {
+    async updateCharacterInstruction(id: number, characterInstruction: Partial<TSchemaCharacter.TCharacterInstructionInsert>) {
         await this.characterRepository.updateCharacterInstruction(id, characterInstruction);
     }
 
@@ -41,11 +40,11 @@ export class CharacterService {
         await this.characterRepository.deleteCharacterInstruction(id);
     }
 
-    async createCharacterImage(characterImage: TCharacterEntity.TCharacterImageInsert) {
+    async createCharacterImage(characterImage: TSchemaCharacter.TCharacterImageInsert) {
         await this.characterRepository.createCharacterImage(characterImage);
     }
 
-    async updateCharacterImage(id: number, characterImage: Partial<TCharacterEntity.TCharacterImageInsert>) {
+    async updateCharacterImage(id: number, characterImage: Partial<TSchemaCharacter.TCharacterImageInsert>) {
         await this.characterRepository.updateCharacterImage(id, characterImage);
     }
 
@@ -53,11 +52,11 @@ export class CharacterService {
         await this.characterRepository.deleteCharacterImage(id);
     }
 
-    async createCharacterPersona(characterPersona: TCharacterEntity.TCharacterPersonaInsert) {
+    async createCharacterPersona(characterPersona: TSchemaCharacter.TCharacterPersonaInsert) {
         await this.characterRepository.createCharacterPersona(characterPersona);
     }
 
-    async updateCharacterPersona(id: number, characterPersona: Partial<TCharacterEntity.TCharacterPersonaInsert>) {
+    async updateCharacterPersona(id: number, characterPersona: Partial<TSchemaCharacter.TCharacterPersonaInsert>) {
         await this.characterRepository.updateCharacterPersona(id, characterPersona);
     }
 

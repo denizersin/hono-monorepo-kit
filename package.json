@@ -9,7 +9,7 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "turbo dev",
+    "dev": "turbo dev --filter=!@repo/db --filter=!@repo/config",
     "dev2": "turbo dev --filter='./apps/*'",
     "build": "turbo build",
     "lint": "turbo lint",

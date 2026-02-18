@@ -74,12 +74,12 @@ const userApp = createHonoApp()
             })
         })
     .post('/create-user',
-        honoRoleMiddleware([SahredEnums.Role.ADMIN, SahredEnums.Role.USER]),
+        honoRoleMiddleware([SahredEnums.EnumRoleKey.ADMIN, SahredEnums.EnumRoleKey.USER]),
         validator('json', async (value, c: Context<TAuthMiddlewareContextWithVariables>) => {
             const role = c.var.session.role
             return validateMultipleSchemas({
                 map: {
-                    [SahredEnums.Role.ADMIN]: userValidator.adminCreateUserSchema,
+                    [SahredEnums.EnumRoleKey.ADMIN]: userValidator.adminCreateUserSchema,
                     [SahredEnums.Role.USER]: userValidator.userCreateSchema
                 },
                 key: role,
@@ -91,10 +91,10 @@ const userApp = createHonoApp()
             const userData = c.req.valid('json')
             const session = c.var.session
 
-            if (session.role == SahredEnums.Role.ADMIN) {
+            if (session.role == SahredEnums.EnumRoleKey.ADMIN) {
                 const result = await createUserUseCase.executeAsAdmin(userData as TUserValidator.TAdminCreateUserSchema)
                 return c.json(createSuccessResponse(result))
-            } else if (session.role == SahredEnums.Role.USER) {
+            } else if (session.role == SahredEnums.EnumRoleKey.USER) {
                 const result = await createUserUseCase.executeAsUser(userData as TUserValidator.TUserCreateSchema)
                 return c.json(createSuccessResponse(result))
             } else {

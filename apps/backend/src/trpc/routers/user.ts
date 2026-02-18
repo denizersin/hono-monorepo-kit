@@ -25,8 +25,8 @@ export const userRouter = createTRPCRouter({
     }),
 
     updateUserPreferences: publicProcedure.input(z.object({
-        language: z.nativeEnum(SahredEnums.Language),
-        theme: z.nativeEnum(SahredEnums.Theme)
+        language: z.nativeEnum(SahredEnums.EnumLanugageKey),
+        theme: z.nativeEnum(SahredEnums.EnumThemeKey)
     })).mutation(async ({ ctx, input }) => {
         setCookie(ctx.c, EnumCookieKeys.LANGUAGE, input.language)
         setCookie(ctx.c, EnumCookieKeys.THEME, input.theme)
@@ -38,11 +38,11 @@ export const userRouter = createTRPCRouter({
     createUser: protectedProcedure.use(roleMiddleware([SahredEnums.Role.ADMIN, SahredEnums.Role.OWNER]))
         .input(z.union([userValidator.adminCreateUserSchema, userValidator.userCreateSchema]))
         .mutation(async ({ ctx, input }) => {
-            if (ctx.session.role === SahredEnums.Role.ADMIN) {
+            if (ctx.session.roleId === SahredEnums.Role.ADMIN) {
                 const adminCreateUserInput = userValidator.adminCreateUserSchema.parse(input)
                 return await createUserUseCase.executeAsAdmin(adminCreateUserInput)
             }
-            else if (ctx.session.role === SahredEnums.Role.OWNER) {
+            else if (ctx.session.roleId === SahredEnums.Role.OWNER) {
                 const userCreateUserInput = userValidator.userCreateSchema.parse(input)
                 return await createUserUseCase.executeAsUser(userCreateUserInput)
             }
@@ -88,7 +88,7 @@ export const userRouter = createTRPCRouter({
                 throw new ForbiddenError({ message: 'You can only update users from your company', toast: true })
             }
             // Prevent updating OWNER or ADMIN roles
-            if (user.role === SahredEnums.Role.OWNER || user.role === SahredEnums.Role.ADMIN) {
+            if (user.roleId === SahredEnums.Role.OWNER || user.roleId === SahredEnums.Role.ADMIN) {
                 throw new ForbiddenError({ message: 'You cannot update admin or owner users', toast: true })
             }
             await userRepository.updateUser({ id: input.id, data: input.data })
@@ -108,7 +108,7 @@ export const userRouter = createTRPCRouter({
                 throw new ForbiddenError({ message: 'You can only delete users from your company', toast: true })
             }
             // Prevent deleting OWNER or ADMIN roles
-            if (user.role === SahredEnums.Role.OWNER || user.role === SahredEnums.Role.ADMIN) {
+            if (user.roleId === SahredEnums.Role.OWNER || user.roleId === SahredEnums.Role.ADMIN) {
                 throw new ForbiddenError({ message: 'You cannot delete admin or owner users', toast: true })
             }
             await userRepository.deleteUser(input.id)
@@ -122,7 +122,7 @@ export const userRouter = createTRPCRouter({
             const userInput = {
                 ...input,
                 companyId: ctx.companyId,
-                role: SahredEnums.Role.USER,
+                roleId: SahredEnums.Role.USER,
             }
             return await createUserUseCase.executeAsUser(userInput)
         }),

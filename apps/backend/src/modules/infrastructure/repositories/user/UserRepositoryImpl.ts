@@ -1,14 +1,13 @@
-import { IUserRepository } from "@server/modules/domain/repositories/IUserRepository";
-import TUserEntity from "@server/modules/domain/entities/user/User";
-import db from "../../database";
-import { and, asc, count, desc, eq, isNull, like, or, sql, SQL } from "drizzle-orm";
 import { tblUser } from "@repo/shared/schema";
 import { TSession } from "@repo/shared/types";
 import { TBaseValidators, TUserValidator } from "@repo/shared/validators";
+import TUserEntity from "@server/modules/domain/entities/user/User";
+import { and, asc, count, desc, eq, isNull, like, or, sql, SQL } from "drizzle-orm";
 import { PgColumn } from "drizzle-orm/pg-core";
+import db from "../../database";
 
 
-export class UserRepositoryImpl implements IUserRepository {
+export class UserRepositoryImpl {
 
     async getUserById(id: number): Promise<TUserEntity.TUser | undefined> {
         const user = await db.query.tblUser.findFirst({
@@ -87,8 +86,8 @@ export class UserRepositoryImpl implements IUserRepository {
             andConditions.push(like(tblUser.email, `%${filter.email}%`));
         }
 
-        if (filter.role) {
-            andConditions.push(eq(tblUser.role, filter.role));
+        if (filter.roleId) {
+            andConditions.push(eq(tblUser.roleId, filter.roleId));
         }
 
         if (global_search) {

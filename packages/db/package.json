@@ -12,12 +12,19 @@
   "scripts": {
     "lint": "eslint .",
     "type-check": "tsc --noEmit",
-    "dev": "rm -rf dist && tsc --watch",
+    "dev": "tsc --watch",
     "build": "tsc",
+    "db:dump": "tsx ./src/modules/infrastructure/database/scripts/db-dump.ts",
+    "db:backup": "tsx ./src/modules/infrastructure/database/scripts/db-backup.ts",
+    "db:studio": "bunx drizzle-kit studio --config ../../packages/db/drizzle.config.ts",
+    "initialize-db": "tsx ./src/modules/infrastructure/database/scripts/initialize-db.ts",
+    "initialize-new-look-up": "tsx ./src/modules/infrastructure/database/scripts/initialize-new-look-up.ts",
+    "reset-db-step1": "tsx ./src/modules/infrastructure/database/scripts/re-create-db.ts",
+    "reset-db-step2": "rm -rf ../../packages/db/migrations && bun run update-db && bun run initialize-db",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
-    "db:push": "drizzle-kit push",
-    "db:studio": "drizzle-kit studio"
+    "update-db": "bun run db:generate && sleep 1 && bun run db:migrate",
+    "drizzle-studio": "npx drizzle-kit studio"
   },
   "dependencies": {
     "@repo/config": "workspace:*",

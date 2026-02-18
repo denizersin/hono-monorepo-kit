@@ -6,16 +6,16 @@ export class CreateUserUseCase {
     constructor(private readonly userService: UserService) { }
 
     async executeAsAdmin(userData: TUserValidator.TAdminCreateUserSchema) {
-                
+
         return this.userService.createUser(userData)
     }
 
     async executeAsUser(userData: TUserValidator.TUserCreateSchema) {
         return this.userService.createUser({
             ...userData,
-            role: SahredEnums.Role.USER
+            roleId: SahredEnums.Role.USER,
         })
     }
-    
+
 
 }

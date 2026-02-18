@@ -1,11 +1,12 @@
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
-import { validateBackendEnv } from "@repo/config/backend";
 import { schema } from "./schema";
+import { validateBackendEnv } from "@repo/config";
 
 // Load environment variables
 const env = validateBackendEnv();
+
 
 // Create PostgreSQL connection pool
 const pool = new Pool({

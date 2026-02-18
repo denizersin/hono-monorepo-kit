@@ -21,14 +21,6 @@ process.env.TZ = 'UTC';
 
 
 
-
-
-
-
-
-
-
-
 const port = ENV.PORT || 3002
 console.log(`Server is running on port ${port}`)
 

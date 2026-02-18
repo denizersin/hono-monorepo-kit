@@ -1,3 +1,4 @@
+import { SahredEnums } from "@repo/shared/enums"
 import { TJWTSession, TRole, TSession } from "@repo/shared/types"
 import { EnumCookieKeys, EnumHeaderKeys } from "@server/lib/enums"
 import { UnauthorizedError } from "@server/lib/errors"
@@ -103,7 +104,8 @@ export const getSessionByJwtSession = async (jwtSession: TJWTSession): Promise<T
     }
 
     return {
-        role: user.role as TRole,
+        role: SahredEnums.getKey(SahredEnums.Role, user.roleId),
+        roleId: user.id,
         companyId: user.companyId,
         user: userWithoutPassword
     }

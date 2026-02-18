@@ -27,18 +27,19 @@ export type TTheme = "light" | "dark"
 // -------------------------AUTHENTICATION--------------------------------
 interface TBaseSession {
     role: TRole
+    roleId: number
     user: Omit<TSchemaUser.TTblUserSelect, 'password'>
     companyId: number
 
 }
 
 export interface TSuperAdminSession extends TBaseSession {
-    role: typeof SahredEnums.Role.SUPER_ADMIN
+    role: 'SUPER_ADMIN'
     companyId: number
 }
 
 export interface TAdminSession extends TBaseSession {
-    role: typeof SahredEnums.Role.ADMIN
+    role: 'ADMIN'
     companyId: number
 }
 
@@ -47,7 +48,7 @@ interface TUserSession extends TBaseSession {
 }
 
 export interface TOwnerSession extends TBaseSession {
-    role: typeof SahredEnums.Role.OWNER
+    role: 'OWNER'
     companyId: number
 }
 
@@ -55,6 +56,7 @@ export type TSession = TSuperAdminSession | TAdminSession | TUserSession | TOwne
 
 export type TJWTSession = {
     role: TRole
+    roleId: number
     companyId: number
     userId: number
     email: string

@@ -330,3 +330,7 @@
 {"0":{"id":203,"name":"CHARACTER_DELETED"},"level":"db","message":"detected missing records in tblMailConfirmationStatus adding if not exists","timestamp":"2025-10-12T15:35:59.893Z"}
 {"0":{"id":205,"name":"CHARACTER_MINOR_UPDATED"},"level":"db","message":"detected missing records in tblMailConfirmationStatus adding if not exists","timestamp":"2025-10-12T15:35:59.893Z"}
 {"0":{"id":204,"name":"CHARACTER_DELETED_BY_USER"},"level":"db","message":"detected missing records in tblMailConfirmationStatus adding if not exists","timestamp":"2025-10-12T15:35:59.893Z"}
+{"0":{"id":1,"name":"SUPER_ADMIN"},"level":"db","message":"detected missing records in tblMailConfirmationStatus adding if not exists","timestamp":"2026-02-18T13:12:39.541Z"}
+{"0":{"id":3,"name":"OWNER"},"level":"db","message":"detected missing records in tblMailConfirmationStatus adding if not exists","timestamp":"2026-02-18T13:12:39.590Z"}
+{"0":{"id":4,"name":"USER"},"level":"db","message":"detected missing records in tblMailConfirmationStatus adding if not exists","timestamp":"2026-02-18T13:12:39.590Z"}
+{"0":{"id":2,"name":"ADMIN"},"level":"db","message":"detected missing records in tblMailConfirmationStatus adding if not exists","timestamp":"2026-02-18T13:12:39.590Z"}

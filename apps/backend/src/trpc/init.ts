@@ -105,7 +105,7 @@ export const protectedProcedure = t.procedure.use(async (opts) => {
 
 
 export const adminProcedure = protectedProcedure.use(async (opts) => {
-    if (opts.ctx.session.role !== SahredEnums.Role.ADMIN) {
+    if (opts.ctx.session.role !== SahredEnums.EnumRoleKey.ADMIN) {
         throw createTRPCError({
             code: 'UNAUTHORIZED',
         })
@@ -120,7 +120,7 @@ export const adminProcedure = protectedProcedure.use(async (opts) => {
 
 
 export const ownerProcedure = protectedProcedure.use(async (opts) => {
-    if (opts.ctx.session.role !== SahredEnums.Role.OWNER) {
+    if (opts.ctx.session.role !== SahredEnums.EnumRoleKey.OWNER) {
         throw createTRPCError({
             code: 'UNAUTHORIZED',
         })
@@ -138,15 +138,15 @@ export const ownerProcedure = protectedProcedure.use(async (opts) => {
 
 
 
-export const roleMiddleware = (requiredRoles: TRole[] | TRole) =>
+export const roleMiddleware = (requiredRoleIds: number[] | number) =>
     t.middleware(({ ctx, next }) => {
         if (!ctx.session) {
             throw new Error('Not authenticated');
         }
-        if (Array.isArray(requiredRoles) && !requiredRoles.includes(ctx.session.role)) {
+        if (Array.isArray(requiredRoleIds) && !requiredRoleIds.includes(ctx.session.roleId)) {
             throw new Error('Unauthorized');
         }
-        if (typeof requiredRoles === 'string' && ctx.session.role !== requiredRoles) {
+        if (typeof requiredRoleIds === 'number' && ctx.session.roleId !== requiredRoleIds) {
             throw new Error('Unauthorized');
         }
         return next();

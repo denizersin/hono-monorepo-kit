@@ -1,89 +1,92 @@
-import type { TChatType, TEnum, TLanguage, TMailConfirmationStatus, TModel, TRole, TTheme } from "../types/index";
+import type { TChatType, TLanguage, TMailConfirmationStatus, TModel, TRole, TTheme } from "../types/index";
 
+// -----------------------------------------------------------------------
+// Base Type
+// -----------------------------------------------------------------------
 
-const EnumROLES: Record<TRole, { id: number, value: TRole }> = {
-    SUPER_ADMIN: { id: 1, value: 'SUPER_ADMIN' },
-    ADMIN: { id: 2, value: 'ADMIN' },
-    OWNER: { id: 3, value: 'OWNER' },
-    USER: { id: 4, value: 'USER' },
-} as const;
+type TEnumRecord<K extends string> = Record<K, number>;
 
+// -----------------------------------------------------------------------
+// Enum Maps
+// -----------------------------------------------------------------------
 
-
-const EnumRole: Record<TRole, TRole> = {
-    SUPER_ADMIN: 'SUPER_ADMIN',
-    ADMIN: 'ADMIN',
-    USER: 'USER',
-    OWNER: 'OWNER',
-} as const;
-
-const EnumRoleId: Record<TRole, number> = {
+const EnumRole: TEnumRecord<TRole> = {
     SUPER_ADMIN: 1,
     ADMIN: 2,
-    USER: 3,
-    OWNER: 4,
+    OWNER: 3,
+    USER: 4,
 } as const;
 
+const EnumRoleKey: Record<TRole, TRole> = {
+    SUPER_ADMIN: 'SUPER_ADMIN',
+    ADMIN: 'ADMIN',
+    OWNER: 'OWNER',
+    USER: 'USER',
+}
 
 
-//look up example
-const EnumMailConfirmationStatus: Record<TMailConfirmationStatus, TMailConfirmationStatus> = {
-    pending: 'pending',
-    confirmed: 'confirmed',
-    rejected: 'rejected'
-} as const;
-
-const EnumMailConfirmationStatusId: Record<TMailConfirmationStatus, number> = {
+const EnumMailConfirmationStatus: TEnumRecord<TMailConfirmationStatus> = {
     pending: 1,
     confirmed: 2,
-    rejected: 3
-} as const;
-//look up example
-
-const TesEnum = {
-    key1: 'value1',
-    key2: 'value2',
-    key3: 'value3'
+    rejected: 3,
 } as const;
 
-const EnumLanguage: Record<TLanguage, TLanguage> = {
+const EnumLanguage: TEnumRecord<TLanguage> = {
+    tr: 1,
+    en: 2,
+    es: 3,
+} as const;
+
+const EnumLanugageKey: Record<TLanguage, TLanguage> = {
     tr: 'tr',
     en: 'en',
     es: 'es'
+}
+
+const EnumTheme: TEnumRecord<TTheme> = {
+    light: 1,
+    dark: 2,
 } as const;
 
-const EnumLanguageId: Record<TLanguage, number> = {
-    tr: 1,
-    en: 2,
-    es: 3
-} as const;
-
-const EnumTheme: Record<TTheme, TTheme> = {
+const EnumThemeKey: Record<TTheme, TTheme> = {
     light: 'light',
     dark: 'dark'
+}
+
+const EnumChatType: TEnumRecord<TChatType> = {
+    private: 1,
+    group: 2,
 } as const;
 
+const EnumModel: TEnumRecord<TModel> = {
+    'GEMINI_2.5_FLASH': 1,
+    'GEMINI_2.5_PRO': 2,
+} as const;
+
+// -----------------------------------------------------------------------
+// Status Codes
+// -----------------------------------------------------------------------
 
 const STATUS_CODE_IDS = {
-    BAD_REQUEST: 400, // The server cannot or will not process the request due to something that is perceived to be a client error.
-    UNAUTHORIZED: 401, // The client request has not been completed because it lacks valid authentication credentials for the requested resource.
-    PAYMENT_REQUIRED: 402, // The client request requires payment to access the requested resource.
-    FORBIDDEN: 403, // The server was unauthorized to access a required data source, such as a REST API.
-    NOT_FOUND: 404, // The server cannot find the requested resource.
-    METHOD_NOT_SUPPORTED: 405, // The server knows the request method, but the target resource doesn't support this method.
-    TIMEOUT: 408, // The server would like to shut down this unused connection.
-    CONFLICT: 409, // The server request resource conflict with the current state of the target resource.
-    PRECONDITION_FAILED: 412, // Access to the target resource has been denied.
-    PAYLOAD_TOO_LARGE: 413, // Request entity is larger than limits defined by server.
-    UNSUPPORTED_MEDIA_TYPE: 415, // The server refuses to accept the request because the payload format is in an unsupported format.
-    UNPROCESSABLE_CONTENT: 422, // The server understands the request method, and the request entity is correct, but the server was unable to process it.
-    TOO_MANY_REQUESTS: 429, // The rate limit has been exceeded or too many requests are being sent to the server.
-    CLIENT_CLOSED_REQUEST: 499, // Access to the resource has been denied.
-    INTERNAL_SERVER_ERROR: 500, // An unspecified error occurred.
-    NOT_IMPLEMENTED: 501, // The server does not support the functionality required to fulfill the request.
-    BAD_GATEWAY: 502, // The server received an invalid response from the upstream server.
-    SERVICE_UNAVAILABLE: 503, // The server is not ready to handle the request.
-    GATEWAY_TIMEOUT: 504, // The server did not get a response in time from the upstream server that it needed in order to complete the request.
+    BAD_REQUEST: 400,
+    UNAUTHORIZED: 401,
+    PAYMENT_REQUIRED: 402,
+    FORBIDDEN: 403,
+    NOT_FOUND: 404,
+    METHOD_NOT_SUPPORTED: 405,
+    TIMEOUT: 408,
+    CONFLICT: 409,
+    PRECONDITION_FAILED: 412,
+    PAYLOAD_TOO_LARGE: 413,
+    UNSUPPORTED_MEDIA_TYPE: 415,
+    UNPROCESSABLE_CONTENT: 422,
+    TOO_MANY_REQUESTS: 429,
+    CLIENT_CLOSED_REQUEST: 499,
+    INTERNAL_SERVER_ERROR: 500,
+    NOT_IMPLEMENTED: 501,
+    BAD_GATEWAY: 502,
+    SERVICE_UNAVAILABLE: 503,
+    GATEWAY_TIMEOUT: 504,
 } as const;
 
 const STATUS_CODES = {
@@ -109,128 +112,86 @@ const STATUS_CODES = {
 } as const;
 
 const CompanyId = {
-    default: 1
+    default: 1,
 } as const;
 
-const ChatType: Record<TChatType, TChatType> = {
-    private: 'private',
-    group: 'group'
-} as const;
-
-const ChatTypeId: Record<TChatType, number> = {
-    private: 1,
-    group: 2
-} as const;
-
-const Model: Record<TModel, TModel> = {
-    "GEMINI_2.5_FLASH": 'GEMINI_2.5_FLASH',
-    "GEMINI_2.5_PRO": 'GEMINI_2.5_PRO'
-} as const;
-
-const ModelId: Record<TModel, number> = {
-    "GEMINI_2.5_FLASH": 1,
-    "GEMINI_2.5_PRO": 2
-} as const;
+// -----------------------------------------------------------------------
+// Global Enum Helper
+// -----------------------------------------------------------------------
 
 
 
-const EMOTIONS = {
-
-}
-
-
-
-
-type TTestEnum = typeof TesEnum[keyof typeof TesEnum]
+// -----------------------------------------------------------------------
+// Export
+// -----------------------------------------------------------------------
 
 export const SahredEnums = {
-    // -----------------------------ENUMS--------------------------------
-
-
+    // Enums
     Role: EnumRole,
-    RoleId: EnumRoleId,
+    EnumRoleKey,
     MailConfirmationStatus: EnumMailConfirmationStatus,
-    MailConfirmationStatusId: EnumMailConfirmationStatusId,
-    STATUS_CODES: STATUS_CODES,
-    STATUS_CODE_IDS: STATUS_CODE_IDS,
-    CompanyId: CompanyId,
-    ChatType: ChatType,
-    ChatTypeId: ChatTypeId,
-    Model: Model,
-    ModelId: ModelId,
     Language: EnumLanguage,
-    LanguageId: EnumLanguageId,
+    EnumLanugageKey,
     Theme: EnumTheme,
-    // -----------------------------ENUMS--------------------------------
+    EnumThemeKey,
+    ChatType: EnumChatType,
+    Model: EnumModel,
+
+    // Status
+    STATUS_CODES,
+    STATUS_CODE_IDS,
+
+    // Misc
+    CompanyId,
+
+    // Helper
 
 
-    // -----------------------------GET ENUM VALUES AND KEYS--------------------------------
 
-    getEnumKeys: <T extends object>(enumType: T) => {
-        type Key = keyof typeof enumType;
-        return Object.keys(enumType) as Key[]
+
+
+
+    getId<K extends string>(map: TEnumRecord<K>, key: K): number {
+        return map[key];
     },
 
-    getEnumValues: <T extends object>(enumType: T) => {
-        type Key = keyof typeof enumType;
-        type Value = typeof enumType[Key]
-        return Object.values(enumType) as Value[]
+    getKey<K extends string>(map: TEnumRecord<K>, id: number): K {
+        const entry = Object.entries<number>(map).find(([_, v]) => v === id);
+        if (!entry) throw new Error(`Unknown id: ${id}`);
+        return entry[0] as K;
     },
 
-    getEnumValuesForZod: <T extends object>(enumType: T) => {
-        type Key = keyof typeof enumType;
-        type Value = typeof enumType[Key]
-        return Object.values(enumType) as [Value, ...Value[]]
-    },
-    getStringEnumValuesForZod: <T extends Record<string, string>>(enumType: T) => {
-        type Key = keyof T;
-        type Value = T[Key] extends string ? T[Key] : never;
-        return Object.values(enumType) as [Value, ...Value[]]
+    keys<K extends string>(map: TEnumRecord<K>): K[] {
+        return Object.keys(map) as K[];
     },
 
-    getKeyFromIdEnum: <T extends Record<string, number>>({
-        Enum,
-        value
-    }: {
-        Enum: T
-        value: number
-    }): keyof T => {
-        return Object.keys(Enum).find(key => Enum[key] === value) as keyof T
+    values<K extends string>(map: TEnumRecord<K>): number[] {
+        return Object.values(map);
+    },
+    ids<K extends string>(map: TEnumRecord<K>): number[] {
+        return Object.values(map) as number[];
     },
 
+    entries<K extends string>(map: TEnumRecord<K>): { key: K; id: number }[] {
+        return Object.entries<number>(map).map(([k, v]) => ({
+            key: k as K,
+            id: v,
+        }));
+    },
 
-    getIdFromKeyEnum: <T extends Record<string, number>>({
-        Enum,
-        key
-    }: {
-        Enum: T
-        key: keyof T
-    }): number => {
-        return Enum[key] as number
-    }
-    // -----------------------------GET ENUM VALUES AND KEYS--------------------------------
-} as const;
+    has<K extends string>(map: TEnumRecord<K>, key: string): key is K {
+        return key in map;
+    },
 
+    hasId<K extends string>(map: TEnumRecord<K>, id: number): boolean {
+        return Object.values<number>(map).includes(id);
+    },
 
-
-const confirmationStatusId = 2;
-const confirmationStatusKey = SahredEnums.getKeyFromIdEnum({
-    Enum: SahredEnums.MailConfirmationStatusId,
-    value: confirmationStatusId
-})
-
-const id = SahredEnums.getIdFromKeyEnum({
-    Enum: SahredEnums.MailConfirmationStatusId,
-    key: confirmationStatusKey
-})
-
-
-const values = SahredEnums.getEnumValues(SahredEnums.Role)
-// ?~ ('admin', 'user', 'owner')[]
-
-
-
-const keys = SahredEnums.getEnumKeys(SahredEnums.Role)
-
-// ?~ ('ADMIN', 'USER', 'OWNER')[]
+    keysForZod<K extends string>(map: TEnumRecord<K>): [K, ...K[]] {
+        return Object.keys(map) as [K, ...K[]];
+    },
+    getStringEnumValuesForZod<K extends string>(map: TEnumRecord<K>): [K, ...K[]] {
+        return Object.keys(map) as [K, ...K[]];
+    },
+}
 

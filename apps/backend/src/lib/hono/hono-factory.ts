@@ -29,8 +29,8 @@ export default createFactory<AppBindings>({
     app.use(
       //no need to set variable because it is already set itself globally !!
       languageDetector({
-        supportedLanguages: SahredEnums.getEnumValues(SahredEnums.Language), // Must include fallback
-        fallbackLanguage: SahredEnums.Language.en, // Required
+        supportedLanguages: SahredEnums.keys(SahredEnums.Language), // Must include fallback
+        fallbackLanguage: SahredEnums.EnumLanugageKey.en, // Required
         order: ['header', 'cookie'],
         cookieOptions: {
           sameSite: 'None'
@@ -50,7 +50,7 @@ export default createFactory<AppBindings>({
       const companyIdInt = session?.companyId || (companyId ? parseInt(companyId) : null)
       c.set("companyId", companyIdInt)
       const theme = getCookie(c, EnumCookieKeys.THEME)
-      c.set("theme", theme as TTheme || SahredEnums.Theme.light)
+      c.set("theme", theme as TTheme || SahredEnums.EnumThemeKey.light)
 
       initApiContext({
         session,

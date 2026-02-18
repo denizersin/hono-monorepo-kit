@@ -21,30 +21,30 @@ export class InitializeDbPrededfinedDatas {
     }
 
     static async initializeLanguageData() {
-        const languageEnumValues = SahredEnums.getStringEnumValuesForZod(SahredEnums.Language)
+        const languageEnumKeys = SahredEnums.keysForZod(SahredEnums.Language)
 
         const languageData = _languageData as { code: string, name: string }[]
         languageData.sort((a, b) => {
 
             //if is app language, then it should be first to sync id
-            const isMyEnumValue = languageEnumValues.some(v => v === a.code)
-            const isMyEnumValue2 = languageEnumValues.some(v => v === b.code)
+            const isMyEnumValue = languageEnumKeys.some(v => v === a.code)
+            const isMyEnumValue2 = languageEnumKeys.some(v => v === b.code)
             if (isMyEnumValue && isMyEnumValue2) {
                 return 0
             }
             return isMyEnumValue ? -1 : 1
         })
         const languageDataInsert = languageData.map(language => {
-            const isMyEnumValue = languageEnumValues.some(v => v === language.code)
+            const isMyEnumValue = languageEnumKeys.some(v => v === language.code)
             return {
                 name: language.name,
                 code: language.code,
-                id: isMyEnumValue ? SahredEnums.LanguageId[language.code as TLanguage] : undefined
+                id: isMyEnumValue ? SahredEnums.getId(SahredEnums.Language, language.code as TLanguage) : undefined
             }
         })
 
         const myLanguagesData = languageDataInsert.filter(l => l.id !== undefined)
-  
+
         await db.insert(tblLanguage).values(myLanguagesData)
     }
 

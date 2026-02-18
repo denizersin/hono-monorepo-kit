@@ -13,7 +13,7 @@ const characterService = new CharacterService(new CharacterRepositoryImpl())
 
 const characterApp = createHonoApp()
     .post('/persona/create',
-        honoRoleMiddleware([SahredEnums.Role.OWNER, SahredEnums.Role.ADMIN]),
+        honoRoleMiddleware([SahredEnums.EnumRoleKey.OWNER, SahredEnums.EnumRoleKey.ADMIN]),
         honoPublicCompanyMiddleware,
         zValidator('json', characterValidator.createPersonaWithTranslationSchema),
         async (c) => {
