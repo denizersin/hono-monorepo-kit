@@ -1,0 +1,18 @@
+turbo Monorepo proje
+
+apps/backend->honojs
+apps/mobile->react-native
+apps/web->nextjs
+
+packages/db->dirzlle orm + postgresql 
+import { db } from "@repo/db";
+
+
+
+packages/shared->dto,db-schema,enums,types ,table types: for example for user table: TSchemaUser.TTblUserSelect, repositoryimpl function proptypes etc
+
+packages/job-> background jobs, bullmq
+
+packages/config-> config files, env validation etc for each app
+
+

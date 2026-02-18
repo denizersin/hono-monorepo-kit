@@ -1,6 +1,15 @@
 import type { TChatType, TEnum, TLanguage, TMailConfirmationStatus, TModel, TRole, TTheme } from "../types/index";
 
 
+const EnumROLES: Record<TRole, { id: number, value: TRole }> = {
+    SUPER_ADMIN: { id: 1, value: 'SUPER_ADMIN' },
+    ADMIN: { id: 2, value: 'ADMIN' },
+    OWNER: { id: 3, value: 'OWNER' },
+    USER: { id: 4, value: 'USER' },
+} as const;
+
+
+
 const EnumRole: Record<TRole, TRole> = {
     SUPER_ADMIN: 'SUPER_ADMIN',
     ADMIN: 'ADMIN',
@@ -97,7 +106,7 @@ const STATUS_CODES = {
     BAD_GATEWAY: 'BAD_GATEWAY',
     SERVICE_UNAVAILABLE: 'SERVICE_UNAVAILABLE',
     GATEWAY_TIMEOUT: 'GATEWAY_TIMEOUT',
-} as const; 
+} as const;
 
 const CompanyId = {
     default: 1
@@ -125,9 +134,9 @@ const ModelId: Record<TModel, number> = {
 
 
 
- const EMOTIONS={
-    
- }
+const EMOTIONS = {
+
+}
 
 
 
@@ -139,6 +148,7 @@ export const SahredEnums = {
 
 
     Role: EnumRole,
+    RoleId: EnumRoleId,
     MailConfirmationStatus: EnumMailConfirmationStatus,
     MailConfirmationStatusId: EnumMailConfirmationStatusId,
     STATUS_CODES: STATUS_CODES,
