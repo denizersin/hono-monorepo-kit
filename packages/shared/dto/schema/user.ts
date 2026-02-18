@@ -1,7 +1,7 @@
+import { TPermission } from '#/enums/permissions';
 import { TMailConfirmationStatus, TRole } from '#/types/index';
-import { bigserial, boolean, doublePrecision, integer, pgEnum, pgTable, serial, timestamp, varchar } from 'drizzle-orm/pg-core';
+import { boolean, doublePrecision, integer, pgTable, serial, timestamp, varchar } from 'drizzle-orm/pg-core';
 import { getDefaultTableFields } from './schemaHelpers';
-import { SahredEnums } from '../../enums';
 
 
 export const tblUser = pgTable('user', {
@@ -36,6 +36,19 @@ export const tblRole = pgTable('roles', {
     name: varchar('name', { length: 255 }).notNull().$type<TRole>(),
 });
 
+export const tblPermission = pgTable('permissions', {
+    id: integer('id').primaryKey().notNull(),
+    name: varchar('name', { length: 255 }).notNull().$type<TPermission>(),
+});
+
+export const tblRolePermission = pgTable('role_permissions', {
+    roleId: integer('role_id').notNull().references(() => tblRole.id),
+    permissionId: integer('permission_id').notNull().references(() => tblPermission.id),
+    ...getDefaultTableFields(),
+});
+
+
+
 //role only is an enum
 // export const tblRole = pgTable('roles', {
 //     id: integer('id').primaryKey().notNull(),
@@ -68,6 +81,9 @@ export namespace TSchemaUser {
 
     export type TTblMailConfirmationStatusSelect = typeof tblMailConfirmationStatus.$inferSelect;
     export type TTblMailConfirmationStatusInsert = typeof tblMailConfirmationStatus.$inferInsert;
+
+    export type TTblRolePermissionSelect = typeof tblRolePermission.$inferSelect;
+    export type TTblRolePermissionInsert = typeof tblRolePermission.$inferInsert;
 }
 
 

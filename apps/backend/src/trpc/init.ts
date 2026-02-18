@@ -98,7 +98,7 @@ export const protectedProcedure = t.procedure.use(async (opts) => {
         ctx: {
             ...opts.ctx,
             session: opts.ctx.session,
-            companyId: opts.ctx.companyId
+            companyId: opts.ctx.companyId!
         }
     })
 })

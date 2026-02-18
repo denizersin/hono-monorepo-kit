@@ -3,13 +3,11 @@
   "compilerOptions": {
     "outDir": "./dist",
     "rootDir": "./src",
-    // "forceConsistentCasingInFileNames": true,
     "baseUrl": ".",
     "module": "ESNext",
     "moduleResolution": "bundler",
     "moduleDetection": "force",
     "emitDeclarationOnly": true,
-    // "isolatedModules": true,
     "target": "ESNext",
     "allowJs": true,
     "resolveJsonModule": true,

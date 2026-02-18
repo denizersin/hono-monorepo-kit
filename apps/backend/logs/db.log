@@ -334,3 +334,7 @@
 {"0":{"id":3,"name":"OWNER"},"level":"db","message":"detected missing records in tblMailConfirmationStatus adding if not exists","timestamp":"2026-02-18T13:12:39.590Z"}
 {"0":{"id":4,"name":"USER"},"level":"db","message":"detected missing records in tblMailConfirmationStatus adding if not exists","timestamp":"2026-02-18T13:12:39.590Z"}
 {"0":{"id":2,"name":"ADMIN"},"level":"db","message":"detected missing records in tblMailConfirmationStatus adding if not exists","timestamp":"2026-02-18T13:12:39.590Z"}
+{"0":{"id":1000,"name":"CREATE_USER"},"level":"db","message":"detected missing records in tblMailConfirmationStatus adding if not exists","timestamp":"2026-02-18T18:09:29.447Z"}
+{"0":{"id":1003,"name":"LIST_USER"},"level":"db","message":"detected missing records in tblMailConfirmationStatus adding if not exists","timestamp":"2026-02-18T18:09:29.464Z"}
+{"0":{"id":1002,"name":"DELETE_USER"},"level":"db","message":"detected missing records in tblMailConfirmationStatus adding if not exists","timestamp":"2026-02-18T18:09:29.465Z"}
+{"0":{"id":1001,"name":"UPDATE_USER"},"level":"db","message":"detected missing records in tblMailConfirmationStatus adding if not exists","timestamp":"2026-02-18T18:09:29.466Z"}

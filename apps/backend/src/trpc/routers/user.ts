@@ -52,8 +52,8 @@ export const userRouter = createTRPCRouter({
         }),
 
     // Owner CRUD operations
-    getAllUsers: ownerProcedure
-        .use(roleMiddleware([SahredEnums.Role.OWNER]))
+    getAllUsers: protectedProcedure
+        .use(roleMiddleware([SahredEnums.Role.OWNER, SahredEnums.Role.ADMIN]))
         .input(userValidator.userPaginationQuerySchema)
         .query(async ({ ctx, input }) => {
             return await userRepository.getAllUsersWithPagination(input, ctx.companyId)

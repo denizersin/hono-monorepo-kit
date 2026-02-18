@@ -1,3 +1,4 @@
+import "dotenv/config"
 import LookUpEnumsValidation from "../helpers/validate-lookup"
 
 
@@ -6,10 +7,7 @@ import LookUpEnumsValidation from "../helpers/validate-lookup"
 async function initializeNewLookUp() {
 
 
-
-    // await LookUpEnumsValidation.initializeLanguageToDb()
-
-    // await LookUpEnumsValidation.initializeLogStatusToDb()
+    // await LookUpEnumsValidation.initalizeNewLookup('tblPermission')
 
     await LookUpEnumsValidation.validate()
 

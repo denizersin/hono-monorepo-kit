@@ -19,6 +19,7 @@ import { CustomPagination } from "@/components/dashboard/custom-pagination"
 import { Badge } from "@/components/ui/badge"
 import { Pencil, Trash2, Plus, User } from "lucide-react"
 import { DeleteUserModal } from "./delete-user-modal"
+import { SahredEnums } from "@repo/shared/enums"
 
 type UserWithoutPassword = Omit<TUserValidator.TblUserSelect, 'password'>
 
@@ -137,8 +138,8 @@ export const UserList = () => {
                                     <TableCell className="text-muted-foreground">{user.email}</TableCell>
                                     <TableCell className="text-muted-foreground">{user.fullPhone}</TableCell>
                                     <TableCell>
-                                        <Badge variant={user.role === 'OWNER' ? 'default' : user.role === 'ADMIN' ? 'secondary' : 'outline'}>
-                                            {user.role}
+                                        <Badge variant={user.roleId === SahredEnums.Role.OWNER ? 'default' : user.roleId === SahredEnums.Role.ADMIN ? 'secondary' : 'outline'}>
+                                            {SahredEnums.getKey(SahredEnums.Role, user.roleId)}
                                         </Badge>
                                     </TableCell>
                                     <TableCell className="text-right">
@@ -147,7 +148,7 @@ export const UserList = () => {
                                                 variant="ghost"
                                                 size="icon"
                                                 onClick={() => handleEdit(user)}
-                                                disabled={user.role === 'OWNER' || user.role === 'ADMIN'}
+                                                disabled={user.roleId === SahredEnums.Role.OWNER || user.roleId === SahredEnums.Role.ADMIN || user.roleId === SahredEnums.Role.SUPER_ADMIN}
                                             >
                                                 <Pencil className="h-4 w-4" />
                                             </Button>
@@ -155,7 +156,7 @@ export const UserList = () => {
                                                 variant="ghost"
                                                 size="icon"
                                                 onClick={() => handleDelete(user)}
-                                                disabled={user.role === 'OWNER' || user.role === 'ADMIN' || user.role==="SUPER_ADMIN"}
+                                                disabled={user.roleId === SahredEnums.Role.OWNER || user.roleId === SahredEnums.Role.ADMIN || user.roleId === SahredEnums.Role.SUPER_ADMIN}
                                                 className="text-destructive hover:text-destructive"
                                             >
                                                 <Trash2 className="h-4 w-4" />

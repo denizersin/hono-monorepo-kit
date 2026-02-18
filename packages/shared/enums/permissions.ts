@@ -1,6 +1,13 @@
-export const PermissionEnum = {
-    CREATE_USER: 'CREATE_USER',
-    UPDATE_USER: 'UPDATE_USER',
-    DELETE_USER: 'DELETE_USER',
-    LIST_USER: 'LIST_USER',
-} as const
+import { TEnumRecord } from ".";
+
+
+const _PermissionEnum = {
+    CREATE_USER: 1000,
+    UPDATE_USER: 1001,
+    DELETE_USER: 1002,
+    LIST_USER: 1003,
+} as const;
+
+export type TPermission = keyof typeof _PermissionEnum
+
+export const PermissionEnum: TEnumRecord<TPermission> = _PermissionEnum

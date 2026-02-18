@@ -1,10 +1,10 @@
 import type { TChatType, TLanguage, TMailConfirmationStatus, TModel, TRole, TTheme } from "../types/index";
-
+import { PermissionEnum } from "./permissions";
 // -----------------------------------------------------------------------
 // Base Type
 // -----------------------------------------------------------------------
 
-type TEnumRecord<K extends string> = Record<K, number>;
+export type TEnumRecord<K extends string> = Record<K, number>;
 
 // -----------------------------------------------------------------------
 // Enum Maps
@@ -136,7 +136,7 @@ export const SahredEnums = {
     EnumThemeKey,
     ChatType: EnumChatType,
     Model: EnumModel,
-
+    Permission: PermissionEnum,
     // Status
     STATUS_CODES,
     STATUS_CODE_IDS,
