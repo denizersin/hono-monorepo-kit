@@ -3,14 +3,16 @@ import { WhatsappService } from "./modules/application/services/whatsapp";
 import { CountryRepository } from "./modules/infrastructure/repositories/data/CountryRepository";
 import { VerifyCodeRepositoryImpl } from "./modules/infrastructure/repositories/verifyCode/VerifyCodeRepositoryImpl";
 import { UserRepositoryImpl } from "./modules/infrastructure/repositories/user/UserRepositoryImpl";
+import { RolePermissionRepositoryImpl } from "./modules/infrastructure/repositories/user/RolePermissionRepositoryImpl";
 import { UserService } from "./modules/application/services/user/UserService";
 import { LanguageRepository } from "./modules/infrastructure/repositories/data/LanguageRepository";
 import { CharacterService } from "./modules/application/services/character/CharacterService";
 import { CharacterRepositoryImpl } from "./modules/infrastructure/repositories/character/CharacterRepositoryImpl";
 import { CompanyRepositoryImpl } from "./modules/infrastructure/repositories/company/CompanyRepositoryImpl";
 import { CompanyService } from "./modules/application/services/company/CompanyService";
- 
+
 export const userRepository = new UserRepositoryImpl()
+export const rolePermissionRepository = new RolePermissionRepositoryImpl()
 export const wpClientService = new WhatsappService()
 export const countryRepository = new CountryRepository()
 export const verifyCodeRepository = new VerifyCodeRepositoryImpl()

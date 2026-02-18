@@ -1,5 +1,5 @@
 import { SahredEnums } from "@repo/shared/enums";
-import { userRepository, userService } from "@server/bootstrap";
+import { rolePermissionRepository, userRepository, userService } from "@server/bootstrap";
 import { EnumCookieKeys } from "@server/lib/enums";
 import { CreateUserUseCase } from "@server/modules/application/use-cases/user/CreateUserUseCase";
 import { setCookie } from "hono/cookie";
@@ -125,5 +125,46 @@ export const userRouter = createTRPCRouter({
                 roleId: SahredEnums.Role.USER,
             }
             return await createUserUseCase.executeAsUser(userInput)
+        }),
+
+    // Role Permission Operations
+    getRolePermissions: protectedProcedure
+        .use(roleMiddleware([SahredEnums.Role.OWNER, SahredEnums.Role.ADMIN]))
+        .input(userValidator.rolePermissionPaginationQuerySchema)
+        .query(async ({ ctx, input }) => {
+            return await rolePermissionRepository.getAllRolePermissionsWithPagination(input)
+        }),
+
+    createRolePermission: protectedProcedure
+        .use(roleMiddleware([SahredEnums.Role.OWNER, SahredEnums.Role.ADMIN]))
+        .input(userValidator.rolePermissionBaseInsertSchema)
+        .mutation(async ({ ctx, input }) => {
+            return await rolePermissionRepository.createRolePermission(input)
+        }),
+
+    createBulkRolePermission: protectedProcedure
+        .use(roleMiddleware([SahredEnums.Role.OWNER, SahredEnums.Role.ADMIN]))
+        .input(userValidator.createBulkRolePermissionSchema)
+        .mutation(async ({ ctx, input }) => {
+            return await rolePermissionRepository.createBulkRolePermission(input)
+        }),
+
+    deleteRolePermission: protectedProcedure
+        .use(roleMiddleware([SahredEnums.Role.OWNER, SahredEnums.Role.ADMIN]))
+        .input(userValidator.deleteRolePermissionSchema)
+        .mutation(async ({ ctx, input }) => {
+            return await rolePermissionRepository.deleteRolePermission(input.roleId, input.permissionId)
+        }),
+
+    getAllRoles: protectedProcedure
+        .use(roleMiddleware([SahredEnums.Role.OWNER, SahredEnums.Role.ADMIN]))
+        .query(async () => {
+            return await rolePermissionRepository.getAllRoles()
+        }),
+
+    getAllPermissions: protectedProcedure
+        .use(roleMiddleware([SahredEnums.Role.OWNER, SahredEnums.Role.ADMIN]))
+        .query(async () => {
+            return await rolePermissionRepository.getAllPermissions()
         }),
 })

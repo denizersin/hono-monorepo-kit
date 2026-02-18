@@ -1,9 +1,36 @@
 import { SahredEnums } from '../../../enums';
-import { tblUser } from '../../schema';
+import { tblRolePermission, tblUser } from '../../schema';
 import type { TSchemaUser } from '../../schema';
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
 import { z } from 'zod';
 import { basePaginationQuerySchema, defaultOmitFieldsSchema } from '../utils';
+
+const rolePermissionBaseSelectSchema = createSelectSchema(tblRolePermission)
+const rolePermissionBaseInsertSchema = createInsertSchema(tblRolePermission, {
+    permissionId: z.number(),
+    roleId: z.number(),
+})
+
+const createBulkRolePermissionSchema = z.object({
+    roleId: z.number(),
+    permissionIds: z.array(z.number()),
+})
+
+const rolePermissionPaginationQuerySchema = basePaginationQuerySchema.extend({
+    sort: z.array(z.object({
+        sortBy: z.enum(['asc', 'desc']),
+        sortField: z.enum(['roleId', 'permissionId', 'createdAt']), // Assuming you might want to sort by these
+    })).optional(),
+    filter: z.object({
+        roleId: z.number().optional(),
+        permissionId: z.number().optional(),
+    }).optional()
+})
+
+const deleteRolePermissionSchema = z.object({
+    roleId: z.number(),
+    permissionId: z.number(),
+})
 
 
 const userBaseSelectSchema = createSelectSchema(tblUser)
@@ -96,6 +123,11 @@ export const userValidator = {
     userPaginationQuerySchema,
     updateUserByIdSchema,
     deleteUserByIdSchema,
+    rolePermissionBaseSelectSchema,
+    rolePermissionBaseInsertSchema,
+    rolePermissionPaginationQuerySchema,
+    deleteRolePermissionSchema,
+    createBulkRolePermissionSchema,
 }
 
 
@@ -120,6 +152,12 @@ export namespace TUserValidator {
     export type TUserPaginationQuerySortKeys = TUserSortKeys;
     export type TUpdateUserByIdSchema = z.infer<typeof updateUserByIdSchema>;
     export type TDeleteUserByIdSchema = z.infer<typeof deleteUserByIdSchema>;
+
+    export type TRolePermissionSelect = z.infer<typeof rolePermissionBaseSelectSchema>;
+    export type TRolePermissionInsert = z.infer<typeof rolePermissionBaseInsertSchema>;
+    export type TRolePermissionPaginationQuery = z.infer<typeof rolePermissionPaginationQuerySchema>;
+    export type TDeleteRolePermissionSchema = z.infer<typeof deleteRolePermissionSchema>;
+    export type TCreateBulkRolePermissionSchema = z.infer<typeof createBulkRolePermissionSchema>;
 }
 
 

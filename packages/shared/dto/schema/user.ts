@@ -84,6 +84,13 @@ export namespace TSchemaUser {
 
     export type TTblRolePermissionSelect = typeof tblRolePermission.$inferSelect;
     export type TTblRolePermissionInsert = typeof tblRolePermission.$inferInsert;
+
+
+
+    export type TCreateBulkRolePermissionInput = {
+        roleId: number
+        permissionIds: number[]
+    }
 }
 
 
