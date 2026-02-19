@@ -28,7 +28,7 @@ export const PersonaList = () => {
     const [query, setQuery] = useState<TCharacterValidator.TPersonaPaginationQuery>({
         pagination: {
             page: 1,
-            limit: 5,
+            limit: 10,
         },
         sort: [{
             sortBy: 'asc',
@@ -59,29 +59,34 @@ export const PersonaList = () => {
             setIsOpen={setIsOpen}
             initial={initial}
         />}
-        <Table>
-            <TableHeader>
-                <TableRow>
-                    <TableHead>Name</TableHead>
-                </TableRow>
-            </TableHeader>
-            <TableBody>
-                {data?.map((item) => (
-                    <TableRow key={item.id}>
-                        <TableCell>{item.name}</TableCell>
-                        <TableCell>
-                            <Button onClick={() => {
-                                setIsOpen(true)
-                                setMode("edit")
-                                setInitial(item)
-                            }}>Edit</Button>
-                        </TableCell>
+        <div className="rounded-lg border bg-card min-h-[400px]">
+
+
+            <Table>
+                <TableHeader>
+                    <TableRow>
+                        <TableHead>Name</TableHead>
                     </TableRow>
-                ))}
-            </TableBody>
-        </Table>
+                </TableHeader>
+                <TableBody>
+                    {data?.map((item) => (
+                        <TableRow key={item.id}>
+                            <TableCell>{item.name}</TableCell>
+                            <TableCell>
+                                <Button onClick={() => {
+                                    setIsOpen(true)
+                                    setMode("edit")
+                                    setInitial(item)
+                                }}>Edit</Button>
+                            </TableCell>
+                        </TableRow>
+                    ))}
+                </TableBody>
+            </Table>
+        </div>
 
         {pagination && <CustomPagination
+            className="mt-4"
             paginationData={pagination}
             pagination={query}
             setPagination={(p) => setQuery({ ...query, pagination: p.pagination })}

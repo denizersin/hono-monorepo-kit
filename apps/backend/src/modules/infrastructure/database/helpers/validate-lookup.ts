@@ -1,6 +1,6 @@
 import db, { TDbTable, TDbTableName } from "@server/modules/infrastructure/database"
 import { CustomError } from "@server/lib/errors"
-import { tblLanguage, tblMailConfirmationStatus, tblLogStatus, tblRole, tblPermission } from "@repo/shared/schema"
+import { tblLanguage, tblMailConfirmationStatus, tblLogStatus, tblRole, tblPermission, tblSubscriptionStatus } from "@repo/shared/schema"
 import { ENUM_ALL_EVENT_IDS, ENUM_ALL_EVENTS } from "@server/modules/application/event/interface"
 import logger from "@server/lib/logger"
 import { SahredEnums } from "@repo/shared/enums"
@@ -8,7 +8,7 @@ import { SahredEnums } from "@repo/shared/enums"
 
 
 //lookups with only id and name (LookupEnum string) like tblStatus={id:1,name:'active'}
-const LookUpRecords: Record<string | TDbTableName, {
+const LookUpRecords: Record<TDbTableName | string, {
     LookupEnum: Record<string, number>,
     dbTable: TDbTable,
     dbName: TDbTableName,
@@ -33,6 +33,12 @@ const LookUpRecords: Record<string | TDbTableName, {
         dbTable: tblPermission,
         dbName: 'tblPermission',
     },
+    tblSubscriptionStatus: {
+        LookupEnum: SahredEnums.SubscriptionStatus,
+        dbTable: tblSubscriptionStatus,
+        dbName: 'tblSubscriptionStatus',
+    }
+
 
 }
 

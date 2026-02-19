@@ -13,22 +13,22 @@ import {
     TableHeader,
     TableRow
 } from "@/components/ui/table"
-import { useQuery } from "@tanstack/react-query"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { CustomPagination } from "@/components/dashboard/custom-pagination"
 import { Badge } from "@/components/ui/badge"
 import { Trash2, Plus, ShieldCheck } from "lucide-react"
 import { RolePermissionCrudModal } from "./role-permission-crud-modal"
-import { DeleteRolePermissionModal } from "./delete-role-permission-modal"
+import { GlobalModalManager } from "@/components/global/modal/global-confirm-moda"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { toast } from "sonner"
 
 type RolePermission = TUserValidator.TRolePermissionSelect
 
 export const RolePermissionList = () => {
     const trpc = useTRPC()
+    const queryClient = useQueryClient()
 
     const [isOpen, setIsOpen] = useState(false)
-    const [isDeleteOpen, setIsDeleteOpen] = useState(false)
-    const [selectedRolePermission, setSelectedRolePermission] = useState<RolePermission | undefined>(undefined)
 
     const [query, setQuery] = useState<TUserValidator.TRolePermissionPaginationQuery>({
         pagination: {
@@ -67,10 +67,28 @@ export const RolePermissionList = () => {
     const data = paginationData?.data
     const pagination = paginationData?.pagination
 
+    const deleteRolePermission = useMutation(trpc.user.deleteRolePermission.mutationOptions({
+        onSuccess: () => {
+            toast.success("Role permission deleted successfully")
+            queryClient.invalidateQueries(trpc.user.getRolePermissions.queryFilter())
+        }
+    }))
 
-    const handleDelete = (rp: RolePermission) => {
-        setSelectedRolePermission(rp)
-        setIsDeleteOpen(true)
+    const handleDelete = async (rp: RolePermission) => {
+        const roleName = rolesMap[rp.roleId] || 'Unknown Role'
+        const permissionName = permissionsMap[rp.permissionId] || 'Unknown Permission'
+
+        GlobalModalManager.show({
+            type: 'danger',
+            text1: 'Delete Role Permission',
+            text2: `Are you sure you want to remove permission "${permissionName}" from role "${roleName}"? This action cannot be undone.`,
+            onClickPrimaryButton: async () => {
+                await deleteRolePermission.mutateAsync({
+                    roleId: rp.roleId,
+                    permissionId: rp.permissionId
+                })
+            }
+        })
     }
 
     const handleCreate = () => {
@@ -155,16 +173,6 @@ export const RolePermissionList = () => {
                 <RolePermissionCrudModal
                     isOpen={isOpen}
                     setIsOpen={setIsOpen}
-                />
-            )}
-
-            {isDeleteOpen && selectedRolePermission && (
-                <DeleteRolePermissionModal
-                    isOpen={isDeleteOpen}
-                    setIsOpen={setIsDeleteOpen}
-                    rolePermission={selectedRolePermission}
-                    roleName={rolesMap[selectedRolePermission.roleId] || 'Unknown Role'}
-                    permissionName={permissionsMap[selectedRolePermission.permissionId] || 'Unknown Permission'}
                 />
             )}
 

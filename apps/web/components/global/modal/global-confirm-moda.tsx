@@ -1,4 +1,4 @@
-import { createRef, forwardRef, useImperativeHandle, useRef, useState } from "react";
+import { createRef, forwardRef, useImperativeHandle, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
     Dialog,
@@ -8,11 +8,13 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
-import { X, AlertTriangle, HelpCircle, Info, CheckCircle } from "lucide-react";
-import { toast } from "sonner"; // or your preferred toast library
+import { X, AlertTriangle, HelpCircle, Info, CheckCircle, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
 type TType = 'alert' | 'confirm' | 'danger' | 'info' | 'success';
+
+type AsyncHandler = () => void | Promise<unknown>;
 
 type Options = {
     isToast?: boolean;
@@ -30,34 +32,21 @@ type Options = {
     secondaryButtonText?: string;
     showPrimaryButton?: boolean;
     showSecondaryButton?: boolean;
-    onClickPrimaryButton?: () => void;
-    onClickSecondaryButton?: () => void;
+    onClickPrimaryButton?: AsyncHandler;
+    onClickSecondaryButton?: AsyncHandler;
     onClickCloseButton?: () => void;
     type: TType;
-} & ({
-    type: 'alert'
-} | {
-    type: 'confirm'
-    onClickPrimaryButton: () => void | Promise<unknown>
-} | {
-    type: 'danger'
-    onClickPrimaryButton: () => void | Promise<unknown>
-} | {
-    type: 'info'
-} | {
-    type: 'success'
-})
+} & (
+    | { type: 'alert' | 'info' | 'success' }
+    | { type: 'confirm'; onClickPrimaryButton: AsyncHandler }
+    | { type: 'danger'; onClickPrimaryButton: AsyncHandler }
+);
 
 interface GlobalModalRef {
     show(options: Options): void;
     isOpen: boolean;
     close: () => void;
 }
-
-const isAsync = (fn?: (() => void | Promise<unknown>)): boolean => {
-    if (!fn) return false;
-    return fn.constructor.name === 'AsyncFunction';
-};
 
 const ModalComponent = forwardRef<GlobalModalRef>((_, ref) => {
     const [isOpen, setIsOpen] = useState(false);
@@ -88,9 +77,6 @@ const ModalComponent = forwardRef<GlobalModalRef>((_, ref) => {
         primaryButtonText,
         secondaryButtonText,
     } = options;
-
-    const isPrimaryButtonAsync = isAsync(onClickPrimaryButton);
-    const isSecondaryButtonAsync = isAsync(onClickSecondaryButton);
 
     const willShowPrimaryButton = showPrimaryButton;
     const willShowSecondaryButton = showSecondaryButton &&
@@ -186,14 +172,23 @@ const ModalComponent = forwardRef<GlobalModalRef>((_, ref) => {
     };
 
     const handlePrimaryClick = async () => {
-        if (isPrimaryButtonAsync) {
+        if (!onClickPrimaryButton) {
+            handleClose();
+            return;
+        }
+
+        const isAsync = onClickPrimaryButton.constructor.name === 'AsyncFunction';
+
+        if (isAsync) {
             setPrimaryLoading(true);
         }
 
         try {
-            await onClickPrimaryButton?.();
+            await onClickPrimaryButton();
+        } catch (error) {
+            console.error('Primary button error:', error);
         } finally {
-            if (isPrimaryButtonAsync) {
+            if (isAsync) {
                 setPrimaryLoading(false);
             }
             handleClose();
@@ -201,14 +196,23 @@ const ModalComponent = forwardRef<GlobalModalRef>((_, ref) => {
     };
 
     const handleSecondaryClick = async () => {
-        if (isSecondaryButtonAsync) {
+        if (!onClickSecondaryButton) {
+            handleClose();
+            return;
+        }
+
+        const isAsync = onClickSecondaryButton.constructor.name === 'AsyncFunction';
+
+        if (isAsync) {
             setSecondaryLoading(true);
         }
 
         try {
-            await onClickSecondaryButton?.();
+            await onClickSecondaryButton();
+        } catch (error) {
+            console.error('Secondary button error:', error);
         } finally {
-            if (isSecondaryButtonAsync) {
+            if (isAsync) {
                 setSecondaryLoading(false);
             }
             handleClose();
@@ -265,7 +269,14 @@ const ModalComponent = forwardRef<GlobalModalRef>((_, ref) => {
                         disabled={secondaryLoading || primaryLoading}
                         className="flex-1"
                     >
-                        {secondaryLoading ? 'Loading...' : (secondaryButtonText || buttonTexts.secondary)}
+                        {secondaryLoading ? (
+                            <>
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                Yükleniyor...
+                            </>
+                        ) : (
+                            (secondaryButtonText || buttonTexts.secondary)
+                        )}
                     </Button>
                 )}
                 {willShowPrimaryButton && (
@@ -275,7 +286,14 @@ const ModalComponent = forwardRef<GlobalModalRef>((_, ref) => {
                         disabled={primaryLoading || secondaryLoading}
                         className="flex-1"
                     >
-                        {primaryLoading ? 'Loading...' : (primaryButtonText || buttonTexts.primary)}
+                        {primaryLoading ? (
+                            <>
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                Yükleniyor...
+                            </>
+                        ) : (
+                            (primaryButtonText || buttonTexts.primary)
+                        )}
                     </Button>
                 )}
             </DialogFooter>

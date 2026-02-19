@@ -99,7 +99,7 @@ export const UserList = () => {
                 />
             )}
 
-            <div className="rounded-lg border bg-card">
+            <div className="rounded-lg border bg-card min-h-[400px]">
                 <Table>
                     <TableHeader>
                         <TableRow className="hover:bg-transparent">

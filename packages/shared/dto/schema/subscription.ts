@@ -2,10 +2,10 @@ import { TEnumCampaignTargetType, TEnumCurrenyKey, TEnumDiscountType, TEnumDurat
 import { relations } from 'drizzle-orm';
 import { boolean, integer, jsonb, pgTable, timestamp, varchar } from 'drizzle-orm/pg-core';
 import { tblLanguage } from './data';
-import { tblUser } from './user';
+import { tblUser, TSchemaUser } from './user';
 
 
-export const tblPlans = pgTable('plans', {
+export const tblPlan = pgTable('plan', {
     id: integer().primaryKey().generatedByDefaultAsIdentity(),
     name: varchar({ length: 255 }).notNull(),
     price: integer().notNull(),
@@ -18,24 +18,24 @@ export const tblPlans = pgTable('plans', {
     updatedAt: timestamp().notNull().defaultNow(),
 })
 
-export const tblPlansRelation = relations(tblPlans, ({ many }) => ({
+export const tblPlanRelation = relations(tblPlan, ({ many }) => ({
     translations: many(tblPlanTranslation),
     subscriptions: many(tblSubscription),
-    campaigns: many(tblCampaigns),
+    campaigns: many(tblCampaign),
 }))
 
 export const tblPlanTranslation = pgTable('plan_translation', {
     id: integer().primaryKey().generatedByDefaultAsIdentity(),
-    planId: integer().notNull().references(() => tblPlans.id),
+    planId: integer().notNull().references(() => tblPlan.id),
     languageId: integer().notNull().references(() => tblLanguage.id),
     name: varchar({ length: 255 }).notNull(),
     description: varchar({ length: 255 }).notNull(),
 })
 
 export const tblPlanTranslationRelation = relations(tblPlanTranslation, ({ one }) => ({
-    plan: one(tblPlans, {
+    plan: one(tblPlan, {
         fields: [tblPlanTranslation.planId],
-        references: [tblPlans.id],
+        references: [tblPlan.id],
     }),
     language: one(tblLanguage, {
         fields: [tblPlanTranslation.languageId],
@@ -46,7 +46,7 @@ export const tblPlanTranslationRelation = relations(tblPlanTranslation, ({ one }
 export const tblSubscription = pgTable('subscription', {
     id: integer().primaryKey().generatedByDefaultAsIdentity(),
     userId: integer().notNull().references(() => tblUser.id),
-    planId: integer().notNull().references(() => tblPlans.id),
+    planId: integer().notNull().references(() => tblPlan.id),
     status: varchar({ length: 255 }).notNull().$type<TSubscriptionStatus>(),
     currentPeriodStart: timestamp().notNull(),
     currentPeriodEnd: timestamp().notNull(),
@@ -59,9 +59,9 @@ export const tblSubscriptionRelation = relations(tblSubscription, ({ one, many }
         fields: [tblSubscription.userId],
         references: [tblUser.id],
     }),
-    plan: one(tblPlans, {
+    plan: one(tblPlan, {
         fields: [tblSubscription.planId],
-        references: [tblPlans.id],
+        references: [tblPlan.id],
     }),
     events: many(tblSubscriptionEvents),
 }))
@@ -117,7 +117,7 @@ export const tblUserDiscountsRelation = relations(tblUserDiscounts, ({ one }) =>
     }),
 }))
 
-export const tblCampaigns = pgTable('campaigns', {
+export const tblCampaign = pgTable('campaign', {
     id: integer().primaryKey().generatedByDefaultAsIdentity(),
     title: varchar({ length: 255 }).notNull(),
     discount_type: varchar({ length: 255 }).notNull().$type<TEnumDiscountType>(),
@@ -126,26 +126,60 @@ export const tblCampaigns = pgTable('campaigns', {
     start_date: timestamp().notNull(),
     end_date: timestamp().notNull(),
     is_active: boolean().notNull().default(true),
-    plan_id: integer().references(() => tblPlans.id),
+    plan_id: integer().references(() => tblPlan.id),
 })
 
-export const tblCampaignsRelation = relations(tblCampaigns, ({ one }) => ({
-    plan: one(tblPlans, {
-        fields: [tblCampaigns.plan_id],
-        references: [tblPlans.id],
+export const tblCampaignRelation = relations(tblCampaign, ({ one, many }) => ({
+    plan: one(tblPlan, {
+        fields: [tblCampaign.plan_id],
+        references: [tblPlan.id],
+    }),
+    translations: many(tblCampaignTranslation),
+}))
+
+export const tblCampaignTranslation = pgTable('campaign_translation', {
+    id: integer().primaryKey().generatedByDefaultAsIdentity(),
+    campaign_id: integer().notNull().references(() => tblCampaign.id),
+    language_id: integer().notNull().references(() => tblLanguage.id),
+    title: varchar({ length: 255 }).notNull(),
+    description: varchar({ length: 255 }).notNull(),
+})
+
+export const tblCampaignTranslationRelation = relations(tblCampaignTranslation, ({ one }) => ({
+    campaign: one(tblCampaign, {
+        fields: [tblCampaignTranslation.campaign_id],
+        references: [tblCampaign.id],
+    }),
+    language: one(tblLanguage, {
+        fields: [tblCampaignTranslation.language_id],
+        references: [tblLanguage.id],
     }),
 }))
 
 
+
+//predefined
+export const tblSubscriptionStatus = pgTable('subscription_status', {
+    id: integer().primaryKey().generatedByDefaultAsIdentity(),
+    name: varchar({ length: 255 }).notNull().$type<TSubscriptionStatus>(),
+})
+
+
+
 export namespace TSchemaPlan {
-    export type TPlans = typeof tblPlans.$inferSelect
-    export type TPlansInsert = typeof tblPlans.$inferInsert
+    export type TPlan = typeof tblPlan.$inferSelect
+    export type TPlanInsert = typeof tblPlan.$inferInsert
 
     export type TPlanTranslation = typeof tblPlanTranslation.$inferSelect
     export type TPlanTranslationInsert = typeof tblPlanTranslation.$inferInsert
 
     export type TSubscription = typeof tblSubscription.$inferSelect
     export type TSubscriptionInsert = typeof tblSubscription.$inferInsert
+
+    export type TSubscriptionWithRelation = TSubscription & {
+        plan: TPlan
+        user: TSchemaUser.TTblUserSelect
+    }
 
     export type TSubscriptionEvents = typeof tblSubscriptionEvents.$inferSelect
     export type TSubscriptionEventsInsert = typeof tblSubscriptionEvents.$inferInsert
@@ -156,8 +190,16 @@ export namespace TSchemaPlan {
     export type TUserDiscounts = typeof tblUserDiscounts.$inferSelect
     export type TUserDiscountsInsert = typeof tblUserDiscounts.$inferInsert
 
-    export type TCampaigns = typeof tblCampaigns.$inferSelect
-    export type TCampaignsInsert = typeof tblCampaigns.$inferInsert
+    export type Tcampaign = typeof tblCampaign.$inferSelect
+    export type TcampaignInsert = typeof tblCampaign.$inferInsert
+
+
+    export type TcampaignTranslation = typeof tblCampaignTranslation.$inferSelect
+    export type TcampaignTranslationInsert = typeof tblCampaignTranslation.$inferInsert
+
+
+
+
 }
 
 
