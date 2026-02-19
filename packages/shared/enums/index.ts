@@ -115,6 +115,72 @@ const CompanyId = {
     default: 1,
 } as const;
 
+
+export type TSubscriptionStatus = 'active' | 'trialing' | 'cancelled' | 'expired';
+
+const SubscriptionStatus = {
+    active: 1,
+    trialing: 2,
+    cancelled: 3,
+    expired: 4,
+} as const;
+
+const SubscriptionStatusKey = {
+    active: 'active',
+    trialing: 'trialing',
+    cancelled: 'cancelled',
+    expired: 'expired',
+} as const;
+
+
+export type TEnumCurrenyKey = "TRY" | "USD" | "EUR"
+const Currency = {
+    TRY: "TRY",
+    USD: "USD",
+    EUR: "EUR",
+} as const;
+
+
+export type TEnumPlanIntervalKey = "yearly" | "monthly" | "weekly" | "daily"
+const Plan_Interval = {
+    yearly: 1,
+    monthly: 2,
+    weekly: 3,
+    daily: 4,
+} as const;
+
+
+export type TEnumSubscriptionEventType = "renewed" | "upgraded" | "cancelled" | "payment_failed"
+const Subscription_Event_Type = {
+    renewed: "renewed",
+    upgraded: "upgraded",
+    cancelled: "cancelled",
+    payment_failed: "payment_failed",
+} as const;
+
+
+export type TEnumDiscountType = "percentage" | "fixed_amount"
+const Discount_Type = {
+    percentage: "percentage",
+    fixed_amount: "fixed_amount",
+} as const;
+
+
+// ... existing code ...
+export type TEnumDurationKey = "once" | "forever" | "repeating"
+const Duration_Type = {
+    once: "once",
+    forever: "forever",
+    repeating: "repeating",
+} as const;
+
+export type TEnumCampaignTargetType = "all_users" | "new_users" | "inactive_users"
+const Campaign_Target_Type = {
+    all_users: "all_users",
+    new_users: "new_users",
+    inactive_users: "inactive_users",
+} as const;
+
 // -----------------------------------------------------------------------
 // Global Enum Helper
 // -----------------------------------------------------------------------
@@ -143,6 +209,16 @@ export const SahredEnums = {
 
     // Misc
     CompanyId,
+
+    SubscriptionStatus,
+    SubscriptionStatusKey,
+
+    Currency,
+    Plan_Interval,
+    Subscription_Event_Type,
+    Discount_Type,
+    Duration_Type,
+    Campaign_Target_Type,
 
     // Helper
 

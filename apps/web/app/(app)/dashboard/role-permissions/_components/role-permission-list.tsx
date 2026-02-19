@@ -19,6 +19,7 @@ import { Badge } from "@/components/ui/badge"
 import { Trash2, Plus, ShieldCheck } from "lucide-react"
 import { RolePermissionCrudModal } from "./role-permission-crud-modal"
 import { DeleteRolePermissionModal } from "./delete-role-permission-modal"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 type RolePermission = TUserValidator.TRolePermissionSelect
 
@@ -78,20 +79,76 @@ export const RolePermissionList = () => {
 
     return (
         <div className="px-4 lg:px-6">
-            <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
-                        <ShieldCheck className="h-5 w-5 text-primary" />
+            <div className="flex flex-col gap-4 mb-6">
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
+                            <ShieldCheck className="h-5 w-5 text-primary" />
+                        </div>
+                        <div>
+                            <h1 className="text-2xl font-semibold tracking-tight">Role Permissions</h1>
+                            <p className="text-sm text-muted-foreground">Manage permissions for each role</p>
+                        </div>
                     </div>
-                    <div>
-                        <h1 className="text-2xl font-semibold tracking-tight">Role Permissions</h1>
-                        <p className="text-sm text-muted-foreground">Manage permissions for each role</p>
-                    </div>
+                    <Button onClick={handleCreate} className="gap-2">
+                        <Plus className="h-4 w-4" />
+                        Add Permission
+                    </Button>
                 </div>
-                <Button onClick={handleCreate} className="gap-2">
-                    <Plus className="h-4 w-4" />
-                    Add Permission
-                </Button>
+                <div className="flex items-center gap-2">
+                    <Select
+                        value={query.filter?.roleId?.toString() ?? "all"}
+                        onValueChange={(val) => {
+                            setQuery(prev => ({
+                                ...prev,
+                                filter: {
+                                    ...prev.filter,
+                                    roleId: val === "all" ? undefined : Number(val)
+                                },
+                                pagination: { ...prev.pagination, page: 1 }
+                            }))
+                        }}
+                    >
+                        <SelectTrigger className="w-[200px]">
+                            <SelectValue placeholder="Filter by Role" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="all">All Roles</SelectItem>
+                            {roles?.map((role) => (
+                                <SelectItem key={role.id} value={role.id.toString()}>
+                                    {role.name}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+
+                    <Select
+                        value={query.filter?.permissionId?.toString() ?? "all"}
+                        onValueChange={(val) => {
+                            setQuery(prev => ({
+                                ...prev,
+                                filter: {
+                                    ...prev.filter,
+                                    permissionId: val === "all" ? undefined : Number(val)
+                                },
+                                pagination: { ...prev.pagination, page: 1 }
+                            }))
+                        }}
+                    >
+                        <SelectTrigger className="w-[200px]">
+                            <SelectValue placeholder="Filter by Permission" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="all">All Permissions</SelectItem>
+                            {permissions?.map((permission) => (
+                                <SelectItem key={permission.id} value={permission.id.toString()}>
+                                    {permission.name}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                </div>
+
             </div>
 
             {isOpen && (

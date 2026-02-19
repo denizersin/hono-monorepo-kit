@@ -6,6 +6,7 @@ export * from './model';
 export * from './character';
 export * from './verifyCode';
 export * from './log';
+export * from './subscription';
 // export * from './enums';
 
 

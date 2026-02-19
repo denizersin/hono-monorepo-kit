@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { TUserValidator, userValidator } from "@repo/shared/validators"
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query"
 import { z } from "zod"
+import { Checkbox } from "@/components/ui/checkbox"
 
 
 type RolePermissionCrudModalProps = {
@@ -19,7 +20,7 @@ type RolePermissionCrudModalProps = {
     setIsOpen: (open: boolean) => void
 }
 
-const createFormSchema = userValidator.rolePermissionBaseInsertSchema
+const createFormSchema = userValidator.createBulkRolePermissionSchema
 
 type CreateFormValues = z.infer<typeof createFormSchema>
 
@@ -35,7 +36,7 @@ export function RolePermissionCrudModal({ isOpen, setIsOpen }: RolePermissionCru
         queryClient.invalidateQueries(trpc.user.getRolePermissions.queryFilter())
     }
 
-    const createRolePermission = useMutation(trpc.user.createRolePermission.mutationOptions({
+    const createBulkRolePermission = useMutation(trpc.user.createBulkRolePermission.mutationOptions({
         onSuccess: () => {
             onSuccessCrud()
         }
@@ -45,12 +46,12 @@ export function RolePermissionCrudModal({ isOpen, setIsOpen }: RolePermissionCru
         resolver: zodResolver(createFormSchema),
         defaultValues: {
             roleId: undefined,
-            permissionId: undefined,
+            permissionIds: [], // array for multiple permissions
         }
     })
 
     const onSubmit = (data: CreateFormValues) => {
-        createRolePermission.mutate(data)
+        createBulkRolePermission.mutate(data)
     }
 
     useEffect(() => {
@@ -99,27 +100,47 @@ export function RolePermissionCrudModal({ isOpen, setIsOpen }: RolePermissionCru
 
                         <FormField
                             control={form.control}
-                            name="permissionId"
-                            render={({ field }) => (
+                            name="permissionIds"
+                            render={() => (
                                 <FormItem>
-                                    <FormLabel>Permission</FormLabel>
-                                    <Select
-                                        onValueChange={(value) => field.onChange(Number(value))}
-                                        value={field.value?.toString()}
-                                    >
-                                        <FormControl>
-                                            <SelectTrigger>
-                                                <SelectValue placeholder="Select a permission" />
-                                            </SelectTrigger>
-                                        </FormControl>
-                                        <SelectContent>
-                                            {permissions?.map((permission) => (
-                                                <SelectItem key={permission.id} value={permission.id.toString()}>
-                                                    {permission.name}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
+                                    <div className="mb-4">
+                                        <FormLabel className="text-base">Permissions</FormLabel>
+                                    </div>
+                                    <div className="max-h-[200px] overflow-y-auto border p-2 rounded-md space-y-2">
+                                        {permissions?.map((permission) => (
+                                            <FormField
+                                                key={permission.id}
+                                                control={form.control}
+                                                name="permissionIds"
+                                                render={({ field }) => {
+                                                    return (
+                                                        <FormItem
+                                                            key={permission.id}
+                                                            className="flex flex-row items-center space-x-3 space-y-0"
+                                                        >
+                                                            <FormControl>
+                                                                <Checkbox
+                                                                    checked={field.value?.includes(permission.id)}
+                                                                    onCheckedChange={(checked) => {
+                                                                        return checked
+                                                                            ? field.onChange([...field.value, permission.id])
+                                                                            : field.onChange(
+                                                                                field.value?.filter(
+                                                                                    (value) => value !== permission.id
+                                                                                )
+                                                                            )
+                                                                    }}
+                                                                />
+                                                            </FormControl>
+                                                            <FormLabel className="font-normal text-sm cursor-pointer">
+                                                                {permission.name}
+                                                            </FormLabel>
+                                                        </FormItem>
+                                                    )
+                                                }}
+                                            />
+                                        ))}
+                                    </div>
                                     <FormMessage />
                                 </FormItem>
                             )}
@@ -129,8 +150,8 @@ export function RolePermissionCrudModal({ isOpen, setIsOpen }: RolePermissionCru
                             <Button type="button" variant="outline" onClick={() => setIsOpen(false)}>
                                 Cancel
                             </Button>
-                            <Button type="submit" disabled={createRolePermission.isPending}>
-                                {createRolePermission.isPending ? "Adding..." : "Add Permission"}
+                            <Button type="submit" disabled={createBulkRolePermission.isPending}>
+                                {createBulkRolePermission.isPending ? "Adding..." : "Add Permissions"}
                             </Button>
                         </div>
                     </form>
