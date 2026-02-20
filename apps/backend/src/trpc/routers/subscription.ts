@@ -2,6 +2,7 @@ import { SahredEnums } from "@repo/shared/enums";
 import { subscriptionValidator } from "@repo/shared/validators";
 import { subscriptionRepository, subscriptionService } from "@server/bootstrap";
 import { createTRPCRouter, protectedProcedure, roleMiddleware } from "../init";
+import { z } from "zod";
 
 export const subscriptionRouter = createTRPCRouter({
     // ============== PLAN METHODS ==============
@@ -27,9 +28,13 @@ export const subscriptionRouter = createTRPCRouter({
         }),
 
     getPlanById: protectedProcedure.use(roleMiddleware([SahredEnums.Role.ADMIN, SahredEnums.Role.OWNER]))
-        .input(subscriptionValidator.planPaginationQuerySchema).query(async ({ ctx, input }) => {
-            // Using the pagination query for now, but could be simplified
-            return await subscriptionRepository.getPlanById(0) // This is a placeholder, needs actual id input
+        .input(z.object({ id: z.number() })).query(async ({ ctx, input }) => {
+            return await subscriptionRepository.getPlanById(input.id)
+        }),
+
+    deletePlan: protectedProcedure.use(roleMiddleware([SahredEnums.Role.ADMIN, SahredEnums.Role.OWNER]))
+        .input(z.object({ id: z.number() })).mutation(async ({ ctx, input }) => {
+            return await subscriptionRepository.deletePlan(input.id)
         }),
 
     // ============== SUBSCRIPTION METHODS ==============
@@ -37,6 +42,7 @@ export const subscriptionRouter = createTRPCRouter({
     createSubscription: protectedProcedure.use(roleMiddleware([SahredEnums.Role.ADMIN, SahredEnums.Role.OWNER]))
         .input(subscriptionValidator.createSubscriptionSchema).mutation(async ({ ctx, input }) => {
             // Direct repository call for now, could add service layer later
+            console.log(input.subscriptionData, '21312')
             return await subscriptionRepository.createSubscription(input.subscriptionData)
         }),
 
@@ -50,6 +56,13 @@ export const subscriptionRouter = createTRPCRouter({
         .input(subscriptionValidator.subscriptionPaginationQuerySchema).query(async ({ ctx, input }) => {
             return await subscriptionRepository.getSubscriptionsWithPagination(input)
         }),
+
+    deleteSubscription: protectedProcedure.use(roleMiddleware([SahredEnums.Role.ADMIN, SahredEnums.Role.OWNER]))
+        .input(z.object({ id: z.number() }))
+        .mutation(async ({ input }) => {
+            return await subscriptionRepository.deleteSubscription(input.id)
+        }),
+
 
     // ============== CAMPAIGN METHODS ==============
 
@@ -66,6 +79,11 @@ export const subscriptionRouter = createTRPCRouter({
     getCampaignsWithPagination: protectedProcedure.use(roleMiddleware([SahredEnums.Role.ADMIN, SahredEnums.Role.OWNER]))
         .input(subscriptionValidator.campaignPaginationQuerySchema).query(async ({ ctx, input }) => {
             return await subscriptionRepository.getCampaignsWithPagination(input)
+        }),
+
+    deleteCampaign: protectedProcedure.use(roleMiddleware([SahredEnums.Role.ADMIN, SahredEnums.Role.OWNER]))
+        .input(z.object({ id: z.number() })).mutation(async ({ input }) => {
+            return await subscriptionRepository.deleteCampaign(input.id)
         }),
 
     // ============== COUPON METHODS ==============
@@ -85,6 +103,11 @@ export const subscriptionRouter = createTRPCRouter({
     getCouponsWithPagination: protectedProcedure.use(roleMiddleware([SahredEnums.Role.ADMIN, SahredEnums.Role.OWNER]))
         .input(subscriptionValidator.couponPaginationQuerySchema).query(async ({ ctx, input }) => {
             return await subscriptionRepository.getCouponsWithPagination(input)
+        }),
+
+    deleteCoupon: protectedProcedure.use(roleMiddleware([SahredEnums.Role.ADMIN, SahredEnums.Role.OWNER]))
+        .input(z.object({ id: z.number() })).mutation(async ({ input }) => {
+            return await subscriptionRepository.deleteCoupon(input.id)
         }),
 
     // ============== USER DISCOUNT METHODS ==============

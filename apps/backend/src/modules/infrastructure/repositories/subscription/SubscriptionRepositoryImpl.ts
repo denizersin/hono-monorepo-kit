@@ -19,7 +19,7 @@ export class SubscriptionRepositoryImpl {
 
     async getPlanById(id: number): Promise<TSchemaSubscription.TSubscriptionRepository.TPlanWithRelationSelect | undefined> {
         const plan = await db.query.tblPlan.findFirst({
-            where: eq(tblPlan.id, id),
+            where: and(eq(tblPlan.id, id), isNull(tblPlan.deletedAt)),
             with: {
                 translations: true
             }
@@ -27,8 +27,10 @@ export class SubscriptionRepositoryImpl {
         return plan;
     }
 
+
     async getAllPlans(): Promise<TSchemaSubscription.TSubscriptionRepository.TPlanWithRelationSelect[]> {
         const plans = await db.query.tblPlan.findMany({
+            where: isNull(tblPlan.deletedAt),
             with: {
                 translations: true
             }
@@ -38,6 +40,7 @@ export class SubscriptionRepositoryImpl {
 
     async getAllPlansForSelect(): Promise<Array<{ id: number; name: string }>> {
         const plans = await db.query.tblPlan.findMany({
+            where: isNull(tblPlan.deletedAt),
             columns: {
                 id: true,
                 name: true,
@@ -58,7 +61,8 @@ export class SubscriptionRepositoryImpl {
     }
 
     async deletePlan(id: number): Promise<void> {
-        await db.delete(tblPlan)
+        await db.update(tblPlan)
+            .set({ deletedAt: new Date() })
             .where(eq(tblPlan.id, id));
     }
 
@@ -176,7 +180,7 @@ export class SubscriptionRepositoryImpl {
 
     async getSubscriptionById(id: number): Promise<TSchemaSubscription.TSubscriptionRepository.TSubscriptionWithRelationSelect | undefined> {
         const subscription = await db.query.tblSubscription.findFirst({
-            where: eq(tblSubscription.id, id),
+            where: and(eq(tblSubscription.id, id), isNull(tblSubscription.deletedAt)),
             with: {
                 plan: {
                     with: {
@@ -184,7 +188,8 @@ export class SubscriptionRepositoryImpl {
                     }
                 },
                 user: true,
-                events: true
+                events: true,
+                status: true
             }
         });
         return subscription;
@@ -199,13 +204,16 @@ export class SubscriptionRepositoryImpl {
                     }
                 },
                 user: true,
-                events: true
-            }
+                events: true,
+                status: true
+            },
+            where: isNull(tblSubscription.deletedAt),
         });
         return subscriptions;
     }
 
     async createSubscription(subscription: TSchemaSubscription.TSubscriptionInsert): Promise<void> {
+        console.log(subscription, 'qwe');
         await db.insert(tblSubscription).values(subscription);
         return;
     }
@@ -217,7 +225,8 @@ export class SubscriptionRepositoryImpl {
     }
 
     async deleteSubscription(id: number): Promise<void> {
-        await db.delete(tblSubscription)
+        await db.update(tblSubscription)
+            .set({ deletedAt: new Date() })
             .where(eq(tblSubscription.id, id));
     }
 
@@ -235,12 +244,12 @@ export class SubscriptionRepositoryImpl {
             andConditions.push(eq(tblSubscription.planId, filter.planId));
         }
 
-        if (filter.status) {
-            andConditions.push(eq(tblSubscription.status, filter.status as any));
+        if (filter.statusId) {
+            andConditions.push(eq(tblSubscription.statusId, filter.statusId));
         }
 
         if (global_search) {
-            andConditions.push(like(tblSubscription.status, `%${global_search}%`));
+            // andConditions.push(like(tblSubscription.status, `%${global_search}%`));
         }
 
         const whereCondition: SQL<unknown> | undefined = and(
@@ -254,7 +263,6 @@ export class SubscriptionRepositoryImpl {
             'desc': desc
         };
         const columnMapper: Record<TSubscriptionValidator.TSubscriptionPaginationQuerySortKeys, PgColumn> = {
-            'status': tblSubscription.status,
             'currentPeriodStart': tblSubscription.currentPeriodStart,
             'createdAt': tblSubscription.createdAt,
         };
@@ -271,7 +279,8 @@ export class SubscriptionRepositoryImpl {
                     }
                 },
                 user: true,
-                events: true
+                events: true,
+                status: true
             },
             limit: pagination.limit,
             where: whereCondition,
@@ -302,14 +311,14 @@ export class SubscriptionRepositoryImpl {
 
     async getSubscriptionEventById(id: number): Promise<TSchemaSubscription.TSubscriptionEvents | undefined> {
         const event = await db.query.tblSubscriptionEvents.findFirst({
-            where: eq(tblSubscriptionEvents.id, id)
+            where: and(eq(tblSubscriptionEvents.id, id), isNull(tblSubscriptionEvents.deletedAt))
         });
         return event;
     }
 
     async getAllSubscriptionEventsBySubscriptionId(subscriptionId: number): Promise<TSchemaSubscription.TSubscriptionEvents[]> {
         const events = await db.query.tblSubscriptionEvents.findMany({
-            where: eq(tblSubscriptionEvents.subscription_id, subscriptionId),
+            where: and(eq(tblSubscriptionEvents.subscription_id, subscriptionId), isNull(tblSubscriptionEvents.deletedAt)),
             orderBy: [desc(tblSubscriptionEvents.created_at)]
         });
         return events;
@@ -334,7 +343,8 @@ export class SubscriptionRepositoryImpl {
     }
 
     async deleteSubscriptionEvent(id: number): Promise<void> {
-        await db.delete(tblSubscriptionEvents)
+        await db.update(tblSubscriptionEvents)
+            .set({ deletedAt: new Date() })
             .where(eq(tblSubscriptionEvents.id, id));
     }
 
@@ -342,7 +352,7 @@ export class SubscriptionRepositoryImpl {
 
     async getCouponById(id: number): Promise<TSchemaSubscription.TSubscriptionRepository.TCouponWithRelationSelect | undefined> {
         const coupon = await db.query.tblCoupons.findFirst({
-            where: eq(tblCoupons.id, id),
+            where: (and(eq(tblCoupons.id, id), isNull(tblCoupons.deletedAt))),
             with: {
                 userDiscounts: {
                     with: {
@@ -356,7 +366,7 @@ export class SubscriptionRepositoryImpl {
 
     async getCouponByCode(code: string): Promise<TSchemaSubscription.TSubscriptionRepository.TCouponWithRelationSelect | undefined> {
         const coupon = await db.query.tblCoupons.findFirst({
-            where: eq(tblCoupons.code, code),
+            where: (and(eq(tblCoupons.code, code), isNull(tblCoupons.deletedAt))),
             with: {
                 userDiscounts: {
                     with: {
@@ -370,6 +380,7 @@ export class SubscriptionRepositoryImpl {
 
     async getAllCoupons(): Promise<TSchemaSubscription.TSubscriptionRepository.TCouponWithRelationSelect[]> {
         const coupons = await db.query.tblCoupons.findMany({
+            where: isNull(tblCoupons.deletedAt),
             with: {
                 userDiscounts: {
                     with: {
@@ -393,7 +404,8 @@ export class SubscriptionRepositoryImpl {
     }
 
     async deleteCoupon(id: number): Promise<void> {
-        await db.delete(tblCoupons)
+        await db.update(tblCoupons)
+            .set({ deletedAt: new Date() })
             .where(eq(tblCoupons.id, id));
     }
 
@@ -472,7 +484,7 @@ export class SubscriptionRepositoryImpl {
 
     async getUserDiscountById(id: number): Promise<TSchemaSubscription.TSubscriptionRepository.TUserDiscountWithRelationSelect | undefined> {
         const discount = await db.query.tblUserDiscounts.findFirst({
-            where: eq(tblUserDiscounts.id, id),
+            where: (and(eq(tblUserDiscounts.id, id), isNull(tblUserDiscounts.deletedAt))),
             with: {
                 user: true,
                 coupon: true
@@ -483,7 +495,7 @@ export class SubscriptionRepositoryImpl {
 
     async getAllUserDiscountsByUserId(userId: number): Promise<TSchemaSubscription.TSubscriptionRepository.TUserDiscountWithRelationSelect[]> {
         const discounts = await db.query.tblUserDiscounts.findMany({
-            where: eq(tblUserDiscounts.user_id, userId),
+            where: (and(eq(tblUserDiscounts.user_id, userId), isNull(tblUserDiscounts.deletedAt))),
             with: {
                 user: true,
                 coupon: true
@@ -494,6 +506,7 @@ export class SubscriptionRepositoryImpl {
 
     async getAllUserDiscounts(): Promise<TSchemaSubscription.TSubscriptionRepository.TUserDiscountWithRelationSelect[]> {
         const discounts = await db.query.tblUserDiscounts.findMany({
+            where: (and(isNull(tblUserDiscounts.deletedAt))),
             with: {
                 user: true,
                 coupon: true
@@ -521,7 +534,8 @@ export class SubscriptionRepositoryImpl {
     }
 
     async deleteUserDiscount(id: number): Promise<void> {
-        await db.delete(tblUserDiscounts)
+        await db.update(tblUserDiscounts)
+            .set({ deletedAt: new Date() })
             .where(eq(tblUserDiscounts.id, id));
     }
 
@@ -529,7 +543,7 @@ export class SubscriptionRepositoryImpl {
 
     async getCampaignById(id: number): Promise<TSchemaSubscription.TSubscriptionRepository.TCampaignWithRelationSelect | undefined> {
         const campaign = await db.query.tblCampaign.findFirst({
-            where: eq(tblCampaign.id, id),
+            where: (and(eq(tblCampaign.id, id), isNull(tblCampaign.deletedAt))),
             with: {
                 translations: true,
                 plan: {
@@ -568,7 +582,8 @@ export class SubscriptionRepositoryImpl {
     }
 
     async deleteCampaign(id: number): Promise<void> {
-        await db.delete(tblCampaign)
+        await db.update(tblCampaign)
+            .set({ deletedAt: new Date() })
             .where(eq(tblCampaign.id, id));
     }
 

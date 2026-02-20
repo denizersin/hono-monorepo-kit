@@ -1,3 +1,5 @@
+"use client"
+
 import { TSubscriptionValidator } from "@repo/shared/validators"
 import { useState } from "react"
 
@@ -15,15 +17,15 @@ import { TSchemaSubscription } from "@repo/shared/schema"
 import { useQuery } from "@tanstack/react-query"
 import PlanCrudModal from "./plan-crud-modal"
 import { CustomPagination } from "@/components/dashboard/custom-pagination"
+import { Badge } from "@/components/ui/badge"
+import { Pencil, Trash2, Plus, CreditCard } from "lucide-react"
+import { GlobalModalManager } from "@/components/global/modal/global-confirm-moda"
 
 export const PlanList = () => {
-
     const trpc = useTRPC()
 
     const [isOpen, setIsOpen] = useState(false)
-    const [mode, setMode] = useState<"create" | "edit">("create")
-
-    const [initial, setInitial] = useState<TSchemaSubscription.TSubscriptionRepository.TPlanWithRelationSelect | undefined>(undefined)
+    const [selectedPlan, setSelectedPlan] = useState<TSchemaSubscription.TSubscriptionRepository.TPlanWithRelationSelect | undefined>(undefined)
 
     const [query, setQuery] = useState<TSubscriptionValidator.TPlanPaginationQuery>({
         pagination: {
@@ -34,10 +36,8 @@ export const PlanList = () => {
             sortBy: 'asc',
             sortField: 'createdAt'
         }],
-        filter: {
-        },
+        filter: {},
     })
-
 
     const {
         data: paginationData,
@@ -47,58 +47,134 @@ export const PlanList = () => {
     const data = paginationData?.data
     const pagination = paginationData?.pagination
 
-    return <div>
-        <h1>Plan List</h1>
 
-        <Button onClick={() => {
-            setIsOpen(true)
-            setInitial(undefined)
-        }}>Create Plan</Button>
-        {isOpen && <PlanCrudModal
-            isOpen={isOpen}
-            setIsOpen={setIsOpen}
-            initial={initial}
-        />}
-        <div className="rounded-lg border bg-card min-h-[400px]">
-            <Table>
-                <TableHeader>
-                    <TableRow>
-                        <TableHead>Name</TableHead>
-                        <TableHead>Price</TableHead>
-                        <TableHead>Currency</TableHead>
-                        <TableHead>Interval</TableHead>
-                        <TableHead>Active</TableHead>
-                        <TableHead>Actions</TableHead>
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    {data?.map((item) => (
-                        <TableRow key={item.id}>
-                            <TableCell>{item.name}</TableCell>
-                            <TableCell>{item.price}</TableCell>
-                            <TableCell>{item.currency}</TableCell>
-                            <TableCell>{item.interval}</TableCell>
-                            <TableCell>{item.active ? 'Yes' : 'No'}</TableCell>
-                            <TableCell>
-                                <Button onClick={() => {
-                                    setIsOpen(true)
-                                    setMode("edit")
-                                    setInitial(item)
-                                }}>Edit</Button>
-                            </TableCell>
+    const handleEdit = (plan: TSchemaSubscription.TSubscriptionRepository.TPlanWithRelationSelect) => {
+        setSelectedPlan(plan)
+        setIsOpen(true)
+    }
+
+    const handleDelete = (plan: TSchemaSubscription.TSubscriptionRepository.TPlanWithRelationSelect) => {
+        GlobalModalManager.show({
+            type: 'danger',
+            text1: 'Delete Plan',
+            text2: `Are you sure you want to delete "${plan.name}"? This action cannot be undone.`,
+            onClickPrimaryButton: async () => {
+                await trpc.subscription.deletePlan.mutate({ id: plan.id })
+            }
+        })
+    }
+
+    const handleCreate = () => {
+        setSelectedPlan(undefined)
+        setIsOpen(true)
+    }
+
+    return (
+        <div className="">
+            <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-3">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
+                        <CreditCard className="h-5 w-5 text-primary" />
+                    </div>
+                    <div>
+                        <h1 className="text-2xl font-semibold tracking-tight">Plans</h1>
+                        <p className="text-sm text-muted-foreground">Manage subscription plans</p>
+                    </div>
+                </div>
+                <Button onClick={handleCreate} className="gap-2">
+                    <Plus className="h-4 w-4" />
+                    Add Plan
+                </Button>
+            </div>
+
+            {isOpen && (
+                <PlanCrudModal
+                    isOpen={isOpen}
+                    setIsOpen={setIsOpen}
+                    initial={selectedPlan}
+                />
+            )}
+
+            <div className="rounded-lg border bg-card min-h-[400px]">
+                <Table>
+                    <TableHeader>
+                        <TableRow className="hover:bg-transparent">
+                            <TableHead className="w-[80px]">ID</TableHead>
+                            <TableHead>Name</TableHead>
+                            <TableHead>Price</TableHead>
+                            <TableHead>Currency</TableHead>
+                            <TableHead>Interval</TableHead>
+                            <TableHead>Active</TableHead>
+                            <TableHead className="text-right">Actions</TableHead>
                         </TableRow>
-                    ))}
-                </TableBody>
-            </Table>
+                    </TableHeader>
+                    <TableBody>
+                        {isLoading ? (
+                            <TableRow>
+                                <TableCell colSpan={7} className="h-24 text-center">
+                                    <div className="flex items-center justify-center">
+                                        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+                                    </div>
+                                </TableCell>
+                            </TableRow>
+                        ) : data?.length === 0 ? (
+                            <TableRow>
+                                <TableCell colSpan={7} className="h-24 text-center text-muted-foreground">
+                                    No plans found.
+                                </TableCell>
+                            </TableRow>
+                        ) : (
+                            data?.map((plan) => (
+                                <TableRow key={plan.id}>
+                                    <TableCell className="font-medium">{plan.id}</TableCell>
+                                    <TableCell>
+                                        <div className="flex flex-col">
+                                            <span className="font-medium">{plan.name}</span>
+                                        </div>
+                                    </TableCell>
+                                    <TableCell className="text-muted-foreground">{plan.price}</TableCell>
+                                    <TableCell className="text-muted-foreground">{plan.currency}</TableCell>
+                                    <TableCell className="text-muted-foreground">{plan.interval}</TableCell>
+                                    <TableCell>
+                                        <Badge variant={plan.active ? 'default' : 'secondary'}>
+                                            {plan.active ? 'Active' : 'Inactive'}
+                                        </Badge>
+                                    </TableCell>
+                                    <TableCell className="text-right">
+                                        <div className="flex justify-end gap-2">
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                onClick={() => handleEdit(plan)}
+                                            >
+                                                <Pencil className="h-4 w-4" />
+                                            </Button>
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                onClick={() => handleDelete(plan)}
+                                                className="text-destructive hover:text-destructive"
+                                            >
+                                                <Trash2 className="h-4 w-4" />
+                                            </Button>
+                                        </div>
+                                    </TableCell>
+                                </TableRow>
+                            ))
+                        )}
+                    </TableBody>
+                </Table>
+            </div>
+
+            {pagination && (
+                <div className="mt-4">
+                    <CustomPagination
+                        paginationData={pagination}
+                        pagination={query}
+                        setPagination={(p) => setQuery({ ...query, pagination: p.pagination })}
+                    />
+                </div>
+            )}
         </div>
-
-        {pagination && <CustomPagination
-            className="mt-4"
-            paginationData={pagination}
-            pagination={query}
-            setPagination={(p) => setQuery({ ...query, pagination: p.pagination })}
-        />}
-    </div>
-
-
+    )
 }

@@ -128,8 +128,8 @@ const planPaginationQuerySchema = basePaginationQuerySchema.extend({
 })
 
 
-type TSubscriptionSortKeys = (keyof Pick<TSchemaSubscription.TSubscription, 'status' | 'currentPeriodStart' | 'createdAt'>)
-const subscriptionPaginationSortFields = ['status', 'currentPeriodStart', 'createdAt'] as TSubscriptionSortKeys[]
+type TSubscriptionSortKeys = (keyof Pick<TSchemaSubscription.TSubscription, 'currentPeriodStart' | 'createdAt'>)
+const subscriptionPaginationSortFields = ['currentPeriodStart', 'createdAt'] as TSubscriptionSortKeys[]
 
 const subscriptionPaginationQuerySchema = basePaginationQuerySchema.extend({
     sort: z.array(z.object({
@@ -139,7 +139,7 @@ const subscriptionPaginationQuerySchema = basePaginationQuerySchema.extend({
     filter: z.object({
         userId: z.number().optional(),
         planId: z.number().optional(),
-        status: z.string().optional(),
+        statusId: z.number().optional(),
     })
 })
 

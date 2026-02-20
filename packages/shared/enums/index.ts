@@ -143,10 +143,10 @@ const Currency = {
 
 export type TEnumPlanIntervalKey = "yearly" | "monthly" | "weekly" | "daily"
 const Plan_Interval = {
-    yearly: 1,
-    monthly: 2,
-    weekly: 3,
-    daily: 4,
+    yearly: 'yearly',
+    monthly: 'monthly',
+    weekly: 'weekly',
+    daily: 'daily',
 } as const;
 
 
@@ -240,6 +240,8 @@ export const SahredEnums = {
     keys<K extends string>(map: TEnumRecord<K>): K[] {
         return Object.keys(map) as K[];
     },
+
+
 
     values<K extends string>(map: TEnumRecord<K>): number[] {
         return Object.values(map);

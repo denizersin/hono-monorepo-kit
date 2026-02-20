@@ -15,7 +15,7 @@
     "scripts": {
         "lint": "eslint .",
         "type-check": "tsc --noEmit",
-        "dev": "rm -rf dist && tsc --watch  && tsc-alias",
+        "dev": "tsc --watch  && tsc-alias",
         "build": "rm -rf dist && tsc && tsc-alias"
     },
     "dependencies": {

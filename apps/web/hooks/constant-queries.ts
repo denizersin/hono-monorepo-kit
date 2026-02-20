@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query"
 import { useTRPC } from "@/components/providers/trpc/trpc-provider"
+import { SahredEnums } from "@repo/shared/enums"
 
 export const useGetCountries = () => {
     const trpc = useTRPC()
@@ -45,4 +46,24 @@ export const useSelectDataForLanguages = () => {
 export const useGetAllPlans = () => {
     const trpc = useTRPC()
     return useQuery(trpc.subscription.getAllPlansForSelect.queryOptions())
+}
+
+export const getCurrenciesSelectData = () => {
+    return Object.values(SahredEnums.Currency).map((currency) => ({
+        label: currency,
+        value: currency
+    }))
+}
+
+export const getPlanIntervalsSelectData = () => {
+    return Object.values(SahredEnums.Plan_Interval).map((interval) => ({
+        label: interval,
+        value: interval
+    }))
+}
+export const getSubscriptionStatusSelectData = () => {
+    return Object.entries(SahredEnums.SubscriptionStatus).map(([key, value]) => ({
+        label: key,
+        value: value.toString()
+    }))
 }

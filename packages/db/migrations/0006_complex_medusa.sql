@@ -1,0 +1,1 @@
+ALTER TABLE "subscription" ADD COLUMN "new" varchar(255) NOT NULL;

@@ -10,7 +10,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Switch } from "@/components/ui/switch"
-import { useGetCompanyLanguages } from "@/hooks/constant-queries"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { getCurrenciesSelectData, getPlanIntervalsSelectData, useGetCompanyLanguages } from "@/hooks/constant-queries"
 import { TSchemaSubscription } from "@repo/shared/schema"
 import { subscriptionValidator } from "@repo/shared/validators"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
@@ -160,9 +161,20 @@ export function PlanCrudModal({ isOpen, setIsOpen, initial }: PlanCrudModalProps
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>Currency</FormLabel>
-                                    <FormControl>
-                                        <Input placeholder="USD" {...field} />
-                                    </FormControl>
+                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                        <FormControl>
+                                            <SelectTrigger>
+                                                <SelectValue placeholder="Select a currency" />
+                                            </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent>
+                                            {getCurrenciesSelectData().map((currency) => (
+                                                <SelectItem key={currency.value} value={currency.value}>
+                                                    {currency.label}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
                                     <FormMessage />
                                 </FormItem>
                             )}
@@ -174,9 +186,20 @@ export function PlanCrudModal({ isOpen, setIsOpen, initial }: PlanCrudModalProps
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>Interval</FormLabel>
-                                    <FormControl>
-                                        <Input placeholder="monthly" {...field} />
-                                    </FormControl>
+                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                        <FormControl>
+                                            <SelectTrigger>
+                                                <SelectValue placeholder="Select an interval" />
+                                            </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent>
+                                            {getPlanIntervalsSelectData().map((interval) => (
+                                                <SelectItem key={interval.value} value={interval.value}>
+                                                    {interval.label}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
                                     <FormMessage />
                                 </FormItem>
                             )}

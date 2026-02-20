@@ -64,11 +64,11 @@ export const tblSubscription = pgTable('subscription', {
     id: integer().primaryKey().generatedByDefaultAsIdentity(),
     userId: integer().notNull().references(() => tblUser.id),
     planId: integer().notNull().references(() => tblPlan.id),
-    status: varchar({ length: 255 }).notNull().$type<TSubscriptionStatus>(),
+    statusId: integer().notNull().references(() => tblSubscriptionStatus.id),
     currentPeriodStart: timestamp().notNull(),
     currentPeriodEnd: timestamp().notNull(),
     cancelAtPeriodEnd: boolean().notNull(),
-    receiptData: jsonb().$type<{}>(),
+    // receiptData: jsonb().$type<{}>().default({}),
     ...getDefaultTableFieldsWithDeletedAt()
 
 })
@@ -83,6 +83,10 @@ export const tblSubscriptionRelation = relations(tblSubscription, ({ one, many }
         references: [tblPlan.id],
     }),
     events: many(tblSubscriptionEvents),
+    status: one(tblSubscriptionStatus, {
+        fields: [tblSubscription.statusId],
+        references: [tblSubscriptionStatus.id],
+    }),
 }))
 
 
@@ -336,7 +340,8 @@ function getSubscriptionWithRelation() {
                 }
             },
             user: true,
-            events: true
+            events: true,
+            status: true
         }
     })
 }

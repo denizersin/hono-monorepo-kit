@@ -10,11 +10,12 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Switch } from "@/components/ui/switch"
-import { useGetAllPlans } from "@/hooks/constant-queries"
+import { getSubscriptionStatusSelectData, useGetAllPlans } from "@/hooks/constant-queries"
 import { TSchemaSubscription } from "@repo/shared/schema"
 import { subscriptionValidator, TSubscriptionValidator } from "@repo/shared/validators"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { z } from "zod"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 type SubscriptionCrudModalProps = {
     isOpen: boolean
@@ -29,6 +30,8 @@ export function SubscriptionCrudModal({ isOpen, setIsOpen, initial }: Subscripti
     const trpc = useTRPC()
 
     const queryClient = useQueryClient()
+
+    const subscriptionStatusSelectData = getSubscriptionStatusSelectData()
 
     function onSuccsesCrud() {
         setIsOpen(false)
@@ -134,12 +137,27 @@ export function SubscriptionCrudModal({ isOpen, setIsOpen, initial }: Subscripti
 
                         <FormField
                             control={form.control}
-                            name="subscriptionData.status"
+                            name="subscriptionData.statusId"
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>Status</FormLabel>
                                     <FormControl>
-                                        <Input placeholder="active" {...field} />
+                                        <Select
+                                            {...field}
+                                            value={field.value?.toString()}
+                                            onValueChange={(value) => field.onChange(Number(value))}
+                                        >
+                                            <SelectTrigger className="w-full rounded-md border border-input bg-background px-3 py-2">
+                                                <SelectValue placeholder="Select a status" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {subscriptionStatusSelectData.map((status) => (
+                                                    <SelectItem key={status.value} value={status.value}>
+                                                        {status.label}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
