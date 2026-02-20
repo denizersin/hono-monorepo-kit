@@ -34,3 +34,13 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+
+
+Aha! İşte sorun! Root'ta @types/react@19.1.17 var ama apps/web'de @types/react@19.0.8 var. Ve hata mesajı, root'taki @types/react ile apps/web'deki @types/react arasındaki çakışmayı gösteriyor.
+
+Bu sorunu çözmek için iki yöntem var:
+
+Root'taki @types/react'i kaldırmak veya downgrad etmek
+Root package.json'a React tiplerini eklemek
+En iyi çözüm, root package.json'a React tiplerini devDependencies olarak eklemek:

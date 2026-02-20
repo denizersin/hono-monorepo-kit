@@ -41,3 +41,8 @@ export const useSelectDataForLanguages = () => {
     })) || []
     return { selectData: data, isLoading: query.isLoading, isError: query.isError }
 }
+
+export const useGetAllPlans = () => {
+    const trpc = useTRPC()
+    return useQuery(trpc.subscription.getAllPlansForSelect.queryOptions())
+}

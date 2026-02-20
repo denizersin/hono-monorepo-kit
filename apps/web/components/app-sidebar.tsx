@@ -23,15 +23,20 @@ import { NavDocuments } from "@/components/nav-documents"
 import { NavMain } from "@/components/nav-main"
 import { NavSecondary } from "@/components/nav-secondary"
 import { NavUser } from "@/components/nav-user"
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
+import { ChevronDown } from "lucide-react"
 
 const data = {
   user: {
@@ -45,26 +50,31 @@ const data = {
       url: "#",
       icon: IconDashboard,
     },
+    // {
+    //   title: "Characters",
+    //   url: "/dashboard/character",
+    //   icon: IconListDetails,
+    // },
+    // {
+    //   title: "Persona",
+    //   url: "/dashboard/persona",
+    //   icon: IconFileDescription,
+    // },
     {
-      title: "Characters",
-      url: "/dashboard/character",
-      icon: IconListDetails,
-    },
-    {
-      title: "Persona",
-      url: "/dashboard/persona",
+      title: "Role Permissions",
+      url: "/dashboard/role-permissions",
       icon: IconFileDescription,
     },
-    {
-      title: "Analytics",
-      url: "#",
-      icon: IconChartBar,
-    },
-    {
-      title: "Projects",
-      url: "#",
-      icon: IconFolder,
-    },
+    // {
+    //   title: "Analytics",
+    //   url: "#",
+    //   icon: IconChartBar,
+    // },
+    // {
+    //   title: "Projects",
+    //   url: "#",
+    //   icon: IconFolder,
+    // },
     {
       title: "Users",
       url: "/dashboard/user",
@@ -153,6 +163,34 @@ const data = {
       icon: IconFileWord,
     },
   ],
+  subscriptions: [
+    {
+      name: "Plans",
+      url: "/dashboard/subscription",
+      icon: IconDatabase,
+    },
+    {
+      name: "Subscriptions",
+      url: "/dashboard/subscription/subscriptions",
+      icon: IconReport,
+    },
+    {
+      name: "Campaigns",
+      url: "/dashboard/subscription/campaigns",
+      icon: IconFileWord,
+    },
+    {
+      name: "Coupons",
+      url: "/dashboard/subscription/coupons",
+      icon: IconFileWord,
+    },
+    {
+      name: "User Discounts",
+      url: "/dashboard/subscription/user-discounts",
+      icon: IconFileWord,
+    },
+
+  ]
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
@@ -175,8 +213,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
-        <NavDocuments items={data.documents} />
+        {/* <NavDocuments items={data.documents} title="Documents" /> */}
+        <NavDocuments items={data.subscriptions} title="Subscriptions" />
         <NavSecondary items={data.navSecondary} className="mt-auto" />
+
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={data.user} />
