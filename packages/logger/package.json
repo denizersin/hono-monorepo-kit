@@ -13,7 +13,7 @@
     }
   },
   "scripts": {
-    "dev2": "rm -rf dist && tsc --watch",
+    "dev": "rm -rf dist && tsc --watch",
     "build": "rm -rf dist && tsc",
     "type-check": "tsc --noEmit"
   },
@@ -30,4 +30,3 @@
     "typescript": "^5.9.2"
   }
 }
-

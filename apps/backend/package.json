@@ -7,7 +7,7 @@
   },
   "type": "module",
   "scripts": {
-    "dev": "bun run --hot src/index.ts",
+    "dev": "rm -rf dist && tsc --watch & tsx watch src",
     "dev2": "tsc --watch & tsx watch src",
     "build": "rm -rf dist && tsc && tsc-alias",
     "start": "node dist/src/index.js",

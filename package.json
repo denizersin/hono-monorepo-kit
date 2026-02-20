@@ -9,8 +9,8 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "turbo dev --filter=!@repo/db --filter=!@repo/config",
-    "dev2": "turbo dev --filter='./apps/*'",
+    "dev": "turbo dev --filter=!@repo/db --filter=!@repo/config --filter=!@repo/logger",
+    "dev2": "turbo dev",
     "build": "turbo build",
     "lint": "turbo lint",
     "check-types": "turbo check-types",
@@ -21,6 +21,8 @@
   "license": "ISC",
   "packageManager": "bun@1.1.42",
   "devDependencies": {
-    "turbo": "^2.3.3"
+    "turbo": "^2.3.3",
+    "@types/react": "19.0.8",
+    "@types/react-dom": "19.0.3"
   }
 }

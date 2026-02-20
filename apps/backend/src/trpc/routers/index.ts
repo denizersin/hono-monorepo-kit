@@ -5,12 +5,15 @@ import { authRouter } from "./auth";
 import { constantsRouter } from "./constants";
 import { characterRouter } from "./character";
 import { userRouter } from "./user";
+import { subscriptionRouter } from "./subscription";
 
 export const appRouter = createTRPCRouter({
-    auth: authRouter,   
+    auth: authRouter,
     constants: constantsRouter,
     character: characterRouter,
     user: userRouter,
+    subscription: subscriptionRouter,
+
 })
 
 

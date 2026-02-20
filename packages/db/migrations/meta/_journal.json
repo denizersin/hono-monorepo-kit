@@ -5,22 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1771416103746,
-      "tag": "0000_goofy_toxin",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1771420313122,
-      "tag": "0001_overconfident_northstar",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1771438151204,
-      "tag": "0002_classy_pretty_boy",
+      "when": 1771530289727,
+      "tag": "0000_watery_slipstream",
       "breakpoints": true
     }
   ]

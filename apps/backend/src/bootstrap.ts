@@ -10,6 +10,8 @@ import { CharacterService } from "./modules/application/services/character/Chara
 import { CharacterRepositoryImpl } from "./modules/infrastructure/repositories/character/CharacterRepositoryImpl";
 import { CompanyRepositoryImpl } from "./modules/infrastructure/repositories/company/CompanyRepositoryImpl";
 import { CompanyService } from "./modules/application/services/company/CompanyService";
+import { SubscriptionRepositoryImpl } from "./modules/infrastructure/repositories/subscription/SubscriptionRepositoryImpl";
+import { SubscriptionService } from "./modules/application/services/subscription/SubscriptionService";
 
 export const userRepository = new UserRepositoryImpl()
 export const rolePermissionRepository = new RolePermissionRepositoryImpl()
@@ -19,7 +21,7 @@ export const verifyCodeRepository = new VerifyCodeRepositoryImpl()
 export const languageRepository = new LanguageRepository()
 export const characterRepository = new CharacterRepositoryImpl()
 export const companyRepository = new CompanyRepositoryImpl()
-
+export const subscriptionRepository = new SubscriptionRepositoryImpl()
 
 
 
@@ -27,6 +29,7 @@ export const authService = new AuthService(userRepository, wpClientService, coun
 export const userService = new UserService(userRepository)
 export const companyService = new CompanyService(companyRepository)
 export const characterService = new CharacterService(characterRepository)
+export const subscriptionService = new SubscriptionService(subscriptionRepository)
 
 
 

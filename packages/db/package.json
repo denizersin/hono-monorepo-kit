@@ -20,7 +20,7 @@
     "initialize-db": "tsx ./src/modules/infrastructure/database/scripts/initialize-db.ts",
     "initialize-new-look-up": "tsx ./src/modules/infrastructure/database/scripts/initialize-new-look-up.ts",
     "reset-db-step1": "tsx ./src/modules/infrastructure/database/scripts/re-create-db.ts",
-    "reset-db-step2": "rm -rf ../../packages/db/migrations && bun run update-db && bun run initialize-db",
+    "reset-db-step2": "rm -rf ./migrations && bun run update-db ",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "update-db": "bun run db:generate && sleep 1 && bun run db:migrate",
@@ -31,6 +31,26 @@
     "@repo/shared": "workspace:*",
     "drizzle-orm": "^0.44.5",
     "pg": "^8.16.3"
+  },
+  "peerDependencies": {
+    "@types/react": "19.0.8",
+    "@types/react-dom": "19.0.3",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@types/react": {
+      "optional": true
+    },
+    "@types/react-dom": {
+      "optional": true
+    },
+    "react": {
+      "optional": true
+    },
+    "react-dom": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@types/pg": "^8.15.5",

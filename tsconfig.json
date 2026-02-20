@@ -1,6 +1,5 @@
 {
     "compilerOptions": {
-
         "strict": true,
         "noUncheckedIndexedAccess": true,
         "skipLibCheck": true,
@@ -10,7 +9,8 @@
         "module": "ESNext",
         "esModuleInterop": true,
         "resolveJsonModule": true,
-        "allowSyntheticDefaultImports": true
+        "allowSyntheticDefaultImports": true,
+        "types": ["node"]
     },
     "exclude": [
         "node_modules",
