@@ -1,12 +1,13 @@
 import { createInsertSchema } from "drizzle-zod";
-import { tblPlan, tblPlanTranslation, tblSubscription, tblSubscriptionEvents, tblCoupons, tblUserDiscounts, tblCampaign, tblCampaignTranslation } from "../../schema";
 import { z } from "zod";
-import { defaultOmitFieldsSchema } from "../utils";
+import { SahredEnums } from "../../../enums/index";
+import { tblCampaign, tblCampaignTranslation, tblCoupons, tblPlan, tblPlanTranslation, tblSubscription, tblSubscriptionEvents, tblUserDiscounts, TSchemaSubscription } from "../../schema";
 import { basePaginationQuerySchema } from "../utils";
-import { TSchemaSubscription } from "../../schema";
-
 // Base insert zod schemas
-const planBaseInsertSchema = createInsertSchema(tblPlan)
+const planBaseInsertSchema = createInsertSchema(tblPlan, {
+    currency: z.enum(SahredEnums.getKeysForZod(SahredEnums.Currency)),
+    interval: z.enum(SahredEnums.getKeysForZod(SahredEnums.Plan_Interval)),
+})
 
 const planTranslationBaseInsertSchema = createInsertSchema(tblPlanTranslation);
 
@@ -14,11 +15,17 @@ const subscriptionBaseInsertSchema = createInsertSchema(tblSubscription)
 
 const subscriptionEventsBaseInsertSchema = createInsertSchema(tblSubscriptionEvents)
 
-const couponsBaseInsertSchema = createInsertSchema(tblCoupons)
+const couponsBaseInsertSchema = createInsertSchema(tblCoupons, {
+    discount_type: z.enum(SahredEnums.getKeysForZod(SahredEnums.Discount_Type)),
+    duration: z.enum(SahredEnums.getKeysForZod(SahredEnums.CouponDuration_Type)),
+})
 
 const userDiscountsBaseInsertSchema = createInsertSchema(tblUserDiscounts)
 
-const campaignBaseInsertSchema = createInsertSchema(tblCampaign)
+const campaignBaseInsertSchema = createInsertSchema(tblCampaign, {
+    target_type: z.enum(SahredEnums.getKeysForZod(SahredEnums.Campaign_Target_Type)),
+    discount_type: z.enum(SahredEnums.getKeysForZod(SahredEnums.Discount_Type)),
+})
 
 const campaignTranslationBaseInsertSchema = createInsertSchema(tblCampaignTranslation);
 

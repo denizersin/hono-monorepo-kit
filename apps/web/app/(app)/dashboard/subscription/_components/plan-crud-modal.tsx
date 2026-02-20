@@ -23,6 +23,8 @@ type PlanCrudModalProps = {
     initial?: TSchemaSubscription.TSubscriptionRepository.TPlanWithRelationSelect
 }
 
+
+
 // Build a simple form schema for plan data and translation names
 const formSchema = subscriptionValidator.createPlanWithTranslationSchema
 

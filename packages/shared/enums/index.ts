@@ -118,14 +118,14 @@ const CompanyId = {
 
 export type TSubscriptionStatus = 'active' | 'trialing' | 'cancelled' | 'expired';
 
-const SubscriptionStatus = {
+const EnumSubscriptionStatus = {
     active: 1,
     trialing: 2,
     cancelled: 3,
     expired: 4,
 } as const;
 
-const SubscriptionStatusKey = {
+const EnumSubscriptionStatusKey = {
     active: 'active',
     trialing: 'trialing',
     cancelled: 'cancelled',
@@ -167,8 +167,8 @@ const Discount_Type = {
 
 
 // ... existing code ...
-export type TEnumDurationKey = "once" | "forever" | "repeating"
-const Duration_Type = {
+export type TEnumCouponDurationKey = "once" | "forever" | "repeating"
+const CouponDuration_Type = {
     once: "once",
     forever: "forever",
     repeating: "repeating",
@@ -210,14 +210,14 @@ export const SahredEnums = {
     // Misc
     CompanyId,
 
-    SubscriptionStatus,
-    SubscriptionStatusKey,
+    SubscriptionStatus: EnumSubscriptionStatus,
+    SubscriptionStatusKey: EnumSubscriptionStatusKey,
 
     Currency,
     Plan_Interval,
     Subscription_Event_Type,
     Discount_Type,
-    Duration_Type,
+    CouponDuration_Type,
     Campaign_Target_Type,
 
     // Helper
@@ -268,8 +268,19 @@ export const SahredEnums = {
     keysForZod<K extends string>(map: TEnumRecord<K>): [K, ...K[]] {
         return Object.keys(map) as [K, ...K[]];
     },
+
+
+
     getStringEnumValuesForZod<K extends string>(map: TEnumRecord<K>): [K, ...K[]] {
         return Object.keys(map) as [K, ...K[]];
+    },
+
+    getKeysForZod<K extends string>(map: Record<K, K>): [K, ...K[]] {
+        return Object.keys(map) as [K, ...K[]];
+    },
+
+    getRecordKeys<K extends string>(map: Record<K, K>): [K] {
+        return Object.keys(map) as [K];
     },
 }
 

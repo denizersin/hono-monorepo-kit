@@ -47,6 +47,7 @@ Standart Alan Yapısı
 export const tblEntity = pgTable('entity', {
     id: integer().primaryKey().generatedByDefaultAsIdentity(),
 
+    type: varchar({ length: 255 }).notNull().$type<TEnumEntityKey>(), //enum
     // data fields
     ...
 
@@ -149,7 +150,7 @@ defaultOmitFieldsSchema mutlaka uygulanır
 
 id, createdAt, updatedAt, deletedAt dışlanmalıdır
 
-
+eger enum varsa z.enum() ile type alanına enum type eklenmeli
 
 2.2 CRUD Schema Tanımları
 Create:

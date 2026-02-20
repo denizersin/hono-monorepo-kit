@@ -1,18 +1,18 @@
-import { TEnumCampaignTargetType, TEnumCurrenyKey, TEnumDiscountType, TEnumDurationKey, TEnumPlanIntervalKey, TEnumSubscriptionEventType, TSubscriptionStatus } from '#/enums/index';
+import { TEnumCampaignTargetType, TEnumCouponDurationKey, TEnumCurrenyKey, TEnumDiscountType, TEnumPlanIntervalKey, TEnumSubscriptionEventType, TSubscriptionStatus } from '#/enums/index';
 import { relations } from 'drizzle-orm';
-import { boolean, foreignKey, integer, jsonb, pgTable, timestamp, uniqueIndex, varchar } from 'drizzle-orm/pg-core';
+import { boolean, foreignKey, integer, pgTable, timestamp, uniqueIndex, varchar } from 'drizzle-orm/pg-core';
 import { tblLanguage } from './data';
+import { getDefaultTableFieldsWithDeletedAt } from './schemaHelpers';
 import { mockDb, ReturnTypeOfQuery } from './type';
 import { tblUser, TSchemaUser } from './user';
-import { getDefaultTableFieldsWithDeletedAt } from './schemaHelpers';
 
 
 export const tblPlan = pgTable('plan', {
     id: integer().primaryKey().generatedByDefaultAsIdentity(),
     name: varchar({ length: 255 }).notNull(),
     price: integer().notNull(),
-    currency: varchar({ length: 255 }).notNull().$type<TEnumCurrenyKey>(),
-    interval: varchar({ length: 255 }).notNull().$type<TEnumPlanIntervalKey>(),
+    currency: varchar({ length: 255 }).notNull().$type<TEnumCurrenyKey>(),//enum
+    interval: varchar({ length: 255 }).notNull().$type<TEnumPlanIntervalKey>(),//enum
     intervalCount: integer().notNull(),
     trialPeriodDays: integer().notNull(),
     active: boolean().notNull(),
@@ -93,7 +93,7 @@ export const tblSubscriptionRelation = relations(tblSubscription, ({ one, many }
 export const tblSubscriptionEvents = pgTable('subscription_events', {
     id: integer().primaryKey().generatedByDefaultAsIdentity(),
     subscription_id: integer().notNull().references(() => tblSubscription.id),
-    event_type: varchar({ length: 255 }).notNull().$type<TEnumSubscriptionEventType>(),
+    event_type: varchar({ length: 255 }).notNull().$type<TEnumSubscriptionEventType>(), //enum
     created_at: timestamp().notNull().defaultNow(),
     ...getDefaultTableFieldsWithDeletedAt()
 
@@ -111,9 +111,9 @@ export const tblSubscriptionEventsRelation = relations(tblSubscriptionEvents, ({
 export const tblCoupons = pgTable('coupons', {
     id: integer().primaryKey().generatedByDefaultAsIdentity(),
     code: varchar({ length: 255 }).notNull(),
-    discount_type: varchar({ length: 255 }).notNull().$type<TEnumDiscountType>(),
+    discount_type: varchar({ length: 255 }).notNull().$type<TEnumDiscountType>(),//enum
     value: integer().notNull(),
-    duration: varchar({ length: 255 }).notNull().$type<TEnumDurationKey>(),
+    duration: varchar({ length: 255 }).notNull().$type<TEnumCouponDurationKey>(),//enum
     duration_in_months: integer(),
     store_offer_id: varchar({ length: 255 }),
     ...getDefaultTableFieldsWithDeletedAt()
@@ -149,9 +149,9 @@ export const tblUserDiscountsRelation = relations(tblUserDiscounts, ({ one }) =>
 export const tblCampaign = pgTable('campaign', {
     id: integer().primaryKey().generatedByDefaultAsIdentity(),
     title: varchar({ length: 255 }).notNull(),
-    discount_type: varchar({ length: 255 }).notNull().$type<TEnumDiscountType>(),
+    discount_type: varchar({ length: 255 }).notNull().$type<TEnumDiscountType>(),//enum
     value: integer().notNull(),
-    target_type: varchar({ length: 255 }).notNull().$type<TEnumCampaignTargetType>(),
+    target_type: varchar({ length: 255 }).notNull().$type<TEnumCampaignTargetType>(),//enum
     start_date: timestamp().notNull(),
     end_date: timestamp().notNull(),
     is_active: boolean().notNull().default(true),
@@ -206,7 +206,7 @@ export const tblCampaignTranslationRelation = relations(tblCampaignTranslation, 
 //predefined
 export const tblSubscriptionStatus = pgTable('subscription_status', {
     id: integer().primaryKey().generatedByDefaultAsIdentity(),
-    name: varchar({ length: 255 }).notNull().$type<TSubscriptionStatus>(),
+    name: varchar({ length: 255 }).notNull().$type<TSubscriptionStatus>(),//enum
 })
 
 
