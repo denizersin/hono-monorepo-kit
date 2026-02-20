@@ -66,7 +66,7 @@ export const UserList = () => {
     }
 
     return (
-        <div className="px-4 lg:px-6">
+        <div className="">
             <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
                     <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">

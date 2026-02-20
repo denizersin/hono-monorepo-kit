@@ -256,6 +256,7 @@ export class SubscriptionRepositoryImpl {
         const columnMapper: Record<TSubscriptionValidator.TSubscriptionPaginationQuerySortKeys, PgColumn> = {
             'status': tblSubscription.status,
             'currentPeriodStart': tblSubscription.currentPeriodStart,
+            'createdAt': tblSubscription.createdAt,
         };
 
         sort.forEach(s => {
@@ -427,6 +428,7 @@ export class SubscriptionRepositoryImpl {
         const columnMapper: Record<TSubscriptionValidator.TCouponPaginationQuerySortKeys, PgColumn> = {
             'code': tblCoupons.code,
             'discount_type': tblCoupons.discount_type,
+            'createdAt': tblCoupons.createdAt,
         };
 
         sort.forEach(s => {
@@ -645,6 +647,7 @@ export class SubscriptionRepositoryImpl {
         };
         const columnMapper: Record<TSubscriptionValidator.TCampaignPaginationQuerySortKeys, PgColumn> = {
             'title': tblCampaign.title,
+            createdAt: tblCampaign.createdAt
         };
 
         sort.forEach(s => {
