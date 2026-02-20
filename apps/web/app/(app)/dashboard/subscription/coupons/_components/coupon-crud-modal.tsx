@@ -13,6 +13,8 @@ import { TSchemaSubscription } from "@repo/shared/schema"
 import { subscriptionValidator } from "@repo/shared/validators"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { z } from "zod"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { getDiscountTypeSelectData } from "@/hooks/constant-queries"
 
 type CouponCrudModalProps = {
     isOpen: boolean
@@ -109,7 +111,19 @@ export function CouponCrudModal({ isOpen, setIsOpen, initial }: CouponCrudModalP
                                 <FormItem>
                                     <FormLabel>Discount Type</FormLabel>
                                     <FormControl>
-                                        <Input placeholder="percentage" {...field} />
+                                        <Select
+                                            {...field}>
+                                            <SelectTrigger className="w-full rounded-md border border-input bg-background px-3 py-2">
+                                                <SelectValue placeholder="Select a discount type" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {getDiscountTypeSelectData().map((discountType) => (
+                                                    <SelectItem key={discountType.value} value={discountType.value}>
+                                                        {discountType.label}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>

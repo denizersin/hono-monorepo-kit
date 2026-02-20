@@ -14,7 +14,7 @@ import {
     TableRow
 } from "@/components/ui/table"
 import { TSchemaSubscription } from "@repo/shared/schema"
-import { useQuery } from "@tanstack/react-query"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import SubscriptionCrudModal from "./subscription-crud-modal"
 import { CustomPagination } from "@/components/dashboard/custom-pagination"
 import { Badge } from "@/components/ui/badge"
@@ -24,6 +24,7 @@ import { SahredEnums } from "@repo/shared/enums"
 
 export const SubscriptionList = () => {
     const trpc = useTRPC()
+    const queryClient = useQueryClient()
 
     const [isOpen, setIsOpen] = useState(false)
     const [selectedSubscription, setSelectedSubscription] = useState<TSchemaSubscription.TSubscriptionRepository.TSubscriptionWithRelationSelect | undefined>(undefined)
@@ -45,6 +46,12 @@ export const SubscriptionList = () => {
         isLoading
     } = useQuery(trpc.subscription.getSubscriptionsWithPagination.queryOptions(query))
 
+    const { mutateAsync: deleteSubscription } = useMutation(trpc.subscription.deleteSubscription.mutationOptions({
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: trpc.subscription.getSubscriptionsWithPagination.queryKey() })
+        }
+    }))
+
     const data = paginationData?.data
     const pagination = paginationData?.pagination
 
@@ -59,7 +66,7 @@ export const SubscriptionList = () => {
             text1: 'Delete Subscription',
             text2: `Are you sure you want to delete this subscription for "${subscription.user?.email || 'unknown'}"? This action cannot be undone.`,
             onClickPrimaryButton: async () => {
-                await trpc.subscription.deleteSubscription.mutate({ id: subscription.id })
+                await deleteSubscription({ id: subscription.id })
             }
         })
     }

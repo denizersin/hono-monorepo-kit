@@ -14,7 +14,7 @@ import {
     TableRow
 } from "@/components/ui/table"
 import { TSchemaSubscription } from "@repo/shared/schema"
-import { useQuery } from "@tanstack/react-query"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import CampaignCrudModal from "./campaign-crud-modal"
 import { CustomPagination } from "@/components/dashboard/custom-pagination"
 import { Badge } from "@/components/ui/badge"
@@ -23,7 +23,7 @@ import { GlobalModalManager } from "@/components/global/modal/global-confirm-mod
 
 export const CampaignList = () => {
     const trpc = useTRPC()
-
+    const queryClient = useQueryClient()
     const [isOpen, setIsOpen] = useState(false)
     const [selectedCampaign, setSelectedCampaign] = useState<TSchemaSubscription.TSubscriptionRepository.TCampaignWithRelationSelect | undefined>(undefined)
 
@@ -47,6 +47,13 @@ export const CampaignList = () => {
     const data = paginationData?.data
     const pagination = paginationData?.pagination
 
+
+    const { mutateAsync: deleteCampaign } = useMutation(trpc.subscription.deleteCampaign.mutationOptions({
+        onSuccess: () => {
+            queryClient.invalidateQueries(trpc.subscription.getCampaignsWithPagination.queryOptions(query))
+        }
+    }))
+
     const handleEdit = (campaign: TSchemaSubscription.TSubscriptionRepository.TCampaignWithRelationSelect) => {
         setSelectedCampaign(campaign)
         setIsOpen(true)
@@ -58,7 +65,7 @@ export const CampaignList = () => {
             text1: 'Delete Campaign',
             text2: `Are you sure you want to delete "${campaign.title}"? This action cannot be undone.`,
             onClickPrimaryButton: async () => {
-                await trpc.subscription.deleteCampaign.mutate({ id: campaign.id })
+                await deleteCampaign({ id: campaign.id })
             }
         })
     }

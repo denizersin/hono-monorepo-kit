@@ -67,3 +67,10 @@ export const getSubscriptionStatusSelectData = () => {
         value: value.toString()
     }))
 }
+
+export const getDiscountTypeSelectData = () => {
+    return Object.entries(SahredEnums.Discount_Type).map(([key, value]) => ({
+        label: key,
+        value: value.toString()
+    }))
+}
