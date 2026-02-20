@@ -14,15 +14,17 @@ import {
     TableRow
 } from "@/components/ui/table"
 import { TSchemaSubscription } from "@repo/shared/schema"
-import { useQuery } from "@tanstack/react-query"
+import { useQuery, useMutation } from "@tanstack/react-query"
 import CouponCrudModal from "./coupon-crud-modal"
 import { CustomPagination } from "@/components/dashboard/custom-pagination"
 import { Badge } from "@/components/ui/badge"
 import { Pencil, Trash2, Plus, Ticket } from "lucide-react"
 import { GlobalModalManager } from "@/components/global/modal/global-confirm-moda"
+import { useQueryClient } from "@tanstack/react-query"
 
 export const CouponList = () => {
     const trpc = useTRPC()
+    const queryClient = useQueryClient()
 
     const [isOpen, setIsOpen] = useState(false)
     const [selectedCoupon, setSelectedCoupon] = useState<TSchemaSubscription.TSubscriptionRepository.TCouponWithRelationSelect | undefined>(undefined)
@@ -47,6 +49,15 @@ export const CouponList = () => {
     const data = paginationData?.data
     const pagination = paginationData?.pagination
 
+
+    const { mutateAsync: deleteCoupon } = useMutation(trpc.subscription.deleteCoupon.mutationOptions({
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: trpc.subscription.getCouponsWithPagination.queryKey()
+            })
+        }
+    }))
+
     const handleEdit = (coupon: TSchemaSubscription.TSubscriptionRepository.TCouponWithRelationSelect) => {
         setSelectedCoupon(coupon)
         setIsOpen(true)
@@ -58,7 +69,7 @@ export const CouponList = () => {
             text1: 'Delete Coupon',
             text2: `Are you sure you want to delete coupon "${coupon.code}"? This action cannot be undone.`,
             onClickPrimaryButton: async () => {
-                await trpc.subscription.deleteCoupon.mutate({ id: coupon.id })
+                await deleteCoupon({ id: coupon.id })
             }
         })
     }

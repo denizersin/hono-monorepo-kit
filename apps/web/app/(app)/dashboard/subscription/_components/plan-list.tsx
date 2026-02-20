@@ -14,16 +14,17 @@ import {
     TableRow
 } from "@/components/ui/table"
 import { TSchemaSubscription } from "@repo/shared/schema"
-import { useQuery } from "@tanstack/react-query"
+import { useMutation, useQuery } from "@tanstack/react-query"
 import PlanCrudModal from "./plan-crud-modal"
 import { CustomPagination } from "@/components/dashboard/custom-pagination"
 import { Badge } from "@/components/ui/badge"
 import { Pencil, Trash2, Plus, CreditCard } from "lucide-react"
 import { GlobalModalManager } from "@/components/global/modal/global-confirm-moda"
+import { useQueryClient } from "@tanstack/react-query"
 
 export const PlanList = () => {
     const trpc = useTRPC()
-
+    const queryClient = useQueryClient()
     const [isOpen, setIsOpen] = useState(false)
     const [selectedPlan, setSelectedPlan] = useState<TSchemaSubscription.TSubscriptionRepository.TPlanWithRelationSelect | undefined>(undefined)
 
@@ -47,6 +48,14 @@ export const PlanList = () => {
     const data = paginationData?.data
     const pagination = paginationData?.pagination
 
+    const { mutateAsync: deletePlan } = useMutation(trpc.subscription.deletePlan.mutationOptions({
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: trpc.subscription.getPlansWithPagination.queryKey()
+            })
+        }
+    }))
+
 
     const handleEdit = (plan: TSchemaSubscription.TSubscriptionRepository.TPlanWithRelationSelect) => {
         setSelectedPlan(plan)
@@ -59,7 +68,7 @@ export const PlanList = () => {
             text1: 'Delete Plan',
             text2: `Are you sure you want to delete "${plan.name}"? This action cannot be undone.`,
             onClickPrimaryButton: async () => {
-                await trpc.subscription.deletePlan.mutate({ id: plan.id })
+                await deletePlan({ id: plan.id })
             }
         })
     }
