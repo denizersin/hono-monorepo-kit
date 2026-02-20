@@ -10,6 +10,7 @@
   ],
   "scripts": {
     "dev": "turbo dev --filter=!@repo/db --filter=!@repo/config --filter=!@repo/logger",
+    "dev-mobile": "turbo dev --filter=!@repo/db --filter=!@repo/config --filter=!@repo/logger --filter=!web",
     "dev2": "turbo dev",
     "build": "turbo build",
     "lint": "turbo lint",
