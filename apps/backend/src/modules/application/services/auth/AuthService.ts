@@ -35,13 +35,13 @@ export class AuthService {
 
         const session: TSession = {
             companyId: user.companyId,
-            role: SahredEnums.getKey(SahredEnums.Role, user.roleId),
+            role: SahredEnums.getMapKey(SahredEnums.ROLE_MAP, user.roleId),
             roleId: user.roleId,
             user: sessionUser
         }
 
         const jwtSession: TJWTSession = {
-            role: SahredEnums.getKey(SahredEnums.Role, user.roleId),
+            role: SahredEnums.getMapKey(SahredEnums.ROLE_MAP, user.roleId),
             roleId: user.roleId,
             companyId: user.companyId,
             userId: user.id,
@@ -74,10 +74,10 @@ export class AuthService {
 
         const userId = await this.userRepository.createUser({
             ...userData,
-            companyId: SahredEnums.CompanyId.default,
-            roleId: SahredEnums.Role.USER,
+            companyId: SahredEnums.COMPANY_ID_MAP.default,
+            roleId: SahredEnums.ROLE_MAP.USER,
             fullName: `${userData.name} ${userData.surname}`,
-            mailConfirmationStatusId: SahredEnums.MailConfirmationStatus.pending,
+            mailConfirmationStatusId: SahredEnums.MAIL_CONFIRMATION_MAP.pending,
             test: '',
             fullPhone: fullPhone,
             invitationCode: generateAlphanumericCode(6),
@@ -112,13 +112,13 @@ export class AuthService {
 
         const session: TSession = {
             companyId: user.companyId,
-            role: SahredEnums.getKey(SahredEnums.Role, user.roleId),
+            role: SahredEnums.getMapKey(SahredEnums.ROLE_MAP, user.roleId),
             roleId: user.roleId,
             user: sessionUser
         }
 
         const jwtSession: TJWTSession = {
-            role: SahredEnums.getKey(SahredEnums.Role, user.roleId),
+            role: SahredEnums.getMapKey(SahredEnums.ROLE_MAP, user.roleId),
             roleId: user.roleId,
             companyId: user.companyId,
             userId: user.id,

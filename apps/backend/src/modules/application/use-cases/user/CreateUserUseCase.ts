@@ -13,7 +13,7 @@ export class CreateUserUseCase {
     async executeAsUser(userData: TUserValidator.TUserCreateSchema) {
         return this.userService.createUser({
             ...userData,
-            roleId: SahredEnums.Role.USER,
+            roleId: SahredEnums.ROLE_MAP.USER,
         })
     }
 

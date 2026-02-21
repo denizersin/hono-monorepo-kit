@@ -51,7 +51,7 @@ type Props = Omit<ImageProps, "src"> & {
 
 
 export default function Home() {
-  console.log(SahredEnums.MailConfirmationStatus)
+  console.log(SahredEnums.MAIL_CONFIRMATION_MAP)
 
   const trpc = useTRPC()
 

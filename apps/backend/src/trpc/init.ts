@@ -105,7 +105,7 @@ export const protectedProcedure = t.procedure.use(async (opts) => {
 
 
 export const adminProcedure = protectedProcedure.use(async (opts) => {
-    if (opts.ctx.session.role !== SahredEnums.EnumRoleKey.ADMIN) {
+    if (opts.ctx.session.role !== SahredEnums.ROLE_KEY.ADMIN) {
         throw createTRPCError({
             code: 'UNAUTHORIZED',
         })
@@ -120,7 +120,7 @@ export const adminProcedure = protectedProcedure.use(async (opts) => {
 
 
 export const ownerProcedure = protectedProcedure.use(async (opts) => {
-    if (opts.ctx.session.role !== SahredEnums.EnumRoleKey.OWNER) {
+    if (opts.ctx.session.role !== SahredEnums.ROLE_KEY.OWNER) {
         throw createTRPCError({
             code: 'UNAUTHORIZED',
         })

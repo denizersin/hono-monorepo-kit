@@ -20,13 +20,13 @@ const Layout = ({ children }: Props) => {
     useEffect(() => {
         if (!isAuthenticated || isLoading) return;
 
-        if (session?.roleId === SahredEnums.Role.ADMIN) {
+        if (session?.roleId === SahredEnums.ROLE_MAP.ADMIN) {
             router.push('/admin')
         }
-        else if (session?.roleId === SahredEnums.Role.OWNER) {
+        else if (session?.roleId === SahredEnums.ROLE_MAP.OWNER) {
             router.push('/dashboard')
         }
-        else if (session?.roleId === SahredEnums.Role.USER) {
+        else if (session?.roleId === SahredEnums.ROLE_MAP.USER) {
             router.push('/home')
         }
     }, [isAuthenticated, session])

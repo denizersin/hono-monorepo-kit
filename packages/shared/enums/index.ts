@@ -5,61 +5,69 @@ import { PermissionEnum } from "./permissions";
 // Base Type
 // -----------------------------------------------------------------------
 
-export type TEnumRecord<K extends string> = Record<K, number>;
+
+// Base Types
+export type TEnumMapRecord<K extends string> = Record<K, number>;
+export type TKeyRecord<K extends string> = Record<K, K>;
+
+
+
+
+// export type TEnumMapRecord<K extends string> = Record<K, number>;
 
 // -----------------------------------------------------------------------
 // Enum Maps
 // -----------------------------------------------------------------------
 
-const EnumRole: TEnumRecord<TRole> = {
+const ROLE_MAP: TEnumMapRecord<TRole> = {
     SUPER_ADMIN: 1,
     ADMIN: 2,
     OWNER: 3,
     USER: 4,
 } as const;
 
-const EnumRoleKey: Record<TRole, TRole> = {
+const ROLE_KEY: TKeyRecord<TRole> = {
     SUPER_ADMIN: 'SUPER_ADMIN',
     ADMIN: 'ADMIN',
     OWNER: 'OWNER',
     USER: 'USER',
-}
+} as const;
 
 
-const EnumMailConfirmationStatus: TEnumRecord<TMailConfirmationStatus> = {
+const MAIL_CONFIRMATION_MAP: TEnumMapRecord<TMailConfirmationStatus> = {
     pending: 1,
     confirmed: 2,
     rejected: 3,
 } as const;
 
-const EnumLanguage: TEnumRecord<TLanguage> = {
+const LANGUAGE_MAP: TEnumMapRecord<TLanguage> = {
     tr: 1,
     en: 2,
     es: 3,
 } as const;
 
-const EnumLanugageKey: Record<TLanguage, TLanguage> = {
+const LANGUAGE_KEY: TKeyRecord<TLanguage> = {
     tr: 'tr',
     en: 'en',
     es: 'es'
-}
+} as const;
 
-const EnumTheme: TEnumRecord<TTheme> = {
+const THEME_MAP: TEnumMapRecord<TTheme> = {
     light: 1,
     dark: 2,
 } as const;
 
-const EnumThemeKey: Record<TTheme, TTheme> = {
+const THEME_KEY: TKeyRecord<TTheme> = {
     light: 'light',
     dark: 'dark'
-}
+} as const;
 
-const EnumChatType: TEnumRecord<TChatType> = {
+const CHAT_TYPE_MAP: TEnumMapRecord<TChatType> = {
     private: 1,
     group: 2,
 } as const;
 
-const EnumModel: TEnumRecord<TModel> = {
+const MODEL_MAP: TEnumMapRecord<TModel> = {
     'GEMINI_2.5_FLASH': 1,
     'GEMINI_2.5_PRO': 2,
 } as const;
@@ -112,21 +120,21 @@ const STATUS_CODES = {
     GATEWAY_TIMEOUT: 'GATEWAY_TIMEOUT',
 } as const;
 
-const CompanyId = {
+const COMPANY_ID_MAP = {
     default: 1,
 } as const;
 
 
 export type TSubscriptionStatus = 'active' | 'trialing' | 'cancelled' | 'expired';
 
-const EnumSubscriptionStatus = {
+const SUBSCRIPTION_STATUS_MAP = {
     active: 1,
     trialing: 2,
     cancelled: 3,
     expired: 4,
 } as const;
 
-const EnumSubscriptionStatusKey = {
+const SUBSCRIPTION_STATUS_KEY = {
     active: 'active',
     trialing: 'trialing',
     cancelled: 'cancelled',
@@ -135,7 +143,7 @@ const EnumSubscriptionStatusKey = {
 
 
 export type TEnumCurrenyKey = "TRY" | "USD" | "EUR"
-const Currency = {
+const CURRENCY_KEY = {
     TRY: "TRY",
     USD: "USD",
     EUR: "EUR",
@@ -143,7 +151,7 @@ const Currency = {
 
 
 export type TEnumPlanIntervalKey = "yearly" | "monthly" | "weekly" | "daily"
-const Plan_Interval = {
+const PLAN_INTERVAL_KEY = {
     yearly: 'yearly',
     monthly: 'monthly',
     weekly: 'weekly',
@@ -152,7 +160,7 @@ const Plan_Interval = {
 
 
 export type TEnumSubscriptionEventType = "renewed" | "upgraded" | "cancelled" | "payment_failed"
-const Subscription_Event_Type = {
+const SUBSCRIPTION_EVENT_TYPE_KEY = {
     renewed: "renewed",
     upgraded: "upgraded",
     cancelled: "cancelled",
@@ -161,7 +169,7 @@ const Subscription_Event_Type = {
 
 
 export type TEnumDiscountType = "percentage" | "fixed_amount"
-const Discount_Type = {
+const DISCOUNT_TYPE_KEY = {
     percentage: "percentage",
     fixed_amount: "fixed_amount",
 } as const;
@@ -169,14 +177,14 @@ const Discount_Type = {
 
 // ... existing code ...
 export type TEnumCouponDurationKey = "once" | "forever" | "repeating"
-const CouponDuration_Type = {
+const COUPON_DURATION_TYPE_KEY = {
     once: "once",
     forever: "forever",
     repeating: "repeating",
 } as const;
 
 export type TEnumCampaignTargetType = "all_users" | "new_users" | "inactive_users"
-const Campaign_Target_Type = {
+const CAMPAIGN_TARGET_TYPE_KEY = {
     all_users: "all_users",
     new_users: "new_users",
     inactive_users: "inactive_users",
@@ -194,32 +202,32 @@ const Campaign_Target_Type = {
 
 export const SahredEnums = {
     // Enums
-    Role: EnumRole,
-    EnumRoleKey,
-    MailConfirmationStatus: EnumMailConfirmationStatus,
-    Language: EnumLanguage,
-    EnumLanugageKey,
-    Theme: EnumTheme,
-    EnumThemeKey,
-    ChatType: EnumChatType,
-    Model: EnumModel,
-    Permission: PermissionEnum,
+    ROLE_MAP,
+    ROLE_KEY,
+    MAIL_CONFIRMATION_MAP,
+    LANGUAGE_MAP,
+    LANGUAGE_KEY,
+    THEME_MAP,
+    THEME_KEY,
+    CHAT_TYPE_MAP,
+    MODEL_MAP,
+    PERMISSION_MAP: PermissionEnum,
     // Status
     STATUS_CODES,
     STATUS_CODE_IDS,
 
     // Misc
-    CompanyId,
+    COMPANY_ID_MAP,
 
-    SubscriptionStatus: EnumSubscriptionStatus,
-    SubscriptionStatusKey: EnumSubscriptionStatusKey,
+    SUBSCRIPTION_STATUS_MAP,
+    SUBSCRIPTION_STATUS_KEY,
 
-    Currency,
-    Plan_Interval,
-    Subscription_Event_Type,
-    Discount_Type,
-    CouponDuration_Type,
-    Campaign_Target_Type,
+    CURRENCY_KEY,
+    PLAN_INTERVAL_KEY,
+    SUBSCRIPTION_EVENT_TYPE_KEY,
+    DISCOUNT_TYPE_KEY,
+    COUPON_DURATION_TYPE_KEY,
+    CAMPAIGN_TARGET_TYPE_KEY,
 
     // Helper
 
@@ -228,60 +236,60 @@ export const SahredEnums = {
 
 
 
-
-    getId<K extends string>(map: TEnumRecord<K>, key: K): number {
+    //map helpers
+    getMapId<K extends string>(map: TEnumMapRecord<K>, key: K): number {
         return map[key];
     },
 
-    getKey<K extends string>(map: TEnumRecord<K>, id: number): K {
+    getMapKey<K extends string>(map: TEnumMapRecord<K>, id: number): K {
         const entry = Object.entries<number>(map).find(([_, v]) => v === id);
         if (!entry) throw new Error(`Unknown id: ${id}`);
         return entry[0] as K;
     },
 
-    keys<K extends string>(map: TEnumRecord<K>): K[] {
+    getMapKeys<K extends string>(map: TEnumMapRecord<K>): K[] {
         return Object.keys(map) as K[];
     },
 
 
 
-    values<K extends string>(map: TEnumRecord<K>): number[] {
+    getMapValues<K extends string>(map: TEnumMapRecord<K>): number[] {
         return Object.values(map);
     },
-    ids<K extends string>(map: TEnumRecord<K>): number[] {
+    getMapIds<K extends string>(map: TEnumMapRecord<K>): number[] {
         return Object.values(map) as number[];
     },
 
-    entries<K extends string>(map: TEnumRecord<K>): { key: K; id: number }[] {
+    getMapEntries<K extends string>(map: TEnumMapRecord<K>): { key: K; id: number }[] {
         return Object.entries<number>(map).map(([k, v]) => ({
             key: k as K,
             id: v,
         }));
     },
 
-    has<K extends string>(map: TEnumRecord<K>, key: string): key is K {
+    hasMapKey<K extends string>(map: TEnumMapRecord<K>, key: string): key is K {
         return key in map;
     },
 
-    hasId<K extends string>(map: TEnumRecord<K>, id: number): boolean {
+    hasMapId<K extends string>(map: TEnumMapRecord<K>, id: number): boolean {
         return Object.values<number>(map).includes(id);
     },
 
-    keysForZod<K extends string>(map: TEnumRecord<K>): [K, ...K[]] {
+    getMapKeysForZod<K extends string>(map: TEnumMapRecord<K>): [K, ...K[]] {
+        return Object.keys(map) as [K, ...K[]];
+    },
+
+    getMapStringEnumKeysForZod<K extends string>(map: TEnumMapRecord<K>): [K, ...K[]] {
         return Object.keys(map) as [K, ...K[]];
     },
 
 
-
-    getStringEnumValuesForZod<K extends string>(map: TEnumRecord<K>): [K, ...K[]] {
+    //key helpers
+    getRecordKeysForZod<K extends string>(map: TKeyRecord<K>): [K, ...K[]] {
         return Object.keys(map) as [K, ...K[]];
     },
 
-    getKeysForZod<K extends string>(map: Record<K, K>): [K, ...K[]] {
-        return Object.keys(map) as [K, ...K[]];
-    },
-
-    getRecordKeys<K extends string>(map: Record<K, K>): [K] {
+    getRecordKeys<K extends string>(map: TKeyRecord<K>): [K] {
         return Object.keys(map) as [K];
     },
 }

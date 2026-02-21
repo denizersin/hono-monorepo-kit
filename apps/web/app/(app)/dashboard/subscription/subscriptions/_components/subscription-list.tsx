@@ -142,7 +142,7 @@ export const SubscriptionList = () => {
                                     </TableCell>
                                     <TableCell className="text-muted-foreground">{subscription.plan?.name || 'N/A'}</TableCell>
                                     <TableCell>
-                                        <Badge variant={subscription.statusId === SahredEnums.SubscriptionStatus.active ? 'default' : 'secondary'}>
+                                        <Badge variant={subscription.statusId === SahredEnums.SUBSCRIPTION_STATUS_MAP.active ? 'default' : 'secondary'}>
                                             {subscription.status.name}
                                         </Badge>
                                     </TableCell>

@@ -5,7 +5,7 @@ import { SahredEnums } from "@repo/shared/enums"
 
 
 export const companyRouter = createTRPCRouter({
-    createCompany: protectedProcedure.use(roleMiddleware([SahredEnums.Role.ADMIN, SahredEnums.Role.OWNER]))
+    createCompany: protectedProcedure.use(roleMiddleware([SahredEnums.ROLE_MAP.ADMIN, SahredEnums.ROLE_MAP.OWNER]))
         .input(companyValidator.companyBaseInsertSchema).mutation(async ({ ctx, input }) => {
             return await companyService.createCompany(input)
         })

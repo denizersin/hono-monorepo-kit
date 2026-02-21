@@ -61,7 +61,7 @@ export const tblMailConfirmationStatus = pgTable('mail_confirmation_statuses', {
     name: varchar('name', { length: 255 }).notNull().$type<TMailConfirmationStatus>(),
 });
 
-// export const moodEnum = pgEnum('mood', SahredEnums.getEnumValues(SahredEnums.MailConfirmationStatus) as [string, ...string[]]);
+// export const moodEnum = pgEnum('mood', SahredEnums.getEnumValues(SahredEnums.MAIL_CONFIRMATION_MAP) as [string, ...string[]]);
 
 // export const testTaleWithEnum = pgTable('test_tale_with_enum', {
 //     id: serial('id').primaryKey(),

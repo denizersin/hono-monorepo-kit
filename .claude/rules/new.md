@@ -172,8 +172,8 @@ defaultOmitFieldsSchema mutlaka uygulanır (id, createdAt, updatedAt, deletedAt 
 2.2 Enum Alanları için Override (ZORUNLU)
 Şemada //enum notu ile işaretlenmiş alanlar createInsertSchema içinde mutlaka z.enum() ile override edilir. Enum değerleri SahredEnums üzerinden alınır:
 tsconst couponsBaseInsertSchema = createInsertSchema(tblCoupons, {
-    discount_type: z.enum(SahredEnums.getKeysForZod(SahredEnums.Discount_Type)),
-    duration: z.enum(SahredEnums.getKeysForZod(SahredEnums.CouponDuration_Type)),
+    discount_type: z.enum(SahredEnums.getRecordKeysForZod(SahredEnums.Discount_Type)),
+    duration: z.enum(SahredEnums.getRecordKeysForZod(SahredEnums.CouponDuration_Type)),
 }).omit(defaultOmitFieldsSchema)
 
 ⚠️ shared/enums/index.ts dosyasına bakılmadan enum override yapılmaz. Hangi enum key'lerinin mevcut olduğu bu dosyadan doğrulanır.

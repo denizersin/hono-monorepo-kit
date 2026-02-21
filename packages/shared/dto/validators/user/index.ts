@@ -64,16 +64,15 @@ const loginEmailAndPasswordSchema = userBaseSelectSchema.pick({
 
 
 const userPreferencesSchema = z.object({
-    language: z.enum(SahredEnums.getStringEnumValuesForZod(SahredEnums.Language)),
-    theme: z.enum(SahredEnums.getStringEnumValuesForZod(SahredEnums.Theme))
+    language: z.enum(SahredEnums.getMapKeysForZod(SahredEnums.LANGUAGE_MAP)),
+    theme: z.enum(SahredEnums.getMapKeysForZod(SahredEnums.THEME_MAP))
 })
 
-// Owner creates user schema (limited roles: USER only)
 const ownerCreateUserSchema = userBaseInsertSchema.omit({
     roleId: true,
     companyId: true,
 }).extend({
-    role: z.literal(SahredEnums.Role.USER).default(SahredEnums.Role.USER),
+    role: z.literal(SahredEnums.ROLE_MAP.USER).default(SahredEnums.ROLE_MAP.USER),
 })
 
 // Owner update user schema

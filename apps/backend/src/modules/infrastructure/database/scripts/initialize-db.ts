@@ -25,12 +25,12 @@ async function initializeDb() {
     const superAdminUserId = await userRepository.createUser({
         email: "superadmin@gmail.com",
         password: "superadmin123",
-        roleId: SahredEnums.Role.SUPER_ADMIN,
+        roleId: SahredEnums.ROLE_MAP.SUPER_ADMIN,
         name: "Super Admin",
         surname: "Super Admin",
         fullName: "Super Admin Super Admin",
-        companyId: SahredEnums.CompanyId.default,
-        mailConfirmationStatusId: SahredEnums.MailConfirmationStatus.confirmed,
+        companyId: SahredEnums.COMPANY_ID_MAP.default,
+        mailConfirmationStatusId: SahredEnums.MAIL_CONFIRMATION_MAP.confirmed,
         test: "test",
         phoneCodeId: 1,
         phoneNumber: "1234567890",
@@ -45,12 +45,12 @@ async function initializeDb() {
     await userRepository.createUser({
         email: "admin@gmail.com",
         password: "admin123",
-        roleId: SahredEnums.Role.ADMIN,
+        roleId: SahredEnums.ROLE_MAP.ADMIN,
         name: "Admin",
         surname: "Admin",
         fullName: "Admin Admin",
-        companyId: SahredEnums.CompanyId.default,
-        mailConfirmationStatusId: SahredEnums.MailConfirmationStatus.confirmed,
+        companyId: SahredEnums.COMPANY_ID_MAP.default,
+        mailConfirmationStatusId: SahredEnums.MAIL_CONFIRMATION_MAP.confirmed,
         test: "test",
         phoneCodeId: 1,
         phoneNumber: "1234567890",
@@ -75,7 +75,7 @@ async function initializeDb() {
     console.log("initializeCompanyLanguage")
     companyRepository.updateCompanyLanguages({
         companyId,
-        languages: [SahredEnums.Language.en, SahredEnums.Language.tr],
+        languages: [SahredEnums.LANGUAGE_MAP.en, SahredEnums.LANGUAGE_MAP.tr],
     })
     console.log("initializeCompanyLanguage completed")
 
@@ -86,7 +86,7 @@ async function initializeDb() {
     await userRepository.createUser({
         email: "owner@gmail.com",
         password: "owner123",
-        roleId: SahredEnums.Role.OWNER,
+        roleId: SahredEnums.ROLE_MAP.OWNER,
         name: "Owner",
         surname: "Owner",
         fullName: "Owner Owner",
@@ -96,7 +96,7 @@ async function initializeDb() {
         invitationCode: "1234567890",
         fullPhone: "1234567890",
         isPhoneVerified: true,
-        mailConfirmationStatusId: SahredEnums.MailConfirmationStatus.confirmed,
+        mailConfirmationStatusId: SahredEnums.MAIL_CONFIRMATION_MAP.confirmed,
         test: "test",
     })
     console.log("initializeOwnerUser completed")

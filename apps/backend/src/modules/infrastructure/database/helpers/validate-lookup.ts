@@ -14,7 +14,7 @@ const LookUpRecords: Record<TDbTableName | string, {
     dbName: TDbTableName,
 }> = {
     tblMailConfirmationStatus: {
-        LookupEnum: SahredEnums.MailConfirmationStatus,
+        LookupEnum: SahredEnums.MAIL_CONFIRMATION_MAP,
         dbTable: tblMailConfirmationStatus,
         dbName: 'tblMailConfirmationStatus',
     },
@@ -24,17 +24,17 @@ const LookUpRecords: Record<TDbTableName | string, {
         dbName: 'tblLogStatus',
     },
     tblRole: {
-        LookupEnum: SahredEnums.Role,
+        LookupEnum: SahredEnums.ROLE_MAP,
         dbTable: tblRole,
         dbName: 'tblRole',
     },
     tblPermission: {
-        LookupEnum: SahredEnums.Permission,
+        LookupEnum: SahredEnums.PERMISSION_MAP,
         dbTable: tblPermission,
         dbName: 'tblPermission',
     },
     tblSubscriptionStatus: {
-        LookupEnum: SahredEnums.SubscriptionStatus,
+        LookupEnum: SahredEnums.SUBSCRIPTION_STATUS_MAP,
         dbTable: tblSubscriptionStatus,
         dbName: 'tblSubscriptionStatus',
     }
@@ -68,7 +68,7 @@ export class LookUpEnumsValidation {
     static async initializeLanguageToDb() {
 
         await db.insert(tblLanguage).values(
-            Object.entries(SahredEnums.Language).map(([language, id]) => ({
+            Object.entries(SahredEnums.LANGUAGE_MAP).map(([language, id]) => ({
                 name: language,
                 code: language,
                 id: id

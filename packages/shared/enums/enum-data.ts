@@ -6,7 +6,7 @@ import { SahredEnums } from ".";
 export const SelectData = {
 
     get RoleNumericData() {
-        return SahredEnums.entries(SahredEnums.Role).map(({ key, id }) => {
+        return SahredEnums.getMapEntries(SahredEnums.ROLE_MAP).map(({ key, id }) => {
             return {
                 label: key,
                 value: id.toString()
@@ -15,7 +15,7 @@ export const SelectData = {
     },
 
     get LanguageNumericData() {
-        return SahredEnums.entries(SahredEnums.Language).map(({ key, id }) => {
+        return SahredEnums.getMapEntries(SahredEnums.LANGUAGE_MAP).map(({ key, id }) => {
             return {
                 label: key,
                 value: id.toString()
@@ -24,7 +24,7 @@ export const SelectData = {
     },
 
     get ThemeNumericData() {
-        return SahredEnums.entries(SahredEnums.Theme).map(({ key, id }) => {
+        return SahredEnums.getMapEntries(SahredEnums.THEME_MAP).map(({ key, id }) => {
             return {
                 label: key,
                 value: id.toString()
@@ -33,7 +33,7 @@ export const SelectData = {
     },
 
     get ChatTypeNumericData() {
-        return SahredEnums.entries(SahredEnums.ChatType).map(({ key, id }) => {
+        return SahredEnums.getMapEntries(SahredEnums.CHAT_TYPE_MAP).map(({ key, id }) => {
             return {
                 label: key,
                 value: id.toString()
@@ -42,7 +42,7 @@ export const SelectData = {
     },
 
     get ModelNumericData() {
-        return SahredEnums.entries(SahredEnums.Model).map(({ key, id }) => {
+        return SahredEnums.getMapEntries(SahredEnums.MODEL_MAP).map(({ key, id }) => {
             return {
                 label: key,
                 value: id.toString()
@@ -51,7 +51,7 @@ export const SelectData = {
     },
 
     get PermissionNumericData() {
-        return SahredEnums.entries(SahredEnums.Permission).map(({ key, id }) => {
+        return SahredEnums.getMapEntries(SahredEnums.PERMISSION_MAP).map(({ key, id }) => {
             return {
                 label: key,
                 value: id.toString()
@@ -62,7 +62,7 @@ export const SelectData = {
 
 
     get Campaign_Target_TypeData() {
-        return SahredEnums.getRecordKeys(SahredEnums.Campaign_Target_Type).map((key) => {
+        return SahredEnums.getRecordKeys(SahredEnums.CAMPAIGN_TARGET_TYPE_KEY).map((key) => {
             return {
                 label: key,
                 value: key
@@ -71,7 +71,7 @@ export const SelectData = {
     },
 
     get MailConfirmationStatusNumericData() {
-        return SahredEnums.entries(SahredEnums.MailConfirmationStatus).map(({ key, id }) => {
+        return SahredEnums.getMapEntries(SahredEnums.MAIL_CONFIRMATION_MAP).map(({ key, id }) => {
             return {
                 label: key,
                 value: id.toString()
@@ -80,7 +80,7 @@ export const SelectData = {
     },
 
     get SubscriptionStatusNumericData() {
-        return SahredEnums.entries(SahredEnums.SubscriptionStatus).map(({ key, id }) => {
+        return SahredEnums.getMapEntries(SahredEnums.SUBSCRIPTION_STATUS_MAP).map(({ key, id }) => {
             return {
                 label: key,
                 value: id.toString()
@@ -89,7 +89,7 @@ export const SelectData = {
     },
 
     get CurrencyData() {
-        return SahredEnums.getRecordKeys(SahredEnums.Currency).map((key) => {
+        return SahredEnums.getRecordKeys(SahredEnums.CURRENCY_KEY).map((key) => {
             return {
                 label: key,
                 value: key
@@ -98,7 +98,7 @@ export const SelectData = {
     },
 
     get Plan_IntervalData() {
-        return SahredEnums.getRecordKeys(SahredEnums.Plan_Interval).map((key) => {
+        return SahredEnums.getRecordKeys(SahredEnums.PLAN_INTERVAL_KEY).map((key) => {
             return {
                 label: key,
                 value: key
@@ -107,7 +107,7 @@ export const SelectData = {
     },
 
     get Subscription_Event_TypeData() {
-        return SahredEnums.getRecordKeys(SahredEnums.Subscription_Event_Type).map((key) => {
+        return SahredEnums.getRecordKeys(SahredEnums.SUBSCRIPTION_EVENT_TYPE_KEY).map((key) => {
             return {
                 label: key,
                 value: key
@@ -116,7 +116,7 @@ export const SelectData = {
     },
 
     get Discount_TypeData() {
-        return SahredEnums.getRecordKeys(SahredEnums.Discount_Type).map((key) => {
+        return SahredEnums.getRecordKeys(SahredEnums.DISCOUNT_TYPE_KEY).map((key) => {
             return {
                 label: key,
                 value: key
@@ -125,7 +125,7 @@ export const SelectData = {
     },
 
     get CouponDuration_TypeData() {
-        return SahredEnums.getRecordKeys(SahredEnums.CouponDuration_Type).map((key) => {
+        return SahredEnums.getRecordKeys(SahredEnums.COUPON_DURATION_TYPE_KEY).map((key) => {
             return {
                 label: key,
                 value: key

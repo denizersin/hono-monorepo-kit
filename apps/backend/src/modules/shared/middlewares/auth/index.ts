@@ -104,7 +104,7 @@ export const getSessionByJwtSession = async (jwtSession: TJWTSession): Promise<T
     }
 
     return {
-        role: SahredEnums.getKey(SahredEnums.Role, user.roleId),
+        role: SahredEnums.getMapKey(SahredEnums.ROLE_MAP, user.roleId),
         roleId: user.id,
         companyId: user.companyId,
         user: userWithoutPassword

@@ -16,7 +16,8 @@
         "lint": "eslint .",
         "type-check": "tsc --noEmit",
         "dev": "tsc --watch  && tsc-alias",
-        "build": "rm -rf dist && tsc && tsc-alias"
+        "build": "rm -rf dist && tsc && tsc-alias",
+        "check-types": "tsc --noEmit"
     },
     "dependencies": {
         "drizzle-orm": "^0.44.5",

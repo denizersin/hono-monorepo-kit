@@ -138,8 +138,8 @@ export const UserList = () => {
                                     <TableCell className="text-muted-foreground">{user.email}</TableCell>
                                     <TableCell className="text-muted-foreground">{user.fullPhone}</TableCell>
                                     <TableCell>
-                                        <Badge variant={user.roleId === SahredEnums.Role.OWNER ? 'default' : user.roleId === SahredEnums.Role.ADMIN ? 'secondary' : 'outline'}>
-                                            {SahredEnums.getKey(SahredEnums.Role, user.roleId)}
+                                        <Badge variant={user.roleId === SahredEnums.ROLE_MAP.OWNER ? 'default' : user.roleId === SahredEnums.ROLE_MAP.ADMIN ? 'secondary' : 'outline'}>
+                                            {SahredEnums.getMapKey(SahredEnums.ROLE_MAP, user.roleId)}
                                         </Badge>
                                     </TableCell>
                                     <TableCell className="text-right">
@@ -148,7 +148,7 @@ export const UserList = () => {
                                                 variant="ghost"
                                                 size="icon"
                                                 onClick={() => handleEdit(user)}
-                                                disabled={user.roleId === SahredEnums.Role.OWNER || user.roleId === SahredEnums.Role.ADMIN || user.roleId === SahredEnums.Role.SUPER_ADMIN}
+                                                disabled={user.roleId === SahredEnums.ROLE_MAP.OWNER || user.roleId === SahredEnums.ROLE_MAP.ADMIN || user.roleId === SahredEnums.ROLE_MAP.SUPER_ADMIN}
                                             >
                                                 <Pencil className="h-4 w-4" />
                                             </Button>
@@ -156,7 +156,7 @@ export const UserList = () => {
                                                 variant="ghost"
                                                 size="icon"
                                                 onClick={() => handleDelete(user)}
-                                                disabled={user.roleId === SahredEnums.Role.OWNER || user.roleId === SahredEnums.Role.ADMIN || user.roleId === SahredEnums.Role.SUPER_ADMIN}
+                                                disabled={user.roleId === SahredEnums.ROLE_MAP.OWNER || user.roleId === SahredEnums.ROLE_MAP.ADMIN || user.roleId === SahredEnums.ROLE_MAP.SUPER_ADMIN}
                                                 className="text-destructive hover:text-destructive"
                                             >
                                                 <Trash2 className="h-4 w-4" />

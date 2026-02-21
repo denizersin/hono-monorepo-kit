@@ -21,7 +21,7 @@ export class InitializeDbPrededfinedDatas {
     }
 
     static async initializeLanguageData() {
-        const languageEnumKeys = SahredEnums.keysForZod(SahredEnums.Language)
+        const languageEnumKeys = SahredEnums.getMapKeysForZod(SahredEnums.LANGUAGE_MAP)
 
         const languageData = _languageData as { code: string, name: string }[]
         languageData.sort((a, b) => {
@@ -39,7 +39,7 @@ export class InitializeDbPrededfinedDatas {
             return {
                 name: language.name,
                 code: language.code,
-                id: isMyEnumValue ? SahredEnums.getId(SahredEnums.Language, language.code as TLanguage) : undefined
+                id: isMyEnumValue ? SahredEnums.getMapId(SahredEnums.LANGUAGE_MAP, language.code as TLanguage) : undefined
             }
         })
 
