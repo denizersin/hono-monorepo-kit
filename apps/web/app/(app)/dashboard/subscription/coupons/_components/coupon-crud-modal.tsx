@@ -1,7 +1,7 @@
 "use client"
 
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo } from "react"
 import { useForm } from "react-hook-form"
 
 import { useTRPC } from "@/components/providers/trpc/trpc-provider"
@@ -9,12 +9,12 @@ import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { SahredEnums } from "@repo/shared/enums"
 import { TSchemaSubscription } from "@repo/shared/schema"
 import { subscriptionValidator } from "@repo/shared/validators"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { z } from "zod"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { getDiscountTypeSelectData } from "@/hooks/constant-queries"
 
 type CouponCrudModalProps = {
     isOpen: boolean
@@ -117,7 +117,7 @@ export function CouponCrudModal({ isOpen, setIsOpen, initial }: CouponCrudModalP
                                                 <SelectValue placeholder="Select a discount type" />
                                             </SelectTrigger>
                                             <SelectContent>
-                                                {getDiscountTypeSelectData().map((discountType) => (
+                                                {SahredEnums.SelectData.Discount_TypeData.map((discountType) => (
                                                     <SelectItem key={discountType.value} value={discountType.value}>
                                                         {discountType.label}
                                                     </SelectItem>

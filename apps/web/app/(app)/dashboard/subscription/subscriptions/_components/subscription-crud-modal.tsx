@@ -1,7 +1,7 @@
 "use client"
 
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo } from "react"
 import { useForm } from "react-hook-form"
 
 import { useTRPC } from "@/components/providers/trpc/trpc-provider"
@@ -9,13 +9,13 @@ import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Switch } from "@/components/ui/switch"
-import { getSubscriptionStatusSelectData, useGetAllPlans } from "@/hooks/constant-queries"
+import { useGetAllPlans } from "@/hooks/constant-queries"
+import { SahredEnums } from "@repo/shared/enums"
 import { TSchemaSubscription } from "@repo/shared/schema"
 import { subscriptionValidator, TSubscriptionValidator } from "@repo/shared/validators"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { z } from "zod"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 type SubscriptionCrudModalProps = {
     isOpen: boolean
@@ -31,7 +31,7 @@ export function SubscriptionCrudModal({ isOpen, setIsOpen, initial }: Subscripti
 
     const queryClient = useQueryClient()
 
-    const subscriptionStatusSelectData = getSubscriptionStatusSelectData()
+    const subscriptionStatusSelectData = SahredEnums.SelectData.SubscriptionStatusNumericData
 
     function onSuccsesCrud() {
         setIsOpen(false)

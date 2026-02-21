@@ -42,7 +42,6 @@ export const subscriptionRouter = createTRPCRouter({
     createSubscription: protectedProcedure.use(roleMiddleware([SahredEnums.Role.ADMIN, SahredEnums.Role.OWNER]))
         .input(subscriptionValidator.createSubscriptionSchema).mutation(async ({ ctx, input }) => {
             // Direct repository call for now, could add service layer later
-            console.log(input.subscriptionData, '21312')
             return await subscriptionRepository.createSubscription(input.subscriptionData)
         }),
 

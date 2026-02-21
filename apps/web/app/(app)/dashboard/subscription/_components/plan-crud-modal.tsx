@@ -9,9 +9,10 @@ import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { Switch } from "@/components/ui/switch"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { getCurrenciesSelectData, getPlanIntervalsSelectData, useGetCompanyLanguages } from "@/hooks/constant-queries"
+import { Switch } from "@/components/ui/switch"
+import { useGetCompanyLanguages } from "@/hooks/constant-queries"
+import { SahredEnums } from "@repo/shared/enums"
 import { TSchemaSubscription } from "@repo/shared/schema"
 import { subscriptionValidator } from "@repo/shared/validators"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
@@ -170,7 +171,7 @@ export function PlanCrudModal({ isOpen, setIsOpen, initial }: PlanCrudModalProps
                                             </SelectTrigger>
                                         </FormControl>
                                         <SelectContent>
-                                            {getCurrenciesSelectData().map((currency) => (
+                                            {SahredEnums.SelectData.CurrencyData.map((currency) => (
                                                 <SelectItem key={currency.value} value={currency.value}>
                                                     {currency.label}
                                                 </SelectItem>
@@ -195,7 +196,7 @@ export function PlanCrudModal({ isOpen, setIsOpen, initial }: PlanCrudModalProps
                                             </SelectTrigger>
                                         </FormControl>
                                         <SelectContent>
-                                            {getPlanIntervalsSelectData().map((interval) => (
+                                            {SahredEnums.SelectData.Plan_IntervalData.map((interval) => (
                                                 <SelectItem key={interval.value} value={interval.value}>
                                                     {interval.label}
                                                 </SelectItem>

@@ -213,7 +213,6 @@ export class SubscriptionRepositoryImpl {
     }
 
     async createSubscription(subscription: TSchemaSubscription.TSubscriptionInsert): Promise<void> {
-        console.log(subscription, 'qwe');
         await db.insert(tblSubscription).values(subscription);
         return;
     }

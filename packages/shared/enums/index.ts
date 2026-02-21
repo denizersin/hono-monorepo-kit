@@ -1,4 +1,5 @@
 import type { TChatType, TLanguage, TMailConfirmationStatus, TModel, TRole, TTheme } from "../types/index";
+import { SelectData } from "./enum-data";
 import { PermissionEnum } from "./permissions";
 // -----------------------------------------------------------------------
 // Base Type
@@ -223,6 +224,7 @@ export const SahredEnums = {
     // Helper
 
 
+    SelectData,
 
 
 
