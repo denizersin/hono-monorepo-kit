@@ -1,13 +1,7 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "baseUrl": ".",
     "outDir": "./dist",
-    "paths": {
-      "#/*": [
-        "./*.ts"
-      ],
-    },
     "composite": true,
     "lib": [
       "es2022"
@@ -23,6 +17,11 @@
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "strict": true,
+    "paths": {
+      "#/*": [
+        "./*"
+      ]
+    }
   },
   "references": [
     {
@@ -30,7 +29,7 @@
     }
   ],
   "include": [
-    "**/*.ts",
+    "**/*.ts"
   ],
   "exclude": [
     "node_modules",
@@ -39,5 +38,5 @@
   "tsc-alias": {
     "resolveFullPaths": true,
     "verbose": false
-  },
+  }
 }

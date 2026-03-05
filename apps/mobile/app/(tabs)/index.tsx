@@ -1,9 +1,15 @@
+import { trpc } from '@/utils/api';
 import { Ionicons, MaterialCommunityIcons, Feather } from '@expo/vector-icons';
+import { useQuery } from '@tanstack/react-query';
 import { ScrollView, StyleSheet, Text, View, Pressable } from 'react-native';
 
 const zodiacMeta = ['☉ Gemini', '☽ Sagittarius', '↑ Aquarius'];
 
 export default function HomeScreen() {
+
+  const { data, isLoading, error } = useQuery(trpc.auth.healthCheck.queryOptions())
+
+
   return (
     <View style={styles.screen}>
       <Background />

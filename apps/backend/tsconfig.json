@@ -3,7 +3,6 @@
   "compilerOptions": {
     "outDir": "./dist",
     "rootDir": "./src",
-    "baseUrl": ".",
     "module": "ESNext",
     "moduleResolution": "bundler",
     "moduleDetection": "force",
@@ -17,11 +16,11 @@
     "composite": true,
     "paths": {
       "@server/*": [
-        "src/*"
+        "./src/*"
       ],
       "@errors/*": [
-        "src/errors/*"
-      ],
+        "./src/errors/*"
+      ]
     }
   },
   "include": [
@@ -35,5 +34,5 @@
   "tsc-alias": {
     "resolveFullPaths": true,
     "verbose": false
-  },
+  }
 }
