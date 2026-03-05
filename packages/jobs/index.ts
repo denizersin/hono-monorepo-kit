@@ -9,7 +9,7 @@ export { emailQueue } from './queues/email.queue';
 export { imageQueue } from './queues/image.queue';
 
 // Type exports
-export * from './types/job.types';
+export * from './types';
 
 // Worker exports
 export { startWorkers, stopWorkers, setupGracefulShutdown } from './workers';
@@ -20,4 +20,3 @@ export { default as processImageJob } from './processors/image.processor';
 
 // Config exports
 export * from './config/redis.config';
-

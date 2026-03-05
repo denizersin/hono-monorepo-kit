@@ -1,5 +1,5 @@
 import { jobQueue } from './index';
-import { JobType, EmailJobData, DEFAULT_JOB_OPTIONS } from '../types/job.types';
+import { JobType, EmailJobData, EmailJobDataFor, EmailTemplateType, DEFAULT_JOB_OPTIONS } from '../types';
 import { JobOptions } from 'bull';
 
 /**
@@ -23,6 +23,13 @@ export class EmailQueue {
       emailData,
       jobOptions
     );
+  }
+
+  async addTemplatedEmailJob<T extends EmailTemplateType>(
+    emailData: EmailJobDataFor<T>,
+    options?: JobOptions
+  ) {
+    return this.addEmailJob(emailData, options);
   }
 
   /**
@@ -112,4 +119,3 @@ export class EmailQueue {
 
 // Export singleton instance
 export const emailQueue = new EmailQueue();
-

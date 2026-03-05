@@ -1,0 +1,39 @@
+{
+  "name": "@repo/email",
+  "version": "1.0.0",
+  "private": true,
+  "main": "./dist/render.js",
+  "types": "./dist/render.d.ts",
+  "exports": {
+    "./emails/*": "./dist/emails/*.js",
+    "./locales": {
+      "types": "./dist/locales/index.d.ts",
+      "import": "./dist/locales/index.js"
+    },
+    "./render": {
+      "types": "./dist/render.d.ts",
+      "import": "./dist/render.js"
+    }
+  },
+  "scripts": {
+    "clean": "rm -rf .turbo node_modules",
+    "lint": "biome check .",
+    "format": "biome format --write .",
+    "type-check": "tsc --noEmit",
+    "dev": "tsc --watch",
+    "build": "tsc",
+    "start": "email start"
+  },
+  "dependencies": {
+    "@react-email/components": "1.0.1",
+    "@react-email/render": "2.0.0",
+    "@react-email/tailwind": "2.0.1",
+    "date-fns": "^4.1.0",
+    "react-email": "5.0.4",
+    "responsive-react-email": "^0.0.5",
+    "@repo/config": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3"
+  }
+}

@@ -1,6 +1,6 @@
 import Queue from 'bull';
 import { queueOptions } from '../config/redis.config';
-import { JobType } from '../types/job.types';
+import { JobType } from '../types';
 
 /**
  * Job Queue Manager

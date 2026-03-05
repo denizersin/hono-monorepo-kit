@@ -4,7 +4,7 @@
  */
 
 import { emailQueue, imageQueue, startWorkers, setupGracefulShutdown } from './index';
-import { EmailJobData, ImageJobData } from './types/job.types';
+import { EmailJobData, ImageJobData } from './types';
 
 /**
  * Example: Sending emails
@@ -12,8 +12,10 @@ import { EmailJobData, ImageJobData } from './types/job.types';
 async function exampleSendEmail() {
   const emailData: EmailJobData = {
     to: 'user@example.com',
-    subject: 'Welcome to Our Service',
-    body: 'Thank you for signing up!',
+    template: 'welcome',
+    variables: {
+      fullName: 'Jane Doe'
+    },
     cc: ['admin@example.com'],
   };
 
@@ -35,7 +37,15 @@ async function examplePriorityEmail() {
   const emailData: EmailJobData = {
     to: 'urgent@example.com',
     subject: 'Urgent: Password Reset',
-    body: 'Click here to reset your password...',
+    template: 'invite',
+    variables: {
+      locale: 'en',
+      email: 'urgent@example.com',
+      invitedByEmail: 'admin@example.com',
+      invitedByName: 'Admin User',
+      teamName: 'Core Team',
+      ip: '127.0.0.1'
+    },
   };
 
   const job = await emailQueue.sendPriorityEmail(emailData, 1);
@@ -49,7 +59,10 @@ async function exampleScheduledEmail() {
   const emailData: EmailJobData = {
     to: 'user@example.com',
     subject: 'Your Weekly Report',
-    body: 'Here is your weekly report...',
+    template: 'welcome',
+    variables: {
+      fullName: 'Weekly User'
+    },
   };
 
   // Schedule email to be sent in 1 hour (3600000 ms)
@@ -62,9 +75,9 @@ async function exampleScheduledEmail() {
  */
 async function exampleBulkEmails() {
   const emails: EmailJobData[] = [
-    { to: 'user1@example.com', subject: 'Newsletter', body: 'Content 1' },
-    { to: 'user2@example.com', subject: 'Newsletter', body: 'Content 2' },
-    { to: 'user3@example.com', subject: 'Newsletter', body: 'Content 3' },
+    { to: 'user1@example.com', template: 'welcome', variables: { fullName: 'User One' } },
+    { to: 'user2@example.com', template: 'welcome', variables: { fullName: 'User Two' } },
+    { to: 'user3@example.com', template: 'welcome', variables: { fullName: 'User Three' } },
   ];
 
   const jobs = await emailQueue.addBulkEmailJobs(emails);
@@ -163,4 +176,3 @@ export {
   exampleBulkImages,
   exampleQueueStats,
 };
-

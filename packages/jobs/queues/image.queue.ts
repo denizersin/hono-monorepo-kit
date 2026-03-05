@@ -1,5 +1,5 @@
 import { jobQueue } from './index';
-import { JobType, ImageJobData, DEFAULT_JOB_OPTIONS } from '../types/job.types';
+import { JobType, ImageJobData, DEFAULT_JOB_OPTIONS } from '../types';
 import { JobOptions } from 'bull';
 
 /**

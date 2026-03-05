@@ -1,5 +1,33 @@
 import { Job } from 'bull';
-import { EmailJobData, JobResult } from '../types/job.types';
+import { InviteEmail } from '@repo/email/emails/invite';
+import { WelcomeEmail } from '@repo/email/emails/welcome';
+import { render } from '@repo/email/render';
+import {
+  EmailJobData,
+  EmailTemplateType,
+  JobResult,
+  emailJobSchema
+} from '../types';
+import nodemailer from "nodemailer";
+
+const TestTransportOptions = {
+  host: 'smtp-relay.brevo.com',
+  port: 587,                   // TLS için 587
+  secure: false,               // Güvenlik TLS üzerinden sağlanır
+  auth: {
+    user: '8165cc001@smtp-brevo.com', // SMTP kullanıcı adı
+    pass: "XGBLF9pqaCkTW06m",     // SMTP şifreniz (API anahtarı olabilir)
+  },
+}
+
+const GetTestMailOptions = (to: string, subject: string, html: string) => ({
+  from: 'ersindenim@gmail.com', // Gönderen
+  to,                 // Alıcı
+  subject: subject,           // Konu
+  text: "Reservation",   // Mesaj metni
+  html: html, // HTML mesajı
+})
+
 
 /**
  * Mock email sending function
@@ -8,19 +36,23 @@ import { EmailJobData, JobResult } from '../types/job.types';
 async function sendEmail(
   to: string,
   subject: string,
-  body: string,
+  html: string,
   cc?: string[],
   bcc?: string[],
   attachments?: Array<{ filename: string; path: string }>
 ): Promise<void> {
   // Simulate email sending delay
-  await new Promise(resolve => setTimeout(resolve, 1000));
-  
+  // await new Promise(resolve => setTimeout(resolve, 1000));
+
+  const transporter = nodemailer.createTransport(TestTransportOptions);
+
+  await transporter.sendMail(GetTestMailOptions(to, subject, html));
+
   // TODO: Implement actual email sending logic
   console.log('📧 Sending email:', {
     to,
     subject,
-    body: body.substring(0, 50) + '...',
+    htmlPreview: html.substring(0, 80) + '...',
     cc,
     bcc,
     attachments: attachments?.map(a => a.filename)
@@ -32,33 +64,54 @@ async function sendEmail(
   }
 }
 
+const subjectByTemplate: Record<EmailTemplateType, string> = {
+  welcome: 'Welcome to Midday',
+  invite: 'You are invited to join Midday'
+};
+
+function renderTemplateHtml(data: EmailJobData): string {
+  switch (data.template) {
+    case 'welcome':
+      return render(WelcomeEmail(data.variables));
+    case 'invite':
+      return render(InviteEmail(data.variables));
+    default:
+      throw new Error(`Unsupported email template: ${(data as { template: string }).template}`);
+  }
+}
+
 /**
  * Process Email Job
  * Handles email sending with progress tracking and error handling
  */
 export async function processEmail(job: Job<EmailJobData>): Promise<JobResult> {
-  const { to, subject, body, cc, bcc, attachments } = job.data;
-  
   try {
     // Update progress: preparing
     await job.progress(10);
     await job.log('Preparing to send email');
 
-    // Validate email data
-    if (!to || !subject || !body) {
-      throw new Error('Invalid email data: missing required fields');
+    const parsed = emailJobSchema.safeParse(job.data);
+    if (!parsed.success) {
+      throw new Error(`Invalid email job payload: ${parsed.error.message}`);
     }
+    const { to, cc, bcc, attachments, template } = parsed.data;
 
     // Update progress: validating
     await job.progress(30);
     await job.log('Email data validated');
 
-    // Send email
-    await job.progress(50);
+    await job.progress(55);
+    await job.log(`Rendering email template: ${template}`);
+
+    const html = renderTemplateHtml(parsed.data);
+    const subject = parsed.data.subject ?? subjectByTemplate[template];
+
+    // Send email after rendering
+    await job.progress(80);
     await job.log('Sending email...');
-    
-    await sendEmail(to, subject, body, cc, bcc, attachments);
-    
+
+    await sendEmail(to, subject, html, cc, bcc, attachments);
+
     // Update progress: completed
     await job.progress(100);
     await job.log('Email sent successfully');
@@ -69,6 +122,7 @@ export async function processEmail(job: Job<EmailJobData>): Promise<JobResult> {
       data: {
         to,
         subject,
+        template,
         sentAt: new Date()
       },
       completedAt: new Date()
@@ -77,9 +131,9 @@ export async function processEmail(job: Job<EmailJobData>): Promise<JobResult> {
   } catch (error: any) {
     // Log error
     await job.log(`Error: ${error.message}`);
-    
+
     // Determine if error is retryable
-    const isRetryable = 
+    const isRetryable =
       error.message.includes('Network error') ||
       error.message.includes('Timeout') ||
       error.message.includes('Connection');
@@ -99,4 +153,3 @@ export async function processEmail(job: Job<EmailJobData>): Promise<JobResult> {
  * Export this function to be used by the worker
  */
 export default processEmail;
-

@@ -1,5 +1,5 @@
 import { Job } from 'bull';
-import { ImageJobData, JobResult } from '../types/job.types';
+import { ImageJobData, JobResult } from '../types';
 
 /**
  * Mock image processing function

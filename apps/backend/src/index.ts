@@ -3,6 +3,7 @@ import { createNodeWebSocket } from '@hono/node-ws'
 import { trpcServer } from '@hono/trpc-server'
 import { cors } from 'hono/cors'
 import { logger as honoLogger } from 'hono/logger'
+import { setupGracefulShutdown, startWorkers } from '@repo/jobs'
 import { ENV } from './env'
 import honoFactory from './lib/hono/hono-factory'
 import LookUpEnumsValidation from './modules/infrastructure/database/helpers/validate-lookup'
@@ -27,6 +28,8 @@ console.log(`Server is running on port ${port}`)
 
 LookUpEnumsValidation.getInstance()
 LookUpEnumsValidation.validate()
+startWorkers()
+setupGracefulShutdown()
 
 
 
@@ -109,7 +112,6 @@ async function startServer() {
 }
 
 startServer()
-
 
 
 

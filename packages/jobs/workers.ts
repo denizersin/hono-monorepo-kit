@@ -1,5 +1,5 @@
 import { jobQueue } from './queues/index';
-import { JobType } from './types/job.types';
+import { JobType } from './types';
 import processEmail from './processors/email.processor';
 import processImageJob from './processors/image.processor';
 import logger from '@repo/logger';
