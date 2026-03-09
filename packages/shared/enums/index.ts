@@ -1,4 +1,4 @@
-import type { TChatType, TLanguage, TMailConfirmationStatus, TModel, TRole, TTheme } from "../types/index";
+import type { TChatType, TLanguage, TMailConfirmationStatus, TModel, TTheme } from "../types/index";
 import { SelectData } from "./enum-data";
 import { PermissionEnum } from "./permissions";
 // -----------------------------------------------------------------------
@@ -19,19 +19,22 @@ export type TKeyRecord<K extends string> = Record<K, K>;
 // Enum Maps
 // -----------------------------------------------------------------------
 
-const ROLE_MAP: TEnumMapRecord<TRole> = {
+const ROLE_MAP = {
     SUPER_ADMIN: 1,
     ADMIN: 2,
     OWNER: 3,
     USER: 4,
 } as const;
 
-const ROLE_KEY: TKeyRecord<TRole> = {
+const ROLE_KEY = {
     SUPER_ADMIN: 'SUPER_ADMIN',
     ADMIN: 'ADMIN',
     OWNER: 'OWNER',
     USER: 'USER',
 } as const;
+
+export type TRole = keyof typeof ROLE_KEY
+
 
 
 const MAIL_CONFIRMATION_MAP: TEnumMapRecord<TMailConfirmationStatus> = {

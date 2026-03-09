@@ -1,5 +1,5 @@
 import { SahredEnums } from "@repo/shared/enums";
-import { TJWTSession, TRole, TSession } from "@repo/shared/types";
+import { TJWTSession, TSession } from "@repo/shared/types";
 import { TAuthValidator } from "@repo/shared/validators";
 import { APP_CONSTANTS } from "@server/lib/constants";
 import { BadRequestError, ConflictError, CustomError, UnauthorizedError } from "@server/lib/errors";

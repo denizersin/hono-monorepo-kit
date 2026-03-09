@@ -77,27 +77,22 @@ const userApp = createHonoApp()
         honoRoleMiddleware([SahredEnums.ROLE_KEY.ADMIN, SahredEnums.ROLE_KEY.USER]),
         validator('json', async (value, c: Context<TAuthMiddlewareContextWithVariables>) => {
             const role = c.var.session.role
-            return validateMultipleSchemas({
-                map: {
-                    [SahredEnums.ROLE_KEY.ADMIN]: userValidator.adminCreateUserSchema,
-                    [SahredEnums.ROLE_MAP.USER]: userValidator.userCreateSchema
-                },
-                key: role,
+            return userValidator.createUserSchema.parse({
+                role,
                 data: value
             })
 
         }),
         async (c) => {
-            const userData = c.req.valid('json')
-            const session = c.var.session
-
-            if (session.role == SahredEnums.ROLE_KEY.ADMIN) {
-                const result = await createUserUseCase.executeAsAdmin(userData as TUserValidator.TAdminCreateUserSchema)
+            const input = c.req.valid('json')
+            if (input.role === SahredEnums.ROLE_KEY.ADMIN) {
+                const result = await createUserUseCase.executeAsAdmin(input.data)
                 return c.json(createSuccessResponse(result))
-            } else if (session.role == SahredEnums.ROLE_KEY.USER) {
-                const result = await createUserUseCase.executeAsUser(userData as TUserValidator.TUserCreateSchema)
+            } else if (input.role === SahredEnums.ROLE_KEY.USER) {
+                const result = await createUserUseCase.executeAsUser(input.data)
                 return c.json(createSuccessResponse(result))
-            } else {
+            }
+            else {
                 throw new ForbiddenError({ message: 'you are not authorized to create a user', toast: true })
             }
 

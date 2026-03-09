@@ -1,7 +1,8 @@
 import { TPermission } from '#/enums/permissions';
-import { TMailConfirmationStatus, TRole } from '#/types/index';
+import { TMailConfirmationStatus } from '#/types/index';
 import { boolean, doublePrecision, integer, pgTable, serial, timestamp, varchar } from 'drizzle-orm/pg-core';
 import { getDefaultTableFields } from './schemaHelpers';
+import { TRole } from '#/enums/index';
 
 
 export const tblUser = pgTable('user', {

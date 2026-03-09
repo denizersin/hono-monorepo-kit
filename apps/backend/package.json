@@ -18,6 +18,7 @@
     "db:studio": "bunx drizzle-kit studio --config ../../packages/db/drizzle.config.ts",
     "initialize-db": "tsx ./src/modules/infrastructure/database/scripts/initialize-db.ts",
     "initialize-new-look-up": "tsx ./src/modules/infrastructure/database/scripts/initialize-new-look-up.ts",
+    "validate-lookups": "tsx ./src/modules/infrastructure/database/scripts/validate-lookups.ts",
     "reset-db-step1": "tsx ./src/modules/infrastructure/database/scripts/re-create-db.ts",
     "type-check": "tsc --noEmit"
   },

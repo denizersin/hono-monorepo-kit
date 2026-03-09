@@ -1,9 +1,9 @@
-import { SahredEnums } from '../../../enums';
-import { tblRolePermission, tblUser } from '../../schema';
-import type { TSchemaUser } from '../../schema';
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
 import { z } from 'zod';
-import { basePaginationQuerySchema, defaultOmitFieldsSchema } from '../utils';
+import { SahredEnums } from '../../../enums';
+import type { TSchemaUser } from '../../schema';
+import { tblRolePermission, tblUser } from '../../schema';
+import { basePaginationQuerySchema } from '../utils';
 
 const rolePermissionBaseSelectSchema = createSelectSchema(tblRolePermission)
 const rolePermissionBaseInsertSchema = createInsertSchema(tblRolePermission, {
@@ -55,6 +55,18 @@ const userCreateSchema = userBaseInsertSchema.omit({
 }).extend({
     userField: z.string().optional()
 })
+
+
+
+
+const createUserSchema = z.discriminatedUnion("role", [
+    z.object({ role: z.literal(SahredEnums.ROLE_KEY.USER), data: userCreateSchema }),
+    z.object({ role: z.literal(SahredEnums.ROLE_KEY.ADMIN), data: adminCreateUserSchema }),
+]);
+
+const a = createUserSchema.safeParse({})
+
+// const a = SahredEnums.ROLE_KEY.
 
 
 const loginEmailAndPasswordSchema = userBaseSelectSchema.pick({
@@ -114,6 +126,7 @@ export const userValidator = {
     userBaseSelectSchema,
     userBaseInsertSchema,
     adminCreateUserSchema,
+    createUserSchema,
     loginEmailAndPasswordSchema,
     userCreateSchema,
     userPreferencesSchema,
@@ -144,6 +157,7 @@ export namespace TUserValidator {
     //types infered from zod schemas
     export type TAdminCreateUserSchema = z.infer<typeof adminCreateUserSchema>;
     export type TUserCreateSchema = z.infer<typeof userCreateSchema>;
+    export type TCreateUserSchema = z.infer<typeof createUserSchema>;
     export type TLoginEmailAndPasswordSchema = z.infer<typeof loginEmailAndPasswordSchema>;
     export type TOwnerCreateUserSchema = z.infer<typeof ownerCreateUserSchema>;
     export type TOwnerUpdateUserSchema = z.infer<typeof ownerUpdateUserSchema>;

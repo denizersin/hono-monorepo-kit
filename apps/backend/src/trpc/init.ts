@@ -1,5 +1,4 @@
 import { SahredEnums } from "@repo/shared/enums";
-import { TRole } from "@repo/shared/types";
 import { createTRPCError, TErrorResponse, TRPC_ERROR_CODES_BY_KEY } from "@server/lib/errors";
 import { AppBindings } from "@server/lib/hono/types";
 import { initTRPC, TRPCError } from "@trpc/server";

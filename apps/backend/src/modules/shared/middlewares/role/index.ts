@@ -1,8 +1,8 @@
-import { TRole } from "@repo/shared/types"
 import { UnauthorizedError } from "@server/lib/errors"
 import { Context } from "hono"
 import { createMiddleware } from "hono/factory"
 import { TAuthMiddlewareContextWithVariables } from "../auth"
+import { TRole } from "@repo/shared/enums"
 
 export const honoRoleMiddleware = (roles: TRole[]) => {
     const middleware = createMiddleware(async (c: Context<TAuthMiddlewareContextWithVariables>, next) => {

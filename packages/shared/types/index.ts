@@ -1,10 +1,9 @@
 import type { TSchemaUser } from "../dto/schema/index";
 
-import { SahredEnums } from "../enums/index";
+import { SahredEnums, TRole } from "../enums/index";
 
 export type TEnum = Record<string, string> & { readonly [key: string]: string }
 
-export type TRole = "SUPER_ADMIN" | "ADMIN" | "USER" | "OWNER"
 
 export type TRoles = {
     [key in TRole]: key
@@ -43,7 +42,7 @@ export interface TAdminSession extends TBaseSession {
     companyId: number
 }
 
-interface TUserSession extends TBaseSession {
+export interface TUserSession extends TBaseSession {
     companyId: number
 }
 

@@ -1,5 +1,5 @@
 import { SahredEnums } from "@repo/shared/enums"
-import { TJWTSession, TRole, TSession } from "@repo/shared/types"
+import { TJWTSession, TSession } from "@repo/shared/types"
 import { EnumCookieKeys, EnumHeaderKeys } from "@server/lib/enums"
 import { UnauthorizedError } from "@server/lib/errors"
 import { getTokenFromAuthHeader, tryCatchSync } from "@server/lib/utils"
