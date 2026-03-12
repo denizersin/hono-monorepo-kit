@@ -90,6 +90,13 @@ const MODEL_KEY = {
 export type TModelKey = keyof typeof MODEL_KEY
 
 
+const QUEUE_KEY = {
+    "SEND_EMAIL": "SEND_EMAIL",
+    "PROCESS_IMAGE": "PROCESS_IMAGE",
+    "GENERATE_REPORT": "GENERATE_REPORT"
+} as const
+
+export type TQueueKey = keyof typeof QUEUE_KEY
 
 
 
@@ -252,6 +259,8 @@ export const SahredEnums = {
     DISCOUNT_TYPE_KEY,
     COUPON_DURATION_TYPE_KEY,
     CAMPAIGN_TARGET_TYPE_KEY,
+
+    QUEUE_KEY,
 
     // Helper
 

@@ -3,8 +3,9 @@
  * This file demonstrates how to use the job queue in your application
  */
 
-import { emailQueue, imageQueue, startWorkers, setupGracefulShutdown } from './index';
+import { emailQueue, imageQueue } from './index';
 import { EmailJobData, ImageJobData } from './types';
+import { startWorkers, setupGracefulShutdown } from "./workers";
 
 /**
  * Example: Sending emails

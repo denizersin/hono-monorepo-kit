@@ -28,6 +28,13 @@ export const backendEnvSchema = z.object({
   // WordPress client
   WP_CLIENT_API_KEY: z.string(),
   WP_CLIENT_URL: z.string().url(),
+
+  // Redis
+  REDIS_HOST: z.string(),
+  REDIS_PORT: z.string(),
+  REDIS_PASSWORD: z.string(),
+  REDIS_DB: z.string(),
+  BULL_BOARD_BASE_PATH: z.string(),
 });
 
 /**

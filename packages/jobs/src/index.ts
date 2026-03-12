@@ -11,8 +11,6 @@ export { imageQueue } from './queues/image.queue';
 // Type exports
 export * from './types';
 
-// Worker exports
-export { startWorkers, stopWorkers, setupGracefulShutdown } from './workers';
 
 // Processor exports
 export { default as processEmail } from './processors/email.processor';
@@ -20,3 +18,4 @@ export { default as processImageJob } from './processors/image.processor';
 
 // Config exports
 export * from './config/redis.config';
+

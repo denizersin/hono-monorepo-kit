@@ -1,7 +1,10 @@
-import { QueueOptions } from 'bull';
+import { QueueOptions } from 'bullmq';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 /**
- * Redis Configuration
+ * Redis Connection Configuration (ioredis compatible)
  */
 export const redisConfig = {
   host: process.env.REDIS_HOST || 'localhost',
@@ -13,10 +16,12 @@ export const redisConfig = {
 };
 
 /**
- * Bull Queue Options
+ * BullMQ Queue Options
  */
 export const queueOptions: QueueOptions = {
-  redis: process.env.REDIS_URL || redisConfig,
+  connection: process.env.REDIS_URL
+    ? { url: process.env.REDIS_URL, maxRetriesPerRequest: null, enableReadyCheck: false }
+    : redisConfig,
   defaultJobOptions: {
     attempts: 3,
     backoff: {
@@ -25,11 +30,6 @@ export const queueOptions: QueueOptions = {
     },
     removeOnComplete: true,
     removeOnFail: false
-  },
-  settings: {
-    lockDuration: 30000, // 30 seconds
-    stalledInterval: 30000,
-    maxStalledCount: 1
   }
 };
 
@@ -47,4 +47,3 @@ export function getRedisUrl(): string {
   }
   return `redis://${host}:${port}/${db}`;
 }
-

@@ -1,24 +1,27 @@
-import { jobQueue } from './queues/index';
-import { JobType } from './types';
+import { Worker, Job } from 'bullmq';
 import processEmail from './processors/email.processor';
 import processImageJob from './processors/image.processor';
+import { queueOptions } from './config/redis.config';
 import logger from '@repo/logger';
+import { SahredEnums } from '@repo/shared/enums';
+
 /**
  * Worker Configuration
  */
 const WORKER_CONFIG = {
-  [JobType.SEND_EMAIL]: {
+  [SahredEnums.QUEUE_KEY.SEND_EMAIL]: {
     processor: processEmail,
-    concurrency: 5, // Process 5 email jobs concurrently
+    concurrency: 5,
     name: 'Email Worker'
   },
-  [JobType.PROCESS_IMAGE]: {
+  [SahredEnums.QUEUE_KEY.PROCESS_IMAGE]: {
     processor: processImageJob,
-    concurrency: 3, // Process 3 image jobs concurrently
+    concurrency: 3,
     name: 'Image Worker'
   }
-  // Add more workers as needed
 };
+
+const activeWorkers: Worker[] = [];
 
 /**
  * Start all workers
@@ -28,26 +31,34 @@ export function startWorkers(): void {
   console.log('🚀 Starting job workers...');
 
   Object.entries(WORKER_CONFIG).forEach(([jobType, config]) => {
-    const queue = jobQueue.getQueue(jobType);
+    const worker = new Worker(
+      jobType,
+      async (job: Job) => config.processor(job as any),
+      {
+        connection: queueOptions.connection,
+        concurrency: config.concurrency
+      }
+    );
 
-    // Register processor with concurrency
-    queue.process(config.concurrency, config.processor);
-
-    // Setup specific event listeners for this worker
-    queue.on('completed', (job, result) => {
+    worker.on('completed', (job, result) => {
       console.log(`[${config.name}] ✓ Job ${job.id} completed successfully`);
       console.log(`[${config.name}] Result:`, result);
     });
 
-    queue.on('failed', (job, err) => {
-      console.error(`[${config.name}] ✗ Job ${job.id} failed:`, err.message);
-      console.error(`[${config.name}] Failed after ${job.attemptsMade} attempts`);
+    worker.on('failed', (job, err) => {
+      console.error(`[${config.name}] ✗ Job ${job?.id} failed:`, err.message);
+      console.error(`[${config.name}] Failed after ${job?.attemptsMade} attempts`);
     });
 
-    queue.on('progress', (job, progress) => {
-      console.log(`[${config.name}] Job ${job.id} progress: ${progress}%`);
+    worker.on('progress', (job, progress) => {
+      console.log(`[${config.name}] Job ${job.id} progress: ${progress}`);
     });
 
+    worker.on('error', (err) => {
+      console.error(`[${config.name}] Worker error:`, err);
+    });
+
+    activeWorkers.push(worker);
     console.log(`✓ ${config.name} started with concurrency: ${config.concurrency}`);
   });
 
@@ -60,7 +71,8 @@ export function startWorkers(): void {
 export async function stopWorkers(): Promise<void> {
   console.log('🛑 Stopping job workers...');
 
-  await jobQueue.closeAll();
+  await Promise.all(activeWorkers.map(worker => worker.close()));
+  activeWorkers.length = 0;
 
   console.log('✓ All workers stopped successfully');
 }
@@ -83,4 +95,3 @@ export function setupGracefulShutdown(): void {
   process.on('SIGTERM', () => shutdown('SIGTERM'));
   process.on('SIGINT', () => shutdown('SIGINT'));
 }
-

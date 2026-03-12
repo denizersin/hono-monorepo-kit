@@ -1,7 +1,7 @@
 {
   "name": "@repo/jobs",
   "version": "1.0.0",
-  "description": "Background job processing with Bull and Redis",
+  "description": "Background job processing with BullMQ and Redis",
   "private": true,
   "type": "module",
   "main": "./dist/index.js",
@@ -16,7 +16,7 @@
     "dev": "tsc --watch",
     "build": "tsc",
     "type-check": "tsc --noEmit",
-    "start-workers": "bun run worker.ts"
+    "start-workers": "bun run ./src/start.ts"
   },
   "keywords": [
     "bull",
@@ -26,10 +26,12 @@
     "background-jobs"
   ],
   "dependencies": {
+    "@repo/config": "workspace:*",
     "@repo/email": "workspace:*",
     "@repo/logger": "workspace:*",
+    "@repo/shared": "workspace:*",
     "@types/nodemailer": "^7.0.11",
-    "bull": "^4.12.0",
+    "bullmq": "^5.71.0",
     "nodemailer": "^8.0.1",
     "redis": "^4.6.0",
     "zod": "^3.24.2"

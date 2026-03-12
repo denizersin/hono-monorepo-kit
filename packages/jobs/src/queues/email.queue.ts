@@ -1,25 +1,27 @@
 import { jobQueue } from './index';
-import { JobType, EmailJobData, EmailJobDataFor, EmailTemplateType, DEFAULT_JOB_OPTIONS } from '../types';
-import { JobOptions } from 'bull';
+import { EmailJobData, EmailJobDataFor, EmailTemplateType, DEFAULT_JOB_OPTIONS } from '../types';
+import { JobsOptions } from 'bullmq';
+import { SahredEnums } from '@repo/shared/enums';
 
 /**
  * Email Queue Service
  * Handles email job operations
  */
 export class EmailQueue {
-  private readonly queueName = JobType.SEND_EMAIL;
+  private readonly queueName = SahredEnums.QUEUE_KEY.SEND_EMAIL;
 
   /**
    * Add email job to queue
    */
   async addEmailJob(
     emailData: EmailJobData,
-    options?: JobOptions
+    options?: JobsOptions
   ) {
     const jobOptions = { ...DEFAULT_JOB_OPTIONS, ...options };
-    
+
     return await jobQueue.addJob(
       this.queueName,
+      SahredEnums.QUEUE_KEY.SEND_EMAIL,
       emailData,
       jobOptions
     );
@@ -27,7 +29,7 @@ export class EmailQueue {
 
   async addTemplatedEmailJob<T extends EmailTemplateType>(
     emailData: EmailJobDataFor<T>,
-    options?: JobOptions
+    options?: JobsOptions
   ) {
     return this.addEmailJob(emailData, options);
   }
@@ -37,12 +39,13 @@ export class EmailQueue {
    */
   async addBulkEmailJobs(
     emails: EmailJobData[],
-    options?: JobOptions
+    options?: JobsOptions
   ) {
     const queue = jobQueue.getQueue(this.queueName);
     const jobOptions = { ...DEFAULT_JOB_OPTIONS, ...options };
 
     const jobs = emails.map(email => ({
+      name: 'send-email',
       data: email,
       opts: jobOptions
     }));
@@ -59,6 +62,7 @@ export class EmailQueue {
   ) {
     return await jobQueue.addJob(
       this.queueName,
+      'send-email',
       emailData,
       {
         ...DEFAULT_JOB_OPTIONS,
@@ -76,6 +80,7 @@ export class EmailQueue {
   ) {
     return await jobQueue.addJob(
       this.queueName,
+      'send-email',
       emailData,
       {
         ...DEFAULT_JOB_OPTIONS,
@@ -94,7 +99,7 @@ export class EmailQueue {
     }
 
     const state = await job.getState();
-    const progress = job.progress();
+    const progress = job.progress;
 
     return {
       id: job.id,

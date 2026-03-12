@@ -1,6 +1,6 @@
 import { jobQueue } from './index';
 import { JobType, ImageJobData, DEFAULT_JOB_OPTIONS } from '../types';
-import { JobOptions } from 'bull';
+import { JobsOptions } from 'bullmq';
 
 /**
  * Image Processing Queue Service
@@ -14,16 +14,16 @@ export class ImageQueue {
    */
   async addImageJob(
     imageData: ImageJobData,
-    options?: JobOptions
+    options?: JobsOptions
   ) {
-    const jobOptions = { 
+    const jobOptions = {
       ...DEFAULT_JOB_OPTIONS,
-      timeout: 60000, // 60 second timeout for image processing
-      ...options 
+      ...options
     };
-    
+
     return await jobQueue.addJob(
       this.queueName,
+      'process-image',
       imageData,
       jobOptions
     );
@@ -34,16 +34,16 @@ export class ImageQueue {
    */
   async addBulkImageJobs(
     images: ImageJobData[],
-    options?: JobOptions
+    options?: JobsOptions
   ) {
     const queue = jobQueue.getQueue(this.queueName);
-    const jobOptions = { 
+    const jobOptions = {
       ...DEFAULT_JOB_OPTIONS,
-      timeout: 60000,
-      ...options 
+      ...options
     };
 
     const jobs = images.map(image => ({
+      name: 'process-image',
       data: image,
       opts: jobOptions
     }));
@@ -60,10 +60,10 @@ export class ImageQueue {
   ) {
     return await jobQueue.addJob(
       this.queueName,
+      'process-image',
       imageData,
       {
         ...DEFAULT_JOB_OPTIONS,
-        timeout: 60000,
         priority
       }
     );
@@ -78,10 +78,10 @@ export class ImageQueue {
   ) {
     return await jobQueue.addJob(
       this.queueName,
+      'process-image',
       imageData,
       {
         ...DEFAULT_JOB_OPTIONS,
-        timeout: 60000,
         delay
       }
     );
@@ -97,7 +97,7 @@ export class ImageQueue {
     }
 
     const state = await job.getState();
-    const progress = job.progress();
+    const progress = job.progress;
 
     return {
       id: job.id,
@@ -129,4 +129,3 @@ export class ImageQueue {
 
 // Export singleton instance
 export const imageQueue = new ImageQueue();
-

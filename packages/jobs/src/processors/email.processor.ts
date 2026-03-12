@@ -1,4 +1,4 @@
-import { Job } from 'bull';
+import { Job } from 'bullmq';
 import { InviteEmail } from '@repo/email/emails/invite';
 import { WelcomeEmail } from '@repo/email/emails/welcome';
 import { render } from '@repo/email/render';
@@ -12,26 +12,24 @@ import nodemailer from "nodemailer";
 
 const TestTransportOptions = {
   host: 'smtp-relay.brevo.com',
-  port: 587,                   // TLS için 587
-  secure: false,               // Güvenlik TLS üzerinden sağlanır
+  port: 587,
+  secure: false,
   auth: {
-    user: '8165cc001@smtp-brevo.com', // SMTP kullanıcı adı
-    pass: "XGBLF9pqaCkTW06m",     // SMTP şifreniz (API anahtarı olabilir)
+    user: '8165cc001@smtp-brevo.com',
+    pass: "XGBLF9pqaCkTW06m",
   },
 }
 
 const GetTestMailOptions = (to: string, subject: string, html: string) => ({
-  from: 'ersindenim@gmail.com', // Gönderen
-  to,                 // Alıcı
-  subject: subject,           // Konu
-  text: "Reservation",   // Mesaj metni
-  html: html, // HTML mesajı
+  from: 'ersindenim@gmail.com',
+  to,
+  subject: subject,
+  text: "Reservation",
+  html: html,
 })
 
-
 /**
- * Mock email sending function
- * Replace this with your actual email service (SendGrid, Nodemailer, etc.)
+ * Send email via nodemailer
  */
 async function sendEmail(
   to: string,
@@ -41,14 +39,10 @@ async function sendEmail(
   bcc?: string[],
   attachments?: Array<{ filename: string; path: string }>
 ): Promise<void> {
-  // Simulate email sending delay
-  // await new Promise(resolve => setTimeout(resolve, 1000));
-
   const transporter = nodemailer.createTransport(TestTransportOptions);
 
   await transporter.sendMail(GetTestMailOptions(to, subject, html));
 
-  // TODO: Implement actual email sending logic
   console.log('📧 Sending email:', {
     to,
     subject,
@@ -58,7 +52,6 @@ async function sendEmail(
     attachments: attachments?.map(a => a.filename)
   });
 
-  // Simulate occasional failures for testing retry logic
   if (Math.random() < 0.1) {
     throw new Error('Network error: Could not connect to email server');
   }
@@ -82,12 +75,12 @@ function renderTemplateHtml(data: EmailJobData): string {
 
 /**
  * Process Email Job
- * Handles email sending with progress tracking and error handling
+ * BullMQ processor: receives a Job instance and returns the result
  */
 export async function processEmail(job: Job<EmailJobData>): Promise<JobResult> {
   try {
     // Update progress: preparing
-    await job.progress(10);
+    await job.updateProgress(10);
     await job.log('Preparing to send email');
 
     const parsed = emailJobSchema.safeParse(job.data);
@@ -96,24 +89,21 @@ export async function processEmail(job: Job<EmailJobData>): Promise<JobResult> {
     }
     const { to, cc, bcc, attachments, template } = parsed.data;
 
-    // Update progress: validating
-    await job.progress(30);
+    await job.updateProgress(30);
     await job.log('Email data validated');
 
-    await job.progress(55);
+    await job.updateProgress(55);
     await job.log(`Rendering email template: ${template}`);
 
     const html = renderTemplateHtml(parsed.data);
     const subject = parsed.data.subject ?? subjectByTemplate[template];
 
-    // Send email after rendering
-    await job.progress(80);
+    await job.updateProgress(80);
     await job.log('Sending email...');
 
     await sendEmail(to, subject, html, cc, bcc, attachments);
 
-    // Update progress: completed
-    await job.progress(100);
+    await job.updateProgress(100);
     await job.log('Email sent successfully');
 
     return {
@@ -129,27 +119,19 @@ export async function processEmail(job: Job<EmailJobData>): Promise<JobResult> {
     };
 
   } catch (error: any) {
-    // Log error
     await job.log(`Error: ${error.message}`);
 
-    // Determine if error is retryable
     const isRetryable =
       error.message.includes('Network error') ||
       error.message.includes('Timeout') ||
       error.message.includes('Connection');
 
-    if (isRetryable && job.attemptsMade < (job.opts.attempts || 3)) {
-      // Let Bull retry the job
+    if (isRetryable && job.attemptsMade < (job.opts.attempts ?? 3)) {
       throw new Error(`Email could not be sent (attempt ${job.attemptsMade + 1}): ${error.message}`);
     } else {
-      // Final failure
       throw new Error(`Email sending failed permanently: ${error.message}`);
     }
   }
 }
 
-/**
- * Email processor with concurrency support
- * Export this function to be used by the worker
- */
 export default processEmail;

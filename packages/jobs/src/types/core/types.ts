@@ -1,13 +1,9 @@
-import { JobOptions } from 'bull';
+import { JobsOptions } from 'bullmq';
 
 /**
  * Job Types Enumeration
  */
-export enum JobType {
-  SEND_EMAIL = 'send-email',
-  PROCESS_IMAGE = 'process-image',
-  GENERATE_REPORT = 'generate-report'
-}
+
 
 /**
  * Generic Job Result Interface
@@ -30,7 +26,7 @@ export interface JobProgress {
 /**
  * Default Job Options
  */
-export const DEFAULT_JOB_OPTIONS: JobOptions = {
+export const DEFAULT_JOB_OPTIONS: JobsOptions = {
   attempts: 3,
   backoff: {
     type: 'exponential',
