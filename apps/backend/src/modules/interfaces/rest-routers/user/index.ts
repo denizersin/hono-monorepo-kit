@@ -1,7 +1,6 @@
 import { zValidator } from "@hono/zod-validator"
 import { SahredEnums } from "@repo/shared/enums"
-import { TUserValidator, userValidator } from "@repo/shared/userInsertSchema"
-import { validateMultipleSchemas } from "@repo/shared/utils"
+import { userValidator } from "@repo/shared/userInsertSchema"
 import { EnumCookieKeys } from "@server/lib/enums"
 import { createSuccessResponse, ForbiddenError } from "@server/lib/errors"
 import { apiContext, createHonoApp } from "@server/lib/hono/hono-factory"

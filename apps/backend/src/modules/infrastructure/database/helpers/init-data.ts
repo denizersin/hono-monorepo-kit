@@ -2,8 +2,7 @@ import db from "@server/modules/infrastructure/database"
 import _countryData from '@server/data/db/country.json'
 import _languageData from '@server/data/db/language.json'
 import { tblCountry, tblLanguage, TSchemaData } from "@repo/shared/schema";
-import { SahredEnums } from "@repo/shared/enums";
-import { TLanguage } from "@repo/shared/types";
+import { SahredEnums, TLanguageKey } from "@repo/shared/enums";
 
 // const countryData = _countryData 
 export class InitializeDbPrededfinedDatas {
@@ -39,7 +38,7 @@ export class InitializeDbPrededfinedDatas {
             return {
                 name: language.name,
                 code: language.code,
-                id: isMyEnumValue ? SahredEnums.getMapId(SahredEnums.LANGUAGE_MAP, language.code as TLanguage) : undefined
+                id: isMyEnumValue ? SahredEnums.getMapId(SahredEnums.LANGUAGE_MAP, language.code as TLanguageKey) : undefined
             }
         })
 

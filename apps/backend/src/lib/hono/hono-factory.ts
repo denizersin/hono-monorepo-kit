@@ -1,12 +1,11 @@
 import { createFactory } from "hono/factory";
 
-import { SahredEnums } from "@repo/shared/enums";
+import { SahredEnums, TThemeKey } from "@repo/shared/enums";
 import { AppBindings, TApiContextRaw } from "@server/lib/hono/types";
 import db from "@server/modules/infrastructure/database";
 import { languageDetector } from "hono/language";
 import { EnumCookieKeys, EnumHeaderKeys } from "../enums";
 
-import { TTheme } from "@repo/shared/types";
 import { initApiContext } from "@server/lib/context";
 import { getSafeSessionFromContext } from "@server/modules/shared/middlewares/auth";
 import { AsyncLocalStorage } from 'async_hooks';
@@ -50,7 +49,7 @@ export default createFactory<AppBindings>({
       const companyIdInt = session?.companyId || (companyId ? parseInt(companyId) : null)
       c.set("companyId", companyIdInt)
       const theme = getCookie(c, EnumCookieKeys.THEME)
-      c.set("theme", theme as TTheme || SahredEnums.THEME_KEY.light)
+      c.set("theme", theme as TThemeKey || SahredEnums.THEME_KEY.light)
 
       initApiContext({
         session,

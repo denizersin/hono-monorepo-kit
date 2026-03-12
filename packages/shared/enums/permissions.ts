@@ -1,4 +1,3 @@
-import { TEnumMapRecord } from ".";
 
 
 const _PermissionEnum = {
@@ -10,4 +9,4 @@ const _PermissionEnum = {
 
 export type TPermission = keyof typeof _PermissionEnum
 
-export const PermissionEnum: TEnumMapRecord<TPermission> = _PermissionEnum
+export const PermissionEnum = _PermissionEnum

@@ -1,6 +1,6 @@
-import { TLanguage, TSession, TTheme } from "@repo/shared/types";
-import { TGlobalEvent } from "@server/modules/application/event/interface";
-import { TDB, TDBTransaction } from "@server/modules/infrastructure/database";
+import { TLanguageKey, TThemeKey } from "@repo/shared/enums";
+import { TSession } from "@repo/shared/types";
+import { TDB } from "@server/modules/infrastructure/database";
 import type { Env } from "hono";
 
 export interface AppBindings extends Env {
@@ -10,8 +10,8 @@ export interface AppBindings extends Env {
         db: TDB
         session: TSession | null
         companyId: number | null
-        language: TLanguage
-        theme: TTheme
+        language: TLanguageKey
+        theme: TThemeKey
     }
 }
 
@@ -22,7 +22,7 @@ export type TApiContextRaw = {
     readonly session: TSession | null
     readonly companyId: number | null
     readonly ip: string | null
-    readonly language: TLanguage
+    readonly language: TLanguageKey
 
 }
 

@@ -1,20 +1,5 @@
-import type { TChatType, TLanguage, TMailConfirmationStatus, TModel, TTheme } from "../types/index";
 import { SelectData } from "./enum-data";
 import { PermissionEnum } from "./permissions";
-// -----------------------------------------------------------------------
-// Base Type
-// -----------------------------------------------------------------------
-
-
-// Base Types
-export type TEnumMapRecord<K extends string> = Record<K, number>;
-export type TKeyRecord<K extends string> = Record<K, K>;
-
-
-
-
-// export type TEnumMapRecord<K extends string> = Record<K, number>;
-
 // -----------------------------------------------------------------------
 // Enum Maps
 // -----------------------------------------------------------------------
@@ -36,44 +21,77 @@ const ROLE_KEY = {
 export type TRole = keyof typeof ROLE_KEY
 
 
-
-const MAIL_CONFIRMATION_MAP: TEnumMapRecord<TMailConfirmationStatus> = {
+const MAIL_CONFIRMATION_MAP = {
     pending: 1,
     confirmed: 2,
     rejected: 3,
 } as const;
 
-const LANGUAGE_MAP: TEnumMapRecord<TLanguage> = {
+const MAIL_CONFIRMATION_STATUS_KEY = {
+    pending: 'pending',
+    confirmed: 'confirmed',
+    rejected: 'rejected',
+} as const;
+
+export type TMailConfirmationStatusKey = keyof typeof MAIL_CONFIRMATION_STATUS_KEY
+
+
+const LANGUAGE_MAP = {
     tr: 1,
     en: 2,
     es: 3,
 } as const;
 
-const LANGUAGE_KEY: TKeyRecord<TLanguage> = {
+const LANGUAGE_KEY = {
     tr: 'tr',
     en: 'en',
-    es: 'es'
+    es: 'es',
 } as const;
 
-const THEME_MAP: TEnumMapRecord<TTheme> = {
+export type TLanguageKey = keyof typeof LANGUAGE_KEY
+
+
+const THEME_MAP = {
     light: 1,
     dark: 2,
 } as const;
 
-const THEME_KEY: TKeyRecord<TTheme> = {
+const THEME_KEY = {
     light: 'light',
-    dark: 'dark'
+    dark: 'dark',
 } as const;
 
-const CHAT_TYPE_MAP: TEnumMapRecord<TChatType> = {
+export type TThemeKey = keyof typeof THEME_KEY
+
+
+const CHAT_TYPE_MAP = {
     private: 1,
     group: 2,
 } as const;
 
-const MODEL_MAP: TEnumMapRecord<TModel> = {
+const CHAT_TYPE_KEY = {
+    private: 'private',
+    group: 'group',
+} as const;
+
+export type TChatTypeKey = keyof typeof CHAT_TYPE_KEY
+
+
+const MODEL_MAP = {
     'GEMINI_2.5_FLASH': 1,
     'GEMINI_2.5_PRO': 2,
 } as const;
+
+const MODEL_KEY = {
+    'GEMINI_2.5_FLASH': 'GEMINI_2.5_FLASH',
+    'GEMINI_2.5_PRO': 'GEMINI_2.5_PRO',
+} as const;
+
+export type TModelKey = keyof typeof MODEL_KEY
+
+
+
+
 
 // -----------------------------------------------------------------------
 // Status Codes
@@ -145,7 +163,7 @@ const SUBSCRIPTION_STATUS_KEY = {
 } as const;
 
 
-export type TEnumCurrenyKey = "TRY" | "USD" | "EUR"
+export type TEnumCurrenyKey = keyof typeof CURRENCY_KEY;
 const CURRENCY_KEY = {
     TRY: "TRY",
     USD: "USD",
@@ -153,7 +171,7 @@ const CURRENCY_KEY = {
 } as const;
 
 
-export type TEnumPlanIntervalKey = "yearly" | "monthly" | "weekly" | "daily"
+export type TEnumPlanIntervalKey = keyof typeof PLAN_INTERVAL_KEY;
 const PLAN_INTERVAL_KEY = {
     yearly: 'yearly',
     monthly: 'monthly',
@@ -162,7 +180,7 @@ const PLAN_INTERVAL_KEY = {
 } as const;
 
 
-export type TEnumSubscriptionEventType = "renewed" | "upgraded" | "cancelled" | "payment_failed"
+export type TEnumSubscriptionEventType = keyof typeof SUBSCRIPTION_EVENT_TYPE_KEY;
 const SUBSCRIPTION_EVENT_TYPE_KEY = {
     renewed: "renewed",
     upgraded: "upgraded",
@@ -171,22 +189,21 @@ const SUBSCRIPTION_EVENT_TYPE_KEY = {
 } as const;
 
 
-export type TEnumDiscountType = "percentage" | "fixed_amount"
+export type TEnumDiscountType = keyof typeof DISCOUNT_TYPE_KEY;
 const DISCOUNT_TYPE_KEY = {
     percentage: "percentage",
     fixed_amount: "fixed_amount",
 } as const;
 
 
-// ... existing code ...
-export type TEnumCouponDurationKey = "once" | "forever" | "repeating"
+export type TEnumCouponDurationKey = keyof typeof COUPON_DURATION_TYPE_KEY;
 const COUPON_DURATION_TYPE_KEY = {
     once: "once",
     forever: "forever",
     repeating: "repeating",
 } as const;
 
-export type TEnumCampaignTargetType = "all_users" | "new_users" | "inactive_users"
+export type TEnumCampaignTargetType = keyof typeof CAMPAIGN_TARGET_TYPE_KEY;
 const CAMPAIGN_TARGET_TYPE_KEY = {
     all_users: "all_users",
     new_users: "new_users",
@@ -197,7 +214,8 @@ const CAMPAIGN_TARGET_TYPE_KEY = {
 // Global Enum Helper
 // -----------------------------------------------------------------------
 
-
+type TEnumMapRecord<K extends string> = Record<K, number>;
+type TKeyRecord<K extends string> = Record<K, K>;
 
 // -----------------------------------------------------------------------
 // Export
@@ -208,12 +226,15 @@ export const SahredEnums = {
     ROLE_MAP,
     ROLE_KEY,
     MAIL_CONFIRMATION_MAP,
+    MAIL_CONFIRMATION_STATUS_KEY,
     LANGUAGE_MAP,
     LANGUAGE_KEY,
     THEME_MAP,
     THEME_KEY,
     CHAT_TYPE_MAP,
+    CHAT_TYPE_KEY,
     MODEL_MAP,
+    MODEL_KEY,
     PERMISSION_MAP: PermissionEnum,
     // Status
     STATUS_CODES,

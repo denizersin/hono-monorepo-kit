@@ -10,18 +10,10 @@ export type TRoles = {
 }
 
 
-//Enum Types
-export type TMailConfirmationStatus = "pending" | "confirmed" | "rejected"
-
-export type TChatType = "private" | "group"
 
 
-export type TModel = "GEMINI_2.5_FLASH" | "GEMINI_2.5_PRO"
 
 
-export type TLanguage = "tr" | "en" | "es"
-
-export type TTheme = "light" | "dark"
 
 // -------------------------AUTHENTICATION--------------------------------
 interface TBaseSession {

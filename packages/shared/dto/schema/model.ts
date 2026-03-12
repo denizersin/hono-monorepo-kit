@@ -1,11 +1,11 @@
-import { TModel } from '#/types/index';
+import { TModelKey } from '#/enums/index';
 import { boolean, doublePrecision, integer, pgTable, timestamp, varchar } from 'drizzle-orm/pg-core';
 
 
 export const tblAiModel = pgTable('ai-model', {
 
     id: integer().primaryKey().generatedByDefaultAsIdentity(),
-    name: varchar({ length: 255 }).notNull().$type<TModel>(),
+    name: varchar({ length: 255 }).notNull().$type<TModelKey>(),
     fullName: varchar({ length: 255 }).notNull(),
     isHaveReasoning: boolean().$default(() => false),
     oneMillionInputPrice: doublePrecision().notNull(),

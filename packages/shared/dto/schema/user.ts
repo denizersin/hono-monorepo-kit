@@ -1,8 +1,7 @@
 import { TPermission } from '#/enums/permissions';
-import { TMailConfirmationStatus } from '#/types/index';
 import { boolean, doublePrecision, integer, pgTable, serial, timestamp, varchar } from 'drizzle-orm/pg-core';
 import { getDefaultTableFields } from './schemaHelpers';
-import { TRole } from '#/enums/index';
+import { TMailConfirmationStatusKey, TRole } from '#/enums/index';
 
 
 export const tblUser = pgTable('user', {
@@ -59,7 +58,7 @@ export const tblRolePermission = pgTable('role_permissions', {
 
 export const tblMailConfirmationStatus = pgTable('mail_confirmation_statuses', {
     id: serial('id').primaryKey(),
-    name: varchar('name', { length: 255 }).notNull().$type<TMailConfirmationStatus>(),
+    name: varchar('name', { length: 255 }).notNull().$type<TMailConfirmationStatusKey>(),
 });
 
 // export const moodEnum = pgEnum('mood', SahredEnums.getEnumValues(SahredEnums.MAIL_CONFIRMATION_MAP) as [string, ...string[]]);

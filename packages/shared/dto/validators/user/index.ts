@@ -64,9 +64,6 @@ const createUserSchema = z.discriminatedUnion("role", [
     z.object({ role: z.literal(SahredEnums.ROLE_KEY.ADMIN), data: adminCreateUserSchema }),
 ]);
 
-const a = createUserSchema.safeParse({})
-
-// const a = SahredEnums.ROLE_KEY.
 
 
 const loginEmailAndPasswordSchema = userBaseSelectSchema.pick({
