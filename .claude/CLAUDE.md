@@ -114,10 +114,13 @@ type CreateData = TCharacterValidator.TCreateCharacter
 
 ### Enum Türleri
 
-| Tür | Açıklama | Örnek |
-|-----|----------|-------|
-| `TEnumMapRecord<K>` | String → Number mapping | `ROLE_MAP: { ADMIN: 2 }` |
-| `TKeyRecord<K>` | String → String (self) mapping | `CURRENCY_KEY: { USD: "USD" }` |
+| Tür | Açıklama | Örnek | Key Type |
+|-----|----------|-------|----------|
+| `NumericEnum` | String → Number mapping | `ROLE_MAP: { ADMIN: 2 }` | `TRole` |
+| `StringEnum` | String → String (self) mapping | `CURRENCY_KEY: { USD: "USD" }` | `TCurrency` |
+
+##Enum key type'lari da bu dosyada bulunur (packages/shared/enums/index.ts)
+export type TRole = keyof typeof ROLE_KEY
 
 ### Enum Kullanımı
 ```typescript
@@ -147,6 +150,8 @@ SahredEnums.SelectData.roles  // [{ label, value }]
 - `DISCOUNT_TYPE_KEY` - İndirim tipi
 - `COUPON_DURATION_TYPE_KEY` - Kupon süresi
 - `CAMPAIGN_TARGET_TYPE_KEY` - Kampanya hedefi
+
+
 
 ---
 
