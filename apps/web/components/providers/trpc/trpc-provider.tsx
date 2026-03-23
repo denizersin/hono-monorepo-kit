@@ -1,13 +1,12 @@
-import { AppRouter } from "@repo/backend/exports"
-import { isServer, QueryClient, QueryClientProvider, QueryObserver } from "@tanstack/react-query"
+import { AppRouter } from "@repo/backend/exports";
+import { isServer, QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { createTRPCContext } from "@trpc/tanstack-react-query";
 
+import { NEXT_ENV } from "@/next-env";
 import { createTRPCClient, httpBatchLink, loggerLink } from "@trpc/client";
-import { makeQueryClient } from "./query-client";
 import { useState } from "react";
 import superjson from "superjson";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { NEXT_ENV } from "@/next-env";
+import { makeQueryClient } from "./query-client";
 
 /**
  * Why doesn't my tRPC request header include the cookie header?
@@ -43,7 +42,7 @@ export function TRPCReactProvider(
         createTRPCClient<AppRouter>({
             links: [
                 httpBatchLink({
-                    url: `${NEXT_ENV._runtime.NEXT_PUBLIC_API_URL}/trpc`,
+                    url: `${NEXT_ENV.NEXT_PUBLIC_API_URL}/trpc`,
                     transformer: superjson,
                     // Ensure cookies are sent with requests
                     fetch: (input, init) => {
@@ -56,7 +55,7 @@ export function TRPCReactProvider(
                 }),
                 loggerLink({
                     enabled: (opts) =>
-                        NEXT_ENV._runtime.IS_DEV ||
+                        NEXT_ENV.IS_DEV ||
                         (opts.direction === "down" && opts.result instanceof Error),
                 }),
             ],

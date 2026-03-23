@@ -32,7 +32,7 @@ import ky from "ky";
 
 
 // Use environment variable for base URL
-const baseUrl = NEXT_ENV._runtime.NEXT_PUBLIC_API_URL;
+const baseUrl = NEXT_ENV.NEXT_PUBLIC_API_URL;
 const kyapi = ky.extend({
   hooks: {
     beforeRequest: [(request) => {
