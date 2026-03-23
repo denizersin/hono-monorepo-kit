@@ -1,7 +1,7 @@
 import { Worker, Job } from 'bullmq';
 import processEmail from './processors/email.processor';
 import processImageJob from './processors/image.processor';
-import { queueOptions } from './config/redis.config';
+import { getQueueOptions } from './config/redis.config';
 import logger from '@repo/logger';
 import { SahredEnums } from '@repo/shared/enums';
 
@@ -30,12 +30,14 @@ export function startWorkers(): void {
   logger.job('🚀 Starting job workers...');
   console.log('🚀 Starting job workers...');
 
+  const queueOpts = getQueueOptions();
+
   Object.entries(WORKER_CONFIG).forEach(([jobType, config]) => {
     const worker = new Worker(
       jobType,
       async (job: Job) => config.processor(job as any),
       {
-        connection: queueOptions.connection,
+        connection: queueOpts.connection,
         concurrency: config.concurrency
       }
     );

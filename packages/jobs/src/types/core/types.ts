@@ -3,6 +3,11 @@ import { JobsOptions } from 'bullmq';
 /**
  * Job Types Enumeration
  */
+export enum JobType {
+  SEND_EMAIL = 'send-email',
+  PROCESS_IMAGE = 'process-image',
+  GENERATE_REPORT = 'generate-report'
+}
 
 
 /**

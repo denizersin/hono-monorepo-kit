@@ -1,4 +1,4 @@
-# My Mono Repo - Claude Code Guidelines
+# My Mono Repo - Codex Guidelines
 
 ## Proje Genel Bakış
 
@@ -31,89 +31,6 @@ Turborepo tabanlı full-stack monorepo. Bun package manager kullanılır.
 | Mobile | Expo 54, React Native |
 | Validation | Zod |
 | Build | Turborepo |
-
----
-
-## Environment Yapısı
-
-**Konum:** `packages/config/src/`
-
-### Validator Fonksiyonları
-
-| App/Package | Validator | Ana Env'ler |
-|-------------|-----------|-------------|
-| `apps/backend` | `validateBackendEnv()` | `DATABASE_URL`, `WEB_URL`, `REDIS_*`, `JWT_SECRET` |
-| `packages/jobs` | `validateJobsEnv()` | `DATABASE_URL`, `REDIS_*` |
-| `apps/web` | `validateWebEnv()` | `NEXT_PUBLIC_API_URL`, `NEXT_PUBLIC_WS_URL` |
-| `apps/mobile` | `validateMobileEnv()` | `API_URL`, `WS_URL` |
-
-### Computed Values (Tüm validator'larda)
-- `IS_DEV` - boolean (`NODE_ENV === 'development'`)
-- `IS_PROD` - boolean (`NODE_ENV === 'production'`)
-
-### Kullanım
-```typescript
-// Backend
-import { validateBackendEnv } from "@repo/config/backend";
-export const ENV = validateBackendEnv();
-
-// Jobs
-import { validateJobsEnv } from "@repo/config/jobs";
-const env = validateJobsEnv();
-```
-
-### Paket Bağımlılıkları & Initialization
-
-| App | Bağımlı Paketler | Initialize Fonksiyonları |
-|-----|------------------|--------------------------|
-| `apps/backend` | `@repo/db`, `@repo/jobs` | `initializeDb()`, `initializeJobs()` |
-| `packages/jobs` (standalone) | `@repo/db` | `initializeJobs({ redis, database })` |
-
-**Backend env.ts örneği:**
-```typescript
-import { validateBackendEnv } from "@repo/config/backend";
-import { initializeDb } from "@repo/db";
-import { initializeJobs } from "@repo/jobs";
-
-export const ENV = validateBackendEnv();
-
-// DB initialize
-initializeDb({
-  connectionString: ENV.DATABASE_URL,
-  ssl: ENV.IS_DEV ? false : { rejectUnauthorized: false },
-});
-
-// Jobs initialize (sadece Redis - DB zaten yukarıda init edildi)
-initializeJobs({
-  redis: {
-    host: ENV.REDIS_HOST,
-    port: parseInt(ENV.REDIS_PORT, 10),
-    password: ENV.REDIS_PASSWORD || undefined,
-    db: parseInt(ENV.REDIS_DB, 10),
-  },
-});
-```
-
-**Jobs standalone (start.ts) örneği:**
-```typescript
-import { validateJobsEnv } from "@repo/config/jobs";
-import { initializeJobs } from "./config/redis.config";
-
-const env = validateJobsEnv();
-
-// Standalone worker: hem Redis hem DB gerekli
-initializeJobs({
-  redis: { host, port, password, db },
-  database: { connectionString, ssl },
-});
-```
-
-### Kurallar
-- DEV/PROD ayrımı yok - tek URL kullanılır
-- Ortam ayrımı deploy seviyesinde `.env` ile yapılır
-- Zod ile validation zorunlu
-- Bağımlı paketler için `initialize*()` fonksiyonları çağrılmalı
-- Backend'de DB ayrı init edildiğinde, jobs'a sadece Redis config verilir
 
 ---
 

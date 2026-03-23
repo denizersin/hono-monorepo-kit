@@ -4,7 +4,7 @@ import { Client } from "pg";
 console.log('reCreateDb executing..')
 
 async function main() {
-    if (!ENV._runtime.IS_DEV || ENV.NODE_ENV === 'production') {
+    if (!ENV.IS_DEV || ENV.NODE_ENV === 'production') {
         console.log('reCreateDb is not allowed in production')
         process.abort()
         return;
@@ -12,7 +12,7 @@ async function main() {
 
     try {
         // Parse the database URL to get connection details
-        const dbUrl = new URL(ENV.DATABASE_URL_DEV);
+        const dbUrl = new URL(ENV.DATABASE_URL);
         const host = dbUrl.hostname;
         const port = parseInt(dbUrl.port || '5432', 10);
         const user = dbUrl.username;

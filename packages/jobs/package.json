@@ -14,7 +14,7 @@
   },
   "scripts": {
     "dev": "tsc --watch",
-    "build": "tsc",
+    "build": "rm -rf dist tsconfig.tsbuildinfo && tsc --build",
     "type-check": "tsc --noEmit",
     "start-workers": "bun run ./src/start.ts"
   },

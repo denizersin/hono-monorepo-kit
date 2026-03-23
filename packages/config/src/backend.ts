@@ -10,13 +10,11 @@ export const backendEnvSchema = z.object({
   PORT: z.string().default("3002"),
 
   // Database
-  DATABASE_URL_DEV: z.string().url(),
-  DATABASE_URL_PROD: z.string().url(),
+  DATABASE_URL: z.string().url(),
   DATABASE_NAME: z.string(),
 
-  // Web URLs
-  WEB_DEV_URL: z.string().url(),
-  WEB_PROD_URL: z.string().url(),
+  // Web URL
+  WEB_URL: z.string().url(),
 
   // Auth
   JWT_SECRET: z.string().min(1),
@@ -51,27 +49,14 @@ export function validateBackendEnv(env = process.env) {
     throw new Error("Invalid environment variables");
   }
 
-  const data = parsed.data;
-
   return {
-    ...data,
-    _runtime: {
-      IS_DEV: isDev,
-      IS_PROD: isProd,
-      DATABASE_URL: isDev ? data.DATABASE_URL_DEV : data.DATABASE_URL_PROD,
-      WEB_URL: isDev ? data.WEB_DEV_URL : data.WEB_PROD_URL,
-    },
+    ...parsed.data,
+    IS_DEV: isDev,
+    IS_PROD: isProd,
   };
 }
 
 /**
  * Backend environment types
  */
-export type BackendEnv = z.infer<typeof backendEnvSchema> & {
-  _runtime: {
-    IS_DEV: boolean;
-    IS_PROD: boolean;
-    DATABASE_URL: string;
-    WEB_URL: string;
-  };
-};
+export type BackendEnv = ReturnType<typeof validateBackendEnv>;

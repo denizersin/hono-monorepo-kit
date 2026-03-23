@@ -1,9 +1,9 @@
+import { ENV } from './env'
 import { serve } from '@hono/node-server'
 import { createNodeWebSocket } from '@hono/node-ws'
 import { trpcServer } from '@hono/trpc-server'
 import { cors } from 'hono/cors'
 import { logger as honoLogger } from 'hono/logger'
-import { ENV } from './env'
 import honoFactory from './lib/hono/hono-factory'
 import LookUpEnumsValidation from './modules/infrastructure/database/helpers/validate-lookup'
 import authApp from './modules/interfaces/rest-routers/auth'
@@ -54,7 +54,7 @@ app.use(honoLogger())
 app.use(
   '/*',
   cors({
-    origin: [ENV._runtime.WEB_URL], // Web uygulamasına izin ver
+    origin: [ENV.WEB_URL], // Web uygulamasına izin ver
     // allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowHeaders: ['Content-Type', 'Authorization', 'Set-Cookie'], // Çerezleri içeren yanıtları al
     exposeHeaders: ['Content-Length', 'X-Requested-With', 'Set-Cookie'], // Tarayıcının bu header'ları okumasını sağlar

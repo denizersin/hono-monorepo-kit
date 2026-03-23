@@ -10,6 +10,7 @@
     "./backend": "./dist/backend.js",
     "./web": "./dist/web.js",
     "./mobile": "./dist/mobile.js",
+    "./jobs": "./dist/jobs.js",
     "./envs": "./dist/envs.js",
     ".": "./dist/index.js"
   },

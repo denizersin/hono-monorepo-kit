@@ -1,17 +1,18 @@
 import { Queue, Job, JobsOptions } from 'bullmq';
-import { queueOptions } from '../config/redis.config';
+import { getQueueOptions, isJobsInitialized } from '../config/redis.config';
 import { SahredEnums } from '@repo/shared/enums';
 
 /**
  * Job Queue Manager
- * Manages multiple BullMQ queues
+ * Manages multiple BullMQ queues with lazy initialization
  */
 class JobQueue {
   private queues: Map<string, Queue> = new Map();
   private static instance: JobQueue;
+  private initialized = false;
 
   private constructor() {
-    this.initializeQueues();
+    // Don't initialize queues here - wait for first use
   }
 
   /**
@@ -22,6 +23,23 @@ class JobQueue {
       JobQueue.instance = new JobQueue();
     }
     return JobQueue.instance;
+  }
+
+  /**
+   * Ensure jobs is initialized before queue operations
+   */
+  private ensureInitialized(): void {
+    if (!isJobsInitialized()) {
+      throw new Error(
+        "Jobs not initialized. Call initializeJobs() first from your app entry point."
+      );
+    }
+
+    // Initialize predefined queues on first use
+    if (!this.initialized) {
+      this.initializeQueues();
+      this.initialized = true;
+    }
   }
 
   /**
@@ -37,7 +55,7 @@ class JobQueue {
    * Create a new queue
    */
   private createQueue(name: string): Queue {
-    const queue = new Queue(name, queueOptions);
+    const queue = new Queue(name, getQueueOptions());
 
     this.setupQueueListeners(queue, name);
 
@@ -60,6 +78,8 @@ class JobQueue {
    * Get or create a queue
    */
   public getQueue(name: string): Queue {
+    this.ensureInitialized();
+
     if (!this.queues.has(name)) {
       return this.createQueue(name);
     }
@@ -153,6 +173,7 @@ class JobQueue {
     );
     await Promise.all(closePromises);
     this.queues.clear();
+    this.initialized = false;
   }
 
   /**

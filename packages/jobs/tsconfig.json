@@ -1,6 +1,7 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
+    "rootDir": "./src",
     "outDir": "./dist",
     "composite": true,
     "lib": [
@@ -23,13 +24,8 @@
       ]
     }
   },
-  "references": [
-    {
-      "path": "../../apps/backend"
-    }
-  ],
   "include": [
-    "**/*.ts"
+    "src/**/*.ts"
   ],
   "exclude": [
     "node_modules",
