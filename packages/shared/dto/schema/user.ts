@@ -1,5 +1,5 @@
 import { TPermission } from '#/enums/permissions';
-import { boolean, doublePrecision, integer, pgTable, serial, timestamp, varchar } from 'drizzle-orm/pg-core';
+import { boolean, doublePrecision, integer, pgTable, primaryKey, serial, timestamp, varchar, uniqueIndex } from 'drizzle-orm/pg-core';
 import { getDefaultTableFields } from './schemaHelpers';
 import { TMailConfirmationStatusKey, TRole } from '#/enums/index';
 
@@ -45,7 +45,9 @@ export const tblRolePermission = pgTable('role_permissions', {
     roleId: integer('role_id').notNull().references(() => tblRole.id),
     permissionId: integer('permission_id').notNull().references(() => tblPermission.id),
     ...getDefaultTableFields(),
-});
+}, (table) => ({
+    unqRolePermission: uniqueIndex('unq_role_permission_idx').on(table.roleId, table.permissionId),
+}));
 
 
 

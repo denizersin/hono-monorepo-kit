@@ -13,11 +13,23 @@ export class RolePermissionRepositoryImpl {
 
     async createBulkRolePermission(data: TUserValidator.TCreateBulkRolePermissionSchema): Promise<void> {
         const { roleId, permissionIds } = data;
-        const values = permissionIds.map(permissionId => ({
-            roleId,
-            permissionId
-        }));
-        await db.insert(tblRolePermission).values(values);
+
+        const existingPermissions = await db.query.tblRolePermission.findMany({
+            where: eq(tblRolePermission.roleId, roleId),
+        });
+        const existingPermissionIds = existingPermissions.map((rp) => rp.permissionId);
+
+        const newPermissionIds = permissionIds.filter(
+            (id) => !existingPermissionIds.includes(id)
+        );
+
+        if (newPermissionIds.length > 0) {
+            const values = newPermissionIds.map((permissionId) => ({
+                roleId,
+                permissionId,
+            }));
+            await db.insert(tblRolePermission).values(values);
+        }
     }
 
     async deleteRolePermission(roleId: number, permissionId: number): Promise<void> {

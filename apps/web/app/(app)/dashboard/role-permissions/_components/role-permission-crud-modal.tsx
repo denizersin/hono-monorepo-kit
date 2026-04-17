@@ -50,6 +50,34 @@ export function RolePermissionCrudModal({ isOpen, setIsOpen }: RolePermissionCru
         }
     })
 
+    const selectedRoleId = form.watch("roleId")
+
+    const { data: existingRolePermissions } = useQuery({
+        ...trpc.user.getRolePermissions.queryOptions({
+            pagination: {
+                page: 1,
+                limit: 1000,
+            },
+            sort: [{
+                sortBy: 'desc',
+                sortField: 'createdAt'
+            }],
+            filter: {
+                roleId: selectedRoleId
+            },
+        }),
+        enabled: !!selectedRoleId,
+    })
+
+    useEffect(() => {
+        if (existingRolePermissions?.data) {
+            const existingPermissionIds = existingRolePermissions.data.map(rp => rp.permissionId)
+            form.setValue("permissionIds", existingPermissionIds)
+        } else if (!selectedRoleId) {
+            form.setValue("permissionIds", [])
+        }
+    }, [existingRolePermissions?.data, selectedRoleId, form])
+
     const onSubmit = (data: CreateFormValues) => {
         createBulkRolePermission.mutate(data)
     }
