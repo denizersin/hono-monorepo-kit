@@ -140,13 +140,31 @@ export const ownerProcedure = protectedProcedure.use(async (opts) => {
 export const roleMiddleware = (requiredRoleIds: number[] | number) =>
     t.middleware(({ ctx, next }) => {
         if (!ctx.session) {
-            throw new Error('Not authenticated');
+            throw createTRPCError({
+                code: 'UNAUTHORIZED',
+                data: {
+                    toast: true,
+                    message: 'You are not authorized to access this resource'
+                }
+            });
         }
         if (Array.isArray(requiredRoleIds) && !requiredRoleIds.includes(ctx.session.roleId)) {
-            throw new Error('Unauthorized');
+            throw createTRPCError({
+                code: 'UNAUTHORIZED',
+                data: {
+                    toast: true,
+                    message: 'You are not authorized to access this resource'
+                }
+            });
         }
         if (typeof requiredRoleIds === 'number' && ctx.session.roleId !== requiredRoleIds) {
-            throw new Error('Unauthorized');
+            throw createTRPCError({
+                code: 'UNAUTHORIZED',
+                data: {
+                    toast: true,
+                    message: 'You are not authorized to access this resource'
+                }
+            });
         }
         return next();
     });

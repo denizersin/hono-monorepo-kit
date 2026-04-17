@@ -136,21 +136,21 @@ export const userRouter = createTRPCRouter({
         }),
 
     createRolePermission: protectedProcedure
-        .use(roleMiddleware([SahredEnums.ROLE_MAP.OWNER, SahredEnums.ROLE_MAP.ADMIN]))
+        .use(roleMiddleware([SahredEnums.ROLE_MAP.ADMIN]))
         .input(userValidator.rolePermissionBaseInsertSchema)
         .mutation(async ({ ctx, input }) => {
             return await rolePermissionRepository.createRolePermission(input)
         }),
 
     createBulkRolePermission: protectedProcedure
-        .use(roleMiddleware([SahredEnums.ROLE_MAP.OWNER, SahredEnums.ROLE_MAP.ADMIN]))
+        .use(roleMiddleware([SahredEnums.ROLE_MAP.ADMIN]))
         .input(userValidator.createBulkRolePermissionSchema)
         .mutation(async ({ ctx, input }) => {
             return await rolePermissionRepository.createBulkRolePermission(input)
         }),
 
     deleteRolePermission: protectedProcedure
-        .use(roleMiddleware([SahredEnums.ROLE_MAP.OWNER, SahredEnums.ROLE_MAP.ADMIN]))
+        .use(roleMiddleware([SahredEnums.ROLE_MAP.ADMIN]))
         .input(userValidator.deleteRolePermissionSchema)
         .mutation(async ({ ctx, input }) => {
             return await rolePermissionRepository.deleteRolePermission(input.roleId, input.permissionId)
